@@ -1,25 +1,26 @@
-const withSass = require("@zeit/next-sass");
-const withLess = require("@zeit/next-less");
-const withCSS = require("@zeit/next-css");
+const withPlugins = require('next-compose-plugins');
+const sass = require("@zeit/next-sass")
+const css = require("@zeit/next-css")
 
-const isProd = process.env.NODE_ENV === "production";
-
-// fix: prevents error when .less files are required by node
-if (typeof require !== "undefined") {
-  require.extensions[".less"] = (file) => {};
+const nextConfig = {
+  webpack: function (config) {
+  config.module.rules.push({
+    test: /\.(eot|woff|woff2|ttf|svg|png|jpg|gif)$/,
+    use: {
+    loader: 'url-loader',
+      options: {
+        limit: 100000,
+        name: '[name].[ext]'
+      }
+    }
+  })
+  return config
+  }
 }
 
-module.exports = withCSS({
-  cssModules: true,
-  cssLoaderOptions: {
-    importLoaders: 1,
-    localIdentName: "[local]___[hash:base64:5]",
-  },
-  ...withLess(
-    withSass({
-      lessLoaderOptions: {
-        javascriptEnabled: true,
-      },
-    })
-  ),
-});
+module.exports = withPlugins([
+  [css],
+  [sass, {
+     cssModules: true
+   }]
+], nextConfig);

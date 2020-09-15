@@ -1,11 +1,14 @@
 import React from 'react'
 import { Layout, Row } from 'antd'
 
+import styles from './styles.scss'
+import './overwrite.css'
+
 const PageCourse = () => {
     return (
         <Layout>
-            <Row>
-                <div>Hello world</div>
+            <Row className="wrapper-container">
+                <div className={styles.container}>Hello world</div>
             </Row>
         </Layout>
     )
