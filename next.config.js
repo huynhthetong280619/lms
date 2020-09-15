@@ -22,5 +22,5 @@ module.exports = withPlugins([
   [css],
   [sass, {
      cssModules: true
-   }]
+   }],
 ], nextConfig);
