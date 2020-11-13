@@ -1,20 +1,15 @@
 import React from 'react'
+import IndexContent from '../pages-modules/components/content'
 import IndexLayout from '../pages-modules/layouts/layout'
+import Banner from '../pages-modules/components/banner'
 
-const IndexPage = ({ props }) => {
+const IndexPage = () => {
   return (
-    <IndexLayout>{ props.location }</IndexLayout>
+    <IndexLayout>
+      <Banner />
+      <IndexContent />
+    </IndexLayout>
   )
 }
 
-
-IndexPage.getInitialProps = () => {
-  return {
-    props: {
-      name: 'antd',
-      age: 7,
-      location: 'NY CITY'
-    }
-  }
-}
 export default IndexPage
