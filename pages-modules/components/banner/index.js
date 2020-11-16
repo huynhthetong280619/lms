@@ -1,15 +1,13 @@
 import { Row } from 'antd'
 import React, { Component } from 'react'
 
-// import banner from '../../../assets/images/contents/banner.png'
-
 import styles from './styles.scss'
 class Banner extends Component {
     render() {
         return <>
         <Row className={styles.bannerLayout}>
             <div className="media-banner">
-                {/* <img src={banner} /> */}
+                
             </div>
             <div className={styles.contentBanner}>
                 <h1 className={styles.bannerHeader}>HCM UNIVERSITY OF TECHNOLOGY & EDUCATION</h1>

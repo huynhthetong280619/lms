@@ -1,5 +1,5 @@
 import { Col, Row, Carousel } from 'antd'
-import {PlayCircleOutlined } from '@ant-design/icons'
+import {PlayCircleOutlined, RocketTwoTone } from '@ant-design/icons'
 import React, { Component } from 'react'
 import styles from './styles.scss'
 import './overwrite.css'
@@ -16,8 +16,6 @@ import maxresdefault from '../../../assets/images/contents/maxresdefault.png'
 import nn from '../../../assets/images/contents/nn.png'
 import xd from '../../../assets/images/contents/xd.png'
 
-// import images svg
-import playButton from '../../../assets/svg/content/play.svg'
 
 const contentStyle = {
     height: '160px',
@@ -34,10 +32,7 @@ class IndexContent extends Component {
             <Row className="lms_ws_content">
                 <Col className={styles.carouselIntro} span={10}>
                     <div>
-                        <Carousel autoplay>
-                            <div>
-                                <h3 style={contentStyle}>1</h3>
-                            </div>
+                        <Carousel>
                             <div>
                                 <h3 style={contentStyle}>2</h3>
                             </div>

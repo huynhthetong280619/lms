@@ -8,7 +8,8 @@ body::-webkit-scrollbar {
     display: none;
 }
 
-.mainLayout{    
+.mainLayout{  
+    min-height: 100vh;  
     .header{
         width: var(--width);
         background: linear-gradient(-90deg, rgba(15, 12, 164, 0.8) 0%, rgba(255, 255, 255, 0) 100%), #25DDDD;
@@ -17,6 +18,7 @@ body::-webkit-scrollbar {
     .content{
         position: relative;
         width: 100%;
+        background: linear-gradient(-90deg, rgba(15, 12, 164, 0.8) 0%, rgba(255, 255, 255, 0) 100%), #25DDDD;
     }
     
     .footer{

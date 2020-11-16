@@ -8,7 +8,7 @@ class Headers extends Component{
         return <Row>
             <Col xs={12}>
                 <div>
-                    <span>LOGO</span>
+                    <span><a href="/">LOGO</a></span>
                 </div>
             </Col>
             <Col xs={12}>
