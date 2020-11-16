@@ -3,7 +3,7 @@ import IndexContent from '../pages-modules/components/content'
 import IndexLayout from '../pages-modules/layouts/layout'
 import Banner from '../pages-modules/components/banner'
 
-const IndexPage = ({object}) => {
+const IndexPage = () => {
   return (
     <IndexLayout>
       <Banner />
@@ -13,9 +13,7 @@ const IndexPage = ({object}) => {
 }
 
 IndexPage.getInitialProps = () => {
-  return {
-    object
-  }
+  return null
 }
 
 export default IndexPage

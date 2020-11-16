@@ -109,6 +109,59 @@ const data = [
 ];
 
 
+const columnsSurvey = [
+    {
+        title: 'Mã số',
+        dataIndex: 'name',
+        key: 'name',
+        render: text => <a>{text}</a>,
+    },
+    {
+        title: 'Tên khảo sát',
+        dataIndex: 'age',
+        key: 'age',
+    },
+    {
+        title: 'Hoàn thành',
+        dataIndex: 'address',
+        key: 'address',
+    },
+    {
+        title: 'Action',
+        key: 'action',
+        render: (text, record) => (
+            <Space size="middle">
+                <a>Review</a>
+            </Space>
+        ),
+    },
+];
+
+const dataSurvey = [
+    {
+        key: '1',
+        name: 'John Brown',
+        age: 32,
+        address: 'New York No. 1 Lake Park',
+        tags: ['nice', 'developer'],
+    },
+    {
+        key: '2',
+        name: 'Jim Green',
+        age: 42,
+        address: 'London No. 1 Lake Park',
+        tags: ['loser'],
+    },
+    {
+        key: '3',
+        name: 'Joe Black',
+        age: 32,
+        address: 'Sidney No. 1 Lake Park',
+        tags: ['cool', 'teacher'],
+    },
+];
+
+
 
 const StudentPage = ({ }) => {
     const [visibleAddStudent, setVisibleAddStudent] = useState(false);
@@ -120,7 +173,7 @@ const StudentPage = ({ }) => {
     const content = (
         <div>
             <div style={{ padding: '10px 0' }} onClick={() => setVisibleAddStudent(true)}><i><img src={add} width="30px" /><span style={{ paddingLeft: '10px' }}>Thêm sinh viên</span></i></div>
-            <div style={{ padding: '10px 0' }}  onClick={() => setVisibleNotification(true)}><i><img src={notificationBelt} width="30px" /><span style={{ paddingLeft: '10px' }}>Thông báo</span></i></div>
+            <div style={{ padding: '10px 0' }} onClick={() => setVisibleNotification(true)}><i><img src={notificationBelt} width="30px" /><span style={{ paddingLeft: '10px' }}>Thông báo</span></i></div>
             <div style={{ padding: '10px 0' }} onClick={() => setVisibleAssignment(true)}><i><img src={assignment} width="30px" /><span style={{ paddingLeft: '10px' }}>Bài tập</span></i></div>
             <div style={{ padding: '10px 0' }} onClick={() => setVisibleSurvey(true)}><i><img src={survey} width="30px" /><span style={{ paddingLeft: '10px' }}>Khảo sát</span></i></div>
         </div>
@@ -176,13 +229,13 @@ const StudentPage = ({ }) => {
                                 </p>
                             </Dragger>
                         </Row>
-                       
+
                     </Row>
                     <Row>
-                            <div>
-                                <Button>Create</Button>
-                            </div>
-                        </Row>
+                        <div>
+                            <Button>Create</Button>
+                        </div>
+                    </Row>
                 </TabPane>
                 <TabPane tab="Notifications" key="2">
                     <Row>
@@ -193,11 +246,11 @@ const StudentPage = ({ }) => {
                             <i>
                                 <img src={notificationEmpty} />
                             </i>
-                            <div style={{color: '#c4c4c4', fontStyle: 'italic'}}>Empty notification</div>
+                            <div style={{ color: '#c4c4c4', fontStyle: 'italic' }}>Empty notification</div>
                         </div>
 
                     </Row>
-            </TabPane>
+                </TabPane>
                 <TabPane tab="History" key="3">
                     Content of Tab Pane 3
             </TabPane>
@@ -244,13 +297,13 @@ const StudentPage = ({ }) => {
                                 </p>
                             </Dragger>
                         </Row>
-                       
+
                     </Row>
                     <Row>
-                            <div>
-                                <Button>Create</Button>
-                            </div>
-                        </Row>
+                        <div>
+                            <Button>Create</Button>
+                        </div>
+                    </Row>
                 </TabPane>
                 <TabPane tab="Notifications" key="2">
                     <Row>
@@ -261,11 +314,11 @@ const StudentPage = ({ }) => {
                             <i>
                                 <img src={notificationEmpty} />
                             </i>
-                            <div style={{color: '#c4c4c4', fontStyle: 'italic'}}>Empty notification</div>
+                            <div style={{ color: '#c4c4c4', fontStyle: 'italic' }}>Empty notification</div>
                         </div>
 
                     </Row>
-            </TabPane>
+                </TabPane>
                 <TabPane tab="History" key="3">
                     Content of Tab Pane 3
             </TabPane>
@@ -281,60 +334,25 @@ const StudentPage = ({ }) => {
             width={1000}
         >
             <Tabs defaultActiveKey="1" centered>
-                <TabPane tab="Create notification" key="1">
-                    <Row>
-                        <Col>Subject</Col>
-                        <Col>
-                            <Input placeholder="Basic usage" />
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col>Content</Col>
-                        <Col>
-                            <TextArea rows={4} />
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Row>Customize<Checkbox onChange={onChange} /></Row>
-                        <Row>
-                            <div><span>Begin day</span>
-                                <DatePicker onChange={onChange} />
-                            </div>
-                            <div><span>End day</span>
-                                <DatePicker onChange={onChange} />
-                            </div>
-                        </Row>
-                        <Row>
-                            <span>Attachment</span>
-                            <Dragger {...props}>
-                                <p className="ant-upload-drag-icon">
-                                    <InboxOutlined />
-                                </p>
-                            </Dragger>
-                        </Row>
-                       
-                    </Row>
-                    <Row>
-                            <div>
-                                <Button>Create</Button>
-                            </div>
-                        </Row>
+                <TabPane tab="Submission" key="1">
+                    <div>Submission status</div>
+                    <div>Due date: <span>Tuesday, 20/10/2020</span></div>
+                    <div>Time remaining: <span>Remaining 20 hours</span></div>
+                    <div>Last modified</div>
+                    <div>File submission</div>
+                    <div>Submission comments</div>
+                    <Button>Submit</Button>
                 </TabPane>
-                <TabPane tab="Notifications" key="2">
-                    <Row>
-                        <div style={{
-                            textAlign: 'center',
-                            padding: '45px'
-                        }}>
-                            <i>
-                                <img src={notificationEmpty} />
-                            </i>
-                            <div style={{color: '#c4c4c4', fontStyle: 'italic'}}>Empty notification</div>
-                        </div>
-
-                    </Row>
-            </TabPane>
-                <TabPane tab="History" key="3">
+                <TabPane tab="Requirement" key="2">
+                    <div>[Content requirement]</div>
+                    <div>
+                        - Completeness of certain preceding tasks;
+                        - The level of employee competence required to complete the work successfully;
+                        - The level of creativity required from performers to reach the goals of a task;
+                    </div>
+                    <div>File Attachment</div>
+                </TabPane>
+                <TabPane tab="Grade" key="3">
                     Content of Tab Pane 3
             </TabPane>
             </Tabs>
@@ -349,59 +367,19 @@ const StudentPage = ({ }) => {
             width={1000}
         >
             <Tabs defaultActiveKey="1" centered>
-                <TabPane tab="Create notification" key="1">
-                    <Row>
-                        <Col>Subject</Col>
-                        <Col>
-                            <Input placeholder="Basic usage" />
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col>Content</Col>
-                        <Col>
-                            <TextArea rows={4} />
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Row>Customize<Checkbox onChange={onChange} /></Row>
-                        <Row>
-                            <div><span>Begin day</span>
-                                <DatePicker onChange={onChange} />
-                            </div>
-                            <div><span>End day</span>
-                                <DatePicker onChange={onChange} />
-                            </div>
-                        </Row>
-                        <Row>
-                            <span>Attachment</span>
-                            <Dragger {...props}>
-                                <p className="ant-upload-drag-icon">
-                                    <InboxOutlined />
-                                </p>
-                            </Dragger>
-                        </Row>
-                       
-                    </Row>
-                    <Row>
-                            <div>
-                                <Button>Create</Button>
-                            </div>
-                        </Row>
+                <TabPane tab="Surveys" key="1">
+                <div style={{ width: '90%' }}>
+                <Row style={{ textAlign: 'left', width: '100%', padding: '10px 0' }}>
+                    <Checkbox onChange={onChange} style={{ color: '#ff0000' }}>Bulk Delete</Checkbox>
+                </Row>
+                <Row style={{ width: '100%' }}>
+                    <Table columns={columnsSurvey} dataSource={dataSurvey} style={{ width: '100%' }} />
+                </Row>
+            </div>
                 </TabPane>
-                <TabPane tab="Notifications" key="2">
-                    <Row>
-                        <div style={{
-                            textAlign: 'center',
-                            padding: '45px'
-                        }}>
-                            <i>
-                                <img src={notificationEmpty} />
-                            </i>
-                            <div style={{color: '#c4c4c4', fontStyle: 'italic'}}>Empty notification</div>
-                        </div>
+                <TabPane tab="Surveys" key="2">
 
-                    </Row>
-            </TabPane>
+                </TabPane>
                 <TabPane tab="History" key="3">
                     Content of Tab Pane 3
             </TabPane>
