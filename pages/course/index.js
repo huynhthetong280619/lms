@@ -4,7 +4,7 @@ import { CheckCircleTwoTone, AlertOutlined } from '@ant-design/icons'
 import styles from './styles.scss'
 import './overwrite.css'
 import IndexLayout from '../../pages-modules/layouts/layout'
-
+import Link from 'next/link'
 
 // import images
 import onlineCourse from '../../assets/images/courses/onlineCourse.png'
@@ -18,31 +18,38 @@ const { TabPane } = Tabs;
 const PageCourse = () => {
     const [courses, setCourse] = React.useState([{
         backgroundColor: 'red',
-        title: 'English'
+        title: 'English',
+        urlLink: '/course/1'
     },
     {
         backgroundColor: 'red',
-        title: 'English'
+        title: 'English',
+        urlLink: '/course/2'
     },
     {
         backgroundColor: 'red',
-        title: 'English'
+        title: 'English',
+        urlLink: '/course/3'
     },
     {
         backgroundColor: 'red',
-        title: 'English'
+        title: 'English',
+        urlLink: '/course/4'
     },
     {
         backgroundColor: 'red',
-        title: 'English'
+        title: 'English',
+        urlLink: '/course/5'
     },
     {
         backgroundColor: 'red',
-        title: 'English'
+        title: 'English',
+        urlLink: '/course/6'
     },
     {
         backgroundColor: 'red',
-        title: 'English'
+        title: 'English',
+        urlLink: '/course/7'
     },])
 
     return (
@@ -81,13 +88,15 @@ const PageCourse = () => {
                         <Row style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
                             {
                                 courses.map(course => (
-                                    <Col span={6} style={{
-                                        margin: '15px',
-                                        flexGrow: '1'
-                                    }}>
-                                        <div style={{ height: '250px', background: `${course.backgroundColor}` }}></div>
-                                        <div>{course.title}</div>
-                                    </Col>
+                                    <Link href={course.urlLink}>
+                                        <Col span={6} style={{
+                                            margin: '15px',
+                                            flexGrow: '1'
+                                        }}>
+                                            <div style={{ height: '250px', background: `${course.backgroundColor}` }}></div>
+                                            <div>{course.title}</div>
+                                        </Col>
+                                    </Link>
                                 ))
                             }
                         </Row>
@@ -126,12 +135,30 @@ const PageCourse = () => {
                         <Row style={{justifyContent: 'center'}}>
                         <Tabs defaultActiveKey="1" centered>
                             <TabPane tab={<span> <AlertOutlined twoToneColor="#ff0000"/>Deadline</span>} key="1">
-                            Content of Tab Pane 1
+                                <Row>
+                                    <Col span={10}><i>
+                                            <img src={fastTime} />
+                                        </i></Col>
+                                    <Col span={14}>
+                                        <div>Ngôn ngữ lập trình tiên tiến</div>
+                                        <div><span>Due to:</span>20/10/2020</div>
+                                        <div>Time remaining: 2 hours</div>
+                                    </Col>
+                                </Row>
                             </TabPane>
                             <TabPane tab={<span> <CheckCircleTwoTone twoToneColor="#52c41a" />
   
                     Complete</span>} key="2">
-                            Content of Tab Pane 2
+                    <Row>
+                                    <Col span={10}><i>
+                                            <img src={fastTime} />
+                                        </i></Col>
+                                    <Col span={14}>
+                                        <div>Ngôn ngữ lập trình tiên tiến</div>
+                                        <div><span>Due to:</span>20/10/2020</div>
+                                        <div>Time remaining: 2 hours</div>
+                                    </Col>
+                                </Row>
                             </TabPane>
                         </Tabs>
                         </Row>
