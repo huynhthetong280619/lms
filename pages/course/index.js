@@ -158,7 +158,7 @@ const PageCourse = () => {
                                         <div><span>Due to:</span>20/10/2020</div>
                                         <div>Time remaining: 2 hours</div>
                                     </Col>
-                                </Row>
+                                </Row>  
                             </TabPane>
                         </Tabs>
                         </Row>
