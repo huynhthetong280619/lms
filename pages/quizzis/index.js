@@ -35,6 +35,7 @@ const dataSource = [
     },
   ];
 
+  import quizTime from '../../assets/images/contents/quiz-time.png'
 
 const QuizPage = () => {
     return <IndexLayout>
@@ -58,6 +59,9 @@ const QuizPage = () => {
                         borderRadius: "20px"
 
                     }}>
+                      <i>
+                        <img src={quizTime} />
+                      </i>
                         <div>TEST PART 1</div>
                         <div>
                             <div>Attemp allowed: 2</div>

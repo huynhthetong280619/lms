@@ -21,7 +21,7 @@ const SurveyPage = () => {
                     <span>
                         <img src={survey} width="80px" />
                     </span>
-                    <span style={{fontWeight: '700'}}>[ DISCUSSION FORUM ] PART 1: BASIC PYTHON</span>
+                    <span style={{fontWeight: '700'}}>[ SURVEY ] PART 1: CONSOLATE KNOWLEDGE</span>
                 </div>
                 <div style={{ width: '100%', minHeight: '150px' }}>
                       <div style={{
