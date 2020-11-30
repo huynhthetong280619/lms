@@ -1,5 +1,7 @@
 import fetch from 'node-fetch';
 import { get, isEmpty, split, includes, omit } from 'lodash';
+import {GLOBAL_CONFIG} from '../../config/index'
+import urljoin from 'url-join';
 
 const parseReponse = async response => {
   try {
@@ -36,10 +38,16 @@ class RestClient {
     return headers;
   }
 
+  getUrl(path, options) {
+    const url = urljoin(GLOBAL_CONFIG.APPS_DOMAIN, path);
+    console.log('url: ', url);
+    return url;
+  }
+
   async asyncGet(path) {
     console.log('asyncGet')
     try {
-      const response = await fetch(path, {
+      const response = await fetch(this.getUrl(path), {
         headers: this.createHeaders(),
       });
 

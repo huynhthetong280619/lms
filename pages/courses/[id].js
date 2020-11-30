@@ -16,7 +16,7 @@ import text from '../../assets/images/contents/text-editor.png'
 import timeline from '../../assets/images/contents/timeline.png'
 import word from '../../assets/images/contents/word.png'
 import assignment from '../../assets/images/contents/assignment.png'
-import RestClient from '../../assets/common/core/restClient';
+import { withTranslation } from 'react-i18next';
 
 const { TextArea } = Input;
 const { TabPane } = Tabs;
@@ -68,7 +68,7 @@ const content = (
     </div>
 );
 
-const CourseDetail = () => {
+const CourseDetail = ({t}) => {
     const router = useRouter()
     const [visible, setVisible] = React.useState(false)
 
@@ -93,7 +93,7 @@ const CourseDetail = () => {
             <Tabs defaultActiveKey="1" centered>
                 <TabPane tab="Submission" key="1">
                     <div>
-                        <div>Submission status</div>
+                        <div>{t('sbmit_stat')}</div>
                         <div>
                             <span>Due date</span>
                             <span>Tuesday, 20/10/2020</span>
@@ -178,7 +178,7 @@ const CourseDetail = () => {
                             }}
                         >PART 1: TỔNG QUAN KHÓA HỌC</Row>
                         <Row style={{ marginBottom: "10px" }}>
-                            <Col span={6} style={{ textAlign: "center" }}>
+                            <Col span={6} style={{ textAlign: "left" }}>
                                 <i>
                                     <img src={forum} />
                                 </i>
@@ -191,7 +191,7 @@ const CourseDetail = () => {
                             </Col>
                         </Row>
                         <Row style={{ marginBottom: "10px" }} onClick={() => setVisible(true)}>
-                            <Col span={6} style={{ textAlign: "center" }}>
+                            <Col span={6} style={{ textAlign: "left" }}>
                                 <i>
                                     <img src={assignment} />
                                 </i>
@@ -241,6 +241,8 @@ const CourseDetail = () => {
 }
 
 CourseDetail.getInitialProps = async () => {
-        return {};
+    return {
+        namespacesRequired: ['lms-ws'] 
+    }
 }
-export default CourseDetail
+export default withTranslation('translations')(CourseDetail)

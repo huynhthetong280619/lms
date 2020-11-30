@@ -173,7 +173,7 @@ const PageCourse = ({listCourses}) => {
 
 PageCourse.getInitialProps = async () => {
     console.log('CourseDetail');
-    const data = await RestClient.asyncGet('https://spkt-server.herokuapp.com/subject?fbclid=IwAR1JJS38lHJxaGQj_0qX_wac6rBENjblfgoPGYPTE7_tSkALB2jUvKncPPU');
+    const data = await RestClient.asyncGet('/subject?fbclid=IwAR1JJS38lHJxaGQj_0qX_wac6rBENjblfgoPGYPTE7_tSkALB2jUvKncPPU');
     console.log(data);
 
     return {

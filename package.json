@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "better-npm-run dev",
     "build": "next build",
     "start": "next start"
   },
@@ -14,16 +14,31 @@
     "@zeit/next-sass": "^1.0.1",
     "antd": "^4.8.4",
     "babel-plugin-import": "^1.13.0",
+    "better-npm-run": "^0.1.1",
     "file-loader": "^6.2.0",
+    "i18next": "^19.8.4",
     "less": "^3.12.2",
     "lodash": "^4.17.20",
     "next": "9.5.3",
+    "next-assets-import": "^0.0.2",
     "next-compose-plugins": "^2.2.0",
+    "next-fonts": "^1.5.1",
+    "next-i18next": "^7.0.1",
+    "next-transpile-modules": "^5.0.0",
     "node-fetch": "^2.6.1",
     "node-sass": "^4.14.1",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-i18next": "^11.7.3",
+    "url-join": "^4.0.1",
     "url-loader": "^4.1.1"
+  },
+  "betterScripts": {
+    "dev": {
+      "command": "next dev",
+      "env": {
+        "APPS_DOMAIN": "https://spkt-server.herokuapp.com"
+      }
+    }
   }
 }
