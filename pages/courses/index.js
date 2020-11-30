@@ -12,10 +12,12 @@ import courseEmpty from '../../assets/images/courses/courseEmpty.png'
 import deadlineCalcular from '../../assets/images/courses/deadlineCalcular.png'
 import fastTime from '../../assets/images/courses/fastTime.png'
 import deadline from '../../assets/images/courses/deadline.png'
+import RestClient from '../../assets/common/core/restClient'
+import { get, isEmpty, split, includes, omit } from 'lodash';
 
 const { TabPane } = Tabs;
 
-const PageCourse = () => {
+const PageCourse = ({listCourses}) => {
     const [courses, setCourse] = React.useState([{
         backgroundColor: 'red',
         title: 'English',
@@ -87,14 +89,14 @@ const PageCourse = () => {
                         {/* Courses */}
                         <Row style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
                             {
-                                courses.map(course => (
-                                    <Link href={course.urlLink}>
+                                get(listCourses, 'data').map(course => (
+                                    <Link href={`/courses/${course._id}`}>
                                         <Col span={6} style={{
                                             margin: '15px',
                                             flexGrow: '1'
                                         }}>
-                                            <div style={{ height: '250px', background: `${course.backgroundColor}` }}></div>
-                                            <div>{course.title}</div>
+                                            <div style={{ height: '250px', background: `#ff0000` }}></div>
+                                            <div>{course.name}</div>
                                         </Col>
                                     </Link>
                                 ))
@@ -132,41 +134,51 @@ const PageCourse = () => {
                             <div style={{ color: '#c4c4c4', fontStyle: 'italic' }}>No upcoming deadline</div>
                         </div> */}
                         {/* Deadline */}
-                        <Row style={{justifyContent: 'center'}}>
-                        <Tabs defaultActiveKey="1" centered>
-                            <TabPane tab={<span> <AlertOutlined twoToneColor="#ff0000"/>Deadline</span>} key="1">
-                                <Row>
-                                    <Col span={10}><i>
+                        <Row style={{ justifyContent: 'center' }}>
+                            <Tabs defaultActiveKey="1" centered>
+                                <TabPane tab={<span> <AlertOutlined twoToneColor="#ff0000" />Deadline</span>} key="1">
+                                    <Row>
+                                        <Col span={10}><i>
                                             <img src={fastTime} />
                                         </i></Col>
-                                    <Col span={14}>
-                                        <div>Ngôn ngữ lập trình tiên tiến</div>
-                                        <div><span>Due to:</span>20/10/2020</div>
-                                        <div>Time remaining: 2 hours</div>
-                                    </Col>
-                                </Row>
-                            </TabPane>
-                            <TabPane tab={<span> <CheckCircleTwoTone twoToneColor="#52c41a" />
-  
+                                        <Col span={14}>
+                                            <div>Ngôn ngữ lập trình tiên tiến</div>
+                                            <div><span>Due to:</span>20/10/2020</div>
+                                            <div>Time remaining: 2 hours</div>
+                                        </Col>
+                                    </Row>
+                                </TabPane>
+                                <TabPane tab={<span> <CheckCircleTwoTone twoToneColor="#52c41a" />
+
                     Complete</span>} key="2">
-                    <Row>
-                                    <Col span={10}><i>
+                                    <Row>
+                                        <Col span={10}><i>
                                             <img src={fastTime} />
                                         </i></Col>
-                                    <Col span={14}>
-                                        <div>Ngôn ngữ lập trình tiên tiến</div>
-                                        <div><span>Due to:</span>20/10/2020</div>
-                                        <div>Time remaining: 2 hours</div>
-                                    </Col>
-                                </Row>  
-                            </TabPane>
-                        </Tabs>
+                                        <Col span={14}>
+                                            <div>Ngôn ngữ lập trình tiên tiến</div>
+                                            <div><span>Due to:</span>20/10/2020</div>
+                                            <div>Time remaining: 2 hours</div>
+                                        </Col>
+                                    </Row>
+                                </TabPane>
+                            </Tabs>
                         </Row>
                     </div>
                 </Col>
             </Row>
         </IndexLayout>
     )
+}
+
+PageCourse.getInitialProps = async () => {
+    console.log('CourseDetail');
+    const data = await RestClient.asyncGet('https://spkt-server.herokuapp.com/subject?fbclid=IwAR1JJS38lHJxaGQj_0qX_wac6rBENjblfgoPGYPTE7_tSkALB2jUvKncPPU');
+    console.log(data);
+
+    return {
+        listCourses: data
+    };
 }
 
 export default PageCourse

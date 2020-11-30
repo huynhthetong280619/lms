@@ -2,6 +2,7 @@ import React from 'react'
 import { useRouter } from 'next/router'
 import IndexLayout from '../../pages-modules/layouts/layout'
 import { Row, Col, Popover, Modal, Tooltip, Tabs, Input } from 'antd'
+import { Switch } from 'antd';
 
 import styles from './styles.scss'
 import './overwrite.css'
@@ -15,6 +16,7 @@ import text from '../../assets/images/contents/text-editor.png'
 import timeline from '../../assets/images/contents/timeline.png'
 import word from '../../assets/images/contents/word.png'
 import assignment from '../../assets/images/contents/assignment.png'
+import RestClient from '../../assets/common/core/restClient';
 
 const { TextArea } = Input;
 const { TabPane } = Tabs;
@@ -70,6 +72,7 @@ const CourseDetail = () => {
     const router = useRouter()
     const [visible, setVisible] = React.useState(false)
 
+
     const handleOk = e => {
         console.log(e);
         setVisible(false)
@@ -109,7 +112,6 @@ const CourseDetail = () => {
                         <div>
                             <div>Submission comments</div>
                             <TextArea rows={4} />
-
                         </div>
 
                     </div>
@@ -152,6 +154,7 @@ const CourseDetail = () => {
                     borderRadius: '10px',
                     minHeight: '200px'
                 }}>
+
                 <div>
                     <div style={{
                         textAlign: 'center',
@@ -161,34 +164,46 @@ const CourseDetail = () => {
                         </i>
                         <span style={{ padding: '25px', fontSize: '2em' }}>NGÔN NGỮ LẬP TRÌNH TIÊN TIẾN</span>
                     </div>
+
                 </div>
-                <div>
-                    <Row style={{ marginBottom: "10px" }}>
-                        <Col span={6} style={{ textAlign: "center" }}>
-                            <i>
-                                <img src={forum} />
-                            </i>
-                        </Col>
-                        <Col span={17} style={{
-                            fontSize: '20px',
-                            lineHeight: '3.5'
-                        }}>
-                            <div>Diễn đàn tin tức</div>
-                        </Col>
-                    </Row>
-                    <Row style={{ marginBottom: "10px" }} onClick={() => setVisible(true)}>
-                        <Col span={6} style={{ textAlign: "center" }}>
-                            <i>
-                                <img src={assignment} />
-                            </i>
-                        </Col>
-                        <Col span={17} style={{
-                            fontSize: '20px',
-                            lineHeight: '3.5'
-                        }}>
-                            <div>[Assignment] Submission file word</div>
-                        </Col>
-                    </Row>
+
+
+                <div style={{padding: '0 10px'}}>
+                    <div >
+                        <Row
+                            style={{
+                                padding: "10px",
+                                background: "#cacaca",
+                                marginBottom: "10px"
+                            }}
+                        >PART 1: TỔNG QUAN KHÓA HỌC</Row>
+                        <Row style={{ marginBottom: "10px" }}>
+                            <Col span={6} style={{ textAlign: "center" }}>
+                                <i>
+                                    <img src={forum} />
+                                </i>
+                            </Col>
+                            <Col span={17} style={{
+                                fontSize: '20px',
+                                lineHeight: '3.5'
+                            }}>
+                                <div>Diễn đàn tin tức</div>
+                            </Col>
+                        </Row>
+                        <Row style={{ marginBottom: "10px" }} onClick={() => setVisible(true)}>
+                            <Col span={6} style={{ textAlign: "center" }}>
+                                <i>
+                                    <img src={assignment} />
+                                </i>
+                            </Col>
+                            <Col span={17} style={{
+                                fontSize: '20px',
+                                lineHeight: '3.5'
+                            }}>
+                                <div>[Assignment] Submission file word</div>
+                            </Col>
+                        </Row>
+                    </div>
                     <Row style={{
                         background: '#cacaca',
                         borderRadius: '30px',
@@ -213,9 +228,19 @@ const CourseDetail = () => {
                     borderRadius: '10px',
                     minHeight: '200px'
                 }}>
+                <div
+                    style={{
+                        textAlign: 'center',
+                        padding: "10px"
+                    }}>
+                    <Switch checkedChildren="On" unCheckedChildren="Off" defaultChecked />
+                </div>
             </Col>
         </Row>
     </IndexLayout>
 }
 
+CourseDetail.getInitialProps = async () => {
+        return {};
+}
 export default CourseDetail
