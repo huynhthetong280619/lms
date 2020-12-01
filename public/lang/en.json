@@ -5,5 +5,10 @@
     "univers_nm": "Ho Chi Minh City University of Technology and Education (Synary Coffee UTE)",
     "term_condt": "Term conditions",
     "policy": "Policy",
-    "social_ntw" : "Social network"
+    "social_ntw" : "Social network",
+
+    "nm_course": "COURSE",
+    "upcm_dl": "UPCOMING DEADLINE",
+    "dl": "Deadline",
+    "complt": "Complete"
 }

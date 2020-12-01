@@ -1,22 +1,25 @@
 import React from 'react'
 import { useRouter } from 'next/router'
-import IndexLayout from '../../pages-modules/layouts/layout'
+import IndexLayout from '../../../pages-modules/layouts/layout'
 import { Row, Col, Popover, Modal, Tooltip, Tabs, Input } from 'antd'
 import { Switch } from 'antd';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 import styles from './styles.scss'
 import './overwrite.css'
 
-import add from '../../assets/images/contents/add.png'
-import forum from '../../assets/images/contents/forum.png'
-import excel from '../../assets/images/contents/excel.png'
-import file from '../../assets/images/contents/file.png'
-import pdf from '../../assets/images/contents/pdf.png'
-import text from '../../assets/images/contents/text-editor.png'
-import timeline from '../../assets/images/contents/timeline.png'
-import word from '../../assets/images/contents/word.png'
-import assignment from '../../assets/images/contents/assignment.png'
+import add from '../../../assets/images/contents/add.png'
+import forum from '../../../assets/images/contents/forum.png'
+import excel from '../../../assets/images/contents/excel.png'
+import file from '../../../assets/images/contents/file.png'
+import pdf from '../../../assets/images/contents/pdf.png'
+import text from '../../../assets/images/contents/text-editor.png'
+import timeline from '../../../assets/images/contents/timeline.png'
+import word from '../../../assets/images/contents/word.png'
+import assignment from '../../../assets/images/contents/assignment.png'
 import { withTranslation } from 'react-i18next';
+import RestClient from '../../../assets/common/core/restClient';
+
 
 const { TextArea } = Input;
 const { TabPane } = Tabs;
@@ -68,8 +71,11 @@ const content = (
     </div>
 );
 
-const CourseDetail = ({t}) => {
-    const router = useRouter()
+const Detail = ({ detailCourse, t }) => {
+    const router = useRouter();
+    const {id} = router.query;
+
+    console.log('ABC', id);
     const [visible, setVisible] = React.useState(false)
 
 
@@ -83,8 +89,76 @@ const CourseDetail = ({t}) => {
         setVisible(false)
     };
 
+    async function  handleOnDragEnd(result) {
+        if (!result.destination) return;
+    
+        const items = Array.from(characters);
+        const [reorderedItem] = items.splice(result.source.index, 1);
+        items.splice(result.destination.index, 0, reorderedItem);
+    
+       updateCharacters(items);
+    
+        console.log('items', items);
+    }
+
+    const template = (
+        <div style={{ padding: '0 10px' }}>
+            <div >
+                <Row
+                    style={{
+                        padding: 10,
+                        background: "#cacaca",
+                        marginBottom: 10,
+                        fontWeight: 600
+                    }}
+                >PART 1: TỔNG QUAN KHÓA HỌC</Row>
+                <Row style={{ marginBottom: 10 }}>
+                    <Col span={6} style={{ textAlign: "left" }}>
+                        <i>
+                            <img src={forum} />
+                        </i>
+                    </Col>
+                    <Col span={17} style={{
+                        fontSize: '20px',
+                        lineHeight: '3.5'
+                    }}>
+                        <div>Diễn đàn tin tức</div>
+                    </Col>
+                </Row>
+                <Row style={{ marginBottom: 10 }} onClick={() => setVisible(true)}>
+                    <Col span={6} style={{ textAlign: "left" }}>
+                        <i>
+                            <img src={assignment} />
+                        </i>
+                    </Col>
+                    <Col span={17} style={{
+                        fontSize: '20px',
+                        lineHeight: '3.5'
+                    }}>
+                        <div>[Assignment] Submission file word</div>
+                    </Col>
+                </Row>
+            </div>
+            <Row style={{
+                background: '#cacaca',
+                borderRadius: '30px',
+                padding: '10px 0',
+                width: '15%',
+                marginBottom: "15px"
+            }}>
+                <Popover content={content} title="Thêm nội dung">
+                    <div>
+                        <i>
+                            <img src={add} style={{ width: '25px' }} />
+                        </i>
+                    </div>
+                </Popover>
+            </Row>
+        </div>
+    );
+
     return <IndexLayout>
-        <Modal
+        {/* <Modal
             title="[ Assignment ] Submission file word"
             visible={visible}
             onOk={handleOk}
@@ -120,9 +194,8 @@ const CourseDetail = ({t}) => {
                     <div style={{ fontWeight: "700" }}>[Content requirement]</div>
                     <div>
                         - Completeness of certain preceding tasks;</div>
-                    <div>- The level of employee competence required to complete the work successfully;</div>
-                    <div> - The level of creativity required from performers to reach the goals of a task;
-            </div>
+                    <div>- The level of employee competence required to complete the work successfully</div>
+                    <div> - The level of creativity required from performers to reach the goals of a task</div>
                     <div style={{ fontWeight: "700" }}>File attachment</div>
                 </TabPane>
                 <TabPane tab="Grade" key="3">
@@ -141,13 +214,17 @@ const CourseDetail = ({t}) => {
                     <div>
                         <div>Feedback comments</div>
                         <TextArea rows={4} />
-
                     </div>
                 </TabPane>
             </Tabs>
         </Modal>
         <Row className={styles.background} style={{ justifyContent: 'center' }}>
+        <DragDropContext onDragEnd={handleOnDragEnd}>
+          <Droppable droppableId="characters">
+          {(provided) => (
             <Col span={12}
+                {...provided.droppableProps}
+                ref={provided.innerRef}
                 style={{
                     margin: '10px',
                     background: '#fff',
@@ -167,60 +244,23 @@ const CourseDetail = ({t}) => {
 
                 </div>
 
-
-                <div style={{padding: '0 10px'}}>
-                    <div >
-                        <Row
-                            style={{
-                                padding: "10px",
-                                background: "#cacaca",
-                                marginBottom: "10px"
-                            }}
-                        >PART 1: TỔNG QUAN KHÓA HỌC</Row>
-                        <Row style={{ marginBottom: "10px" }}>
-                            <Col span={6} style={{ textAlign: "left" }}>
-                                <i>
-                                    <img src={forum} />
-                                </i>
-                            </Col>
-                            <Col span={17} style={{
-                                fontSize: '20px',
-                                lineHeight: '3.5'
-                            }}>
-                                <div>Diễn đàn tin tức</div>
-                            </Col>
-                        </Row>
-                        <Row style={{ marginBottom: "10px" }} onClick={() => setVisible(true)}>
-                            <Col span={6} style={{ textAlign: "left" }}>
-                                <i>
-                                    <img src={assignment} />
-                                </i>
-                            </Col>
-                            <Col span={17} style={{
-                                fontSize: '20px',
-                                lineHeight: '3.5'
-                            }}>
-                                <div>[Assignment] Submission file word</div>
-                            </Col>
-                        </Row>
-                    </div>
-                    <Row style={{
-                        background: '#cacaca',
-                        borderRadius: '30px',
-                        padding: '10px 0',
-                        width: '15%',
-                        marginBottom: "15px"
-                    }}>
-                        <Popover content={content} title="Thêm nội dung">
-                            <div>
-                                <i>
-                                    <img src={add} style={{ width: '25px' }} />
-                                </i>
-                            </div>
-                        </Popover>
-                    </Row>
-                </div>
+                {
+                    [5, 6, 7, 8].map((item, index) => {
+                        return (
+                            <Draggable key={item} draggableId={item} index={index} >
+                              {(provided) => (
+                                <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                                  {template}
+                                </div>
+                              )}
+                        </Draggable>)
+                    })
+                }
             </Col>
+            )}
+            </Droppable>
+        </DragDropContext>
+        
             <Col span={8}
                 style={{
                     margin: '10px',
@@ -231,18 +271,27 @@ const CourseDetail = ({t}) => {
                 <div
                     style={{
                         textAlign: 'center',
-                        padding: "10px"
+                        padding: 10
                     }}>
                     <Switch checkedChildren="On" unCheckedChildren="Off" defaultChecked />
                 </div>
             </Col>
-        </Row>
+        </Row> */}
     </IndexLayout>
 }
 
-CourseDetail.getInitialProps = async () => {
+Detail.getInitialProps = async () => {
+    
+    console.log('xxxx')
+    const router = useRouter();
+    const {id} = router.query;
+    const data = await RestClient.asyncGet(`/subject/${id}`)
+
     return {
-        namespacesRequired: ['lms-ws'] 
+        namespacesRequired: ['lms-ws'],
+        detailCourse: data
     }
 }
-export default withTranslation('translations')(CourseDetail)
+
+
+export default withTranslation('translations')(Detail)

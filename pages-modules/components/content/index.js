@@ -29,7 +29,7 @@ class IndexContent extends Component {
 
     render() {
         return <>
-            <Row className="lms_ws_content">
+            <Row className="lms_ws_content" style={{background: '#fff'}}>
                 <Col className={styles.carouselIntro} span={10}>
                     <div>
                         <Carousel>
