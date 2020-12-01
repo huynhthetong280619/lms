@@ -1,7 +1,7 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-import en from './public/en.json';
-import vi from './public/vi.json';
+import en from './public/lang/en.json';
+import vi from './public/lang/vi.json';
 // the translations
 // (tip move them in a JSON file and import them)
 
@@ -17,7 +17,7 @@ i18n
         translations: vi
       },
     },
-      fallbackLng: 'en',
+      fallbackLng: 'vi',
 
       // have a common namespace used around the full app
       ns: ['translations'],
