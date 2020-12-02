@@ -12,7 +12,8 @@ const IndexPage = ({}) => {
   )
 }
 
-IndexPage.getInitialProps = () => {
+IndexPage.getInitialProps = async (ctx) => {
+  console.log('ctx', ctx);
   return {}
 }
 

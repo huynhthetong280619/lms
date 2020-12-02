@@ -17,7 +17,7 @@ class Headers extends Component {
         </div>;
         const content = (
             <div className="popover-login">
-                <div>Your profile</div>
+                <a href='/profiles'>Your profile</a>
                 <div>Sign out</div>
             </div>
         );

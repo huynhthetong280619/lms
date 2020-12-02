@@ -1,6 +1,5 @@
 import React from 'react'
 
-
 // import images
 import onlineCourse from '../../../assets/images/courses/onlineCourse.png'
 import courseEmpty from '../../../assets/images/courses/courseEmpty.png'
@@ -18,18 +17,33 @@ import { withTranslation } from 'react-i18next'
 
 
 const { TabPane } = Tabs;
-class Courses extends React.Component{
+class Courses extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            courses: [],
+            deadlines: [],
+            dueTo: []
+        }
+    }
 
-    
+    componentDidMount() {
+        this.setState({
+            courses: this.props.listCourses,
+            deadlines: this.props.listDeadline,
+            dueTo: this.props.listDueAssginment
+        })
+    }
+
     generateColor = () => {
         return '#' + Math.random().toString(16).substr(-6);
     }
 
-    render(){
-        const {listCourses, t} = this.props;
+    render() {
+        const { listCourses, listDeadline, t } = this.props;
 
         return <>
-        <Row className={styles.background} style={{ justifyContent: 'center' }}>
+            <Row className={styles.background} style={{ justifyContent: 'center' }}>
                 <Col span={12}
                     style={{
                         margin: '10px',
@@ -62,14 +76,14 @@ class Courses extends React.Component{
                         {/* Courses */}
                         <Row style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
                             {
-                                get(listCourses, 'data').map(course => (
-                                    <Link href={`/courses/${course._id}`}>
+                                this.state.courses.map(course => (
+                                    <Link href={`/subject/${course._id}`} key={course._id}>
                                         <Col span={6} style={{
                                             margin: '15px',
                                             flexGrow: '1',
                                             cursor: 'pointer'
                                         }}>
-                                            <div style={{ height: '250px', background: this.generateColor() }}>
+                                            <div style={{ height: '250px', background: `${this.generateColor()}` }}>
                                             </div>
                                             <div style={{
                                                 textAlign: "center",
@@ -98,7 +112,7 @@ class Courses extends React.Component{
                             <i>
                                 <img src={deadline} />
                             </i>
-                        <span style={{ padding: '25px', fontSize: '2em' }}>{t('upcm_dl')}</span>
+                            <span style={{ padding: '25px', fontSize: '2em' }}>{t('upcm_dl')}</span>
                         </div>
                     </div>
                     <div>
@@ -116,85 +130,39 @@ class Courses extends React.Component{
                         <Row style={{ justifyContent: 'center' }}>
                             <Tabs defaultActiveKey="1" centered>
                                 <TabPane tab={<span> <AlertOutlined twoToneColor="#ff0000" />{t('dl')}</span>} key="1">
-                                    <Row>
-                                        <Col span={10}><i>
-                                            <img src={fastTime} />
-                                        </i></Col>
-                                        <Col span={14}>
-                                            <div>Ngôn ngữ lập trình tiên tiến</div>
-                                            <div><span>Due to:</span>20/10/2020</div>
-                                            <div>Time remaining: 2 hours</div>
-                                        </Col>
-                                    </Row>
+                                    {this.state.deadlines.map(dl => (
+                                        <Row key={dl._id} style={{marginBottom: 5}}>
+                                            <Col span={10} style={{textAlign: "center"}}><i>
+                                                <img src={fastTime} />
+                                            </i></Col>
+                                            <Col span={14} style={{paddingLeft: 30}}>
+                                                <div>{dl.name}</div>
+                                                <div>
+                                                    <span>Due to: </span>{dl.expireTime}</div>
+                                                <div>Time remaining: 2 hours</div>
+                                            </Col>
+                                        </Row>
+                                    ))}
                                 </TabPane>
-                                <TabPane tab={<span> <CheckCircleTwoTone twoToneColor="#52c41a" />
-
-                    {t('complt')}</span>} key="2">
-                                    <Row>
-                                        <Col span={10}><i>
-                                            <img src={fastTime} />
-                                        </i></Col>
-                                        <Col span={14}>
-                                            <div>Ngôn ngữ lập trình tiên tiến</div>
-                                            <div><span>Due to:</span>20/10/2020</div>
-                                            <div>Time remaining: 2 hours</div>
-                                        </Col>
-                                    </Row>
-
-                                    <Row>
-                                        <Col span={10}><i>
-                                            <img src={fastTime} />
-                                        </i></Col>
-                                        <Col span={14}>
-                                            <div>Ngôn ngữ lập trình tiên tiến</div>
-                                            <div><span>Due to:</span>20/10/2020</div>
-                                            <div>Time remaining: 2 hours</div>
-                                        </Col>
-                                    </Row>
-
-                                    <Row>
-                                        <Col span={10}><i>
-                                            <img src={fastTime} />
-                                        </i></Col>
-                                        <Col span={14}>
-                                            <div>Ngôn ngữ lập trình tiên tiến</div>
-                                            <div><span>Due to:</span>20/10/2020</div>
-                                            <div>Time remaining: 2 hours</div>
-                                        </Col>
-                                    </Row>
-
-                                    <Row>
-                                        <Col span={10}><i>
-                                            <img src={fastTime} />
-                                        </i></Col>
-                                        <Col span={14}>
-                                            <div>Ngôn ngữ lập trình tiên tiến</div>
-                                            <div><span>Due to:</span>20/10/2020</div>
-                                            <div>Time remaining: 2 hours</div>
-                                        </Col>
-                                    </Row>
-
-                                    <Row>
-                                        <Col span={10}><i>
-                                            <img src={fastTime} />
-                                        </i></Col>
-                                        <Col span={14}>
-                                            <div>Ngôn ngữ lập trình tiên tiến</div>
-                                            <div><span>Due to:</span>20/10/2020</div>
-                                            <div>Time remaining: 2 hours</div>
-                                        </Col>
-                                    </Row>
-
-                                    <Row>
-                                        <Col span={10}><i>
-                                            <img src={fastTime} />
-                                        </i></Col>
-                                        <Col span={14}>
-                                            <div>Ngôn ngữ lập trình tiên tiến</div>
-                                            <div><span>Due to:</span>20/10/2020</div>
-                                            <div>Time remaining: 2 hours</div>
-                                        </Col>
-                                    </Row>
+                                <TabPane tab={
+                                    <span><CheckCircleTwoTone twoToneColor="#52c41a" />
+                                        {t('complt')}
+                                    </span>} key="2">
+                                    <div>
+                                    {this.state.dueTo.map(dt => (
+                                        <Row key={dt._id} style={{marginBottom: 5}}>
+                                            <Col span={10} style={{textAlign: "center"}}><i>
+                                                <img src={fastTime} />
+                                            </i></Col>
+                                            <Col span={14} style={{paddingLeft: 30}}>
+                                                <div>{dt.name}</div>
+                                                <div>
+                                                    <span>Due to: </span>{dt.expireTime}</div>
+                                                <div>Time remaining: 2 hours</div>
+                                            </Col>
+                                        </Row>
+                                    ))}
+                                    </div>
                                 </TabPane>
                             </Tabs>
                         </Row>

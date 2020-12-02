@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^4.2.2",
+    "@winstrike/next-i18next-koa": "^0.1.14",
     "@zeit/next-css": "^1.0.1",
     "@zeit/next-less": "^1.0.1",
     "@zeit/next-sass": "^1.0.1",
@@ -17,6 +18,12 @@
     "better-npm-run": "^0.1.1",
     "file-loader": "^6.2.0",
     "i18next": "^19.8.4",
+    "isomorphic-fetch": "^3.0.0",
+    "koa": "^2.13.0",
+    "koa-bodyparser": "^4.3.0",
+    "koa-mount": "^4.0.0",
+    "koa-router": "^10.0.0",
+    "koa-static": "^5.0.0",
     "less": "^3.12.2",
     "lodash": "^4.17.20",
     "next": "9.5.3",
@@ -27,6 +34,7 @@
     "next-transpile-modules": "^5.0.0",
     "node-fetch": "^2.6.1",
     "node-sass": "^4.14.1",
+    "nodemon": "^2.0.6",
     "react": "16.13.1",
     "react-beautiful-dnd": "^13.0.0",
     "react-dom": "16.13.1",
@@ -36,8 +44,9 @@
   },
   "betterScripts": {
     "dev": {
-      "command": "next dev",
+      "command": "nodemon server.js --exec",
       "env": {
+        "NODE_ENV": "development",
         "APPS_DOMAIN": "https://spkt-server.herokuapp.com"
       }
     }
