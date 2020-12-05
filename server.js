@@ -8,6 +8,7 @@ const app = next({ dev })
 const handle = app.getRequestHandler()
 const Router = require('koa-router');
 
+
 app.prepare().then(() => {
   const router = new Router();
 
@@ -19,6 +20,10 @@ app.prepare().then(() => {
 
     if(pathname === '/students'){
       app.render(req, res, '/students', query)
+    }
+
+    if( pathname === '/exams'){
+      app.render(req, res, '/exams', query)
     }
 
     if(pathname === '/profiles'){

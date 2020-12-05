@@ -1,0 +1,15 @@
+.ant-tabs-nav-list{
+    width: 100%;
+}
+
+.ant-tabs-tab{
+    width: 50%;
+}
+
+.ant-tabs-content-holder{
+    width: 100%;
+}
+
+.ant-progress-bg{
+    margin: 0;
+}

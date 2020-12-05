@@ -1,0 +1,11 @@
+.ant-tabs-nav-list{
+    width: 100%;
+}
+
+.ant-tabs-tab{
+    width: 33%;
+}
+
+.ant-tabs-content-holder{
+    width:100%
+}

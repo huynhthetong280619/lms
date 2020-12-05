@@ -12,7 +12,7 @@ const StudentPage = ({ listStudent }) => {
 }
 
 StudentPage.getInitialProps = async () => {
-    const res = await restClient.asyncGet('/subject/lthdt01/student')
+    const res = await restClient.asyncGet('/subject/lthdt01/students')
 
     return {
         listStudent: get(res, 'data')

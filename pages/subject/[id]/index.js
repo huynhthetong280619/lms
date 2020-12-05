@@ -5,11 +5,10 @@ import Subject from '../../../pages-modules/components/subject';
 import { get } from 'lodash';
 
 
-const SubjectCourse = ({subject}) => {
-    console.log(subject.timelines[0].forums)
+const SubjectCourse = ({subject, id}) => {
     return (
         <IndexLayout>
-            <Subject subject={subject}/>
+            <Subject subject={subject} idSubject={id}/>
         </IndexLayout>
     )
 }
@@ -19,7 +18,8 @@ SubjectCourse.getInitialProps = async (ctx) => {
     const res = await RestClient.asyncGet(`/subject/${id}`)
 
     return {
-        subject: get(res, 'data')
+        subject: get(res, 'data'),
+        id
     }
 }
 

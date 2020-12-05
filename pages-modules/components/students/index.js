@@ -8,9 +8,12 @@ import notificationBelt from '../../../assets/images/contents/notificationsbelt.
 import notificationEmpty from '../../../assets/images/contents/notifications.png'
 import assignment from '../../../assets/images/contents/asignment.png'
 import survey from '../../../assets/images/contents/survey.png'
-import {withTranslation} from 'react-i18next'
+import { withTranslation } from 'react-i18next'
 const { TabPane } = Tabs;
 const { TextArea } = Input;
+
+import './overwrite.css'
+import RestClient from '../../../assets/common/core/restClient'
 
 function onChange(e) {
     console.log(`checked = ${e.target.checked}`);
@@ -35,45 +38,7 @@ const props = {
     },
 };
 
-const columns = [
-    {
-        title: 'Avatar',
-        dataIndex: 'urlAvatar',
-        key: 'urlAvatar',
-        render: (data) => <img src={data} width="102px"/>
-    },
-    {
-        title: 'MSSV',
-        dataIndex: '_id',
-        key: '_id',
-    },
-    {
-        title: 'Email',
-        dataIndex: 'emailAddress',
-        key: 'emailAddress'
-    },
-    {
-        title: 'Sure Name',
-        dataIndex: 'surName',
-        key: 'surName',
-    },
-    {
-        title: 'First Name',
-        dataIndex: 'firstName',
-        key: 'firstName',
-    },
-    
-    
-    {
-        title: 'Action',
-        key: 'action',
-        render: (text, record) => (
-            <Space size="middle">
-                <a>Delete</a>
-            </Space>
-        ),
-    },
-];
+
 
 const data = [
     {
@@ -168,11 +133,22 @@ class Student extends React.Component {
     }
 
 
-    componentDidMount(){
+    handleDeleteStudent = async (record) => {
+        const res = await RestClient.asyncDelete(`/${record._id}`);
+
+        if(res.hasError){
+            return;
+        }
+    }
+
+    componentDidMount() {
         this.setState({
             lstStdnt: this.props.listStudent
         })
     }
+
+    
+
     handleHoverChange = (visible) => {
         this.setState({ isHover: visible })
     }
@@ -186,17 +162,17 @@ class Student extends React.Component {
         this.setState({ loading: true });
         // ajax request after empty completing
         setTimeout(() => {
-          this.setState({
-            selectedRowKeys: [],
-            loading: false,
-          });
+            this.setState({
+                selectedRowKeys: [],
+                loading: false,
+            });
         }, 1000);
-      };
+    };
 
-      onSelectChange = selectedRowKeys => {
+    onSelectChange = selectedRowKeys => {
         console.log('selectedRowKeys changed: ', selectedRowKeys);
         this.setState({ selectedRowKeys });
-      };
+    };
 
     render() {
 
@@ -210,14 +186,54 @@ class Student extends React.Component {
             </div>
         );
 
-        const {selectedRowKeys } = this.state;
+        const columns = [
+            {
+                title: 'Avatar',
+                dataIndex: 'urlAvatar',
+                key: 'urlAvatar',
+                render: (data) => <img src={data} width="102px" />
+            },
+            {
+                title: 'MSSV',
+                dataIndex: '_id',
+                key: '_id',
+            },
+            {
+                title: 'Email',
+                dataIndex: 'emailAddress',
+                key: 'emailAddress'
+            },
+            {
+                title: 'Sure Name',
+                dataIndex: 'surName',
+                key: 'surName',
+            },
+            {
+                title: 'First Name',
+                dataIndex: 'firstName',
+                key: 'firstName',
+            },
+        
+        
+            {
+                title: 'Action',
+                key: 'action',
+                render: (text, record) => (
+                    <Space size="middle">
+                        <a onClick={() => this.handleDeleteStudent(record)}>Delete</a>
+                    </Space>
+                ),
+            },
+        ];
+
+        const { selectedRowKeys } = this.state;
 
 
         const rowSelection = {
             selectedRowKeys,
             onChange: this.onSelectChange,
-          };
-        
+        };
+
         const hasSelected = selectedRowKeys.length > 0;
 
         return (
@@ -232,15 +248,15 @@ class Student extends React.Component {
                 >
                     <Tabs defaultActiveKey="1" centered>
                         <TabPane tab="Create notification" key="1">
-                            <Row>
-                                <Col>Subject</Col>
-                                <Col>
+                            <Row style={{ marginBottom: 10 }}>
+                                <Col span={4} style={{ textAlign: 'center' }}>Subject</Col>
+                                <Col span={16}>
                                     <Input placeholder="Basic usage" />
                                 </Col>
                             </Row>
-                            <Row>
-                                <Col>Content</Col>
-                                <Col>
+                            <Row style={{ marginBottom: 10 }}>
+                                <Col span={4} style={{ textAlign: 'center' }}>Content</Col>
+                                <Col span={16}>
                                     <TextArea rows={4} />
                                 </Col>
                             </Row>
@@ -300,27 +316,31 @@ class Student extends React.Component {
                 >
                     <Tabs defaultActiveKey="1" centered>
                         <TabPane tab="Create notification" key="1">
-                            <Row>
-                                <Col>Subject</Col>
-                                <Col>
+                            <Row style={{ marginBottom: 10 }}>
+                                <Col span={4} style={{ textAlign: 'center' }}>Subject</Col>
+                                <Col span={16}>
                                     <Input placeholder="Basic usage" />
                                 </Col>
                             </Row>
-                            <Row>
-                                <Col>Content</Col>
-                                <Col>
+                            <Row style={{ marginBottom: 10 }}>
+                                <Col span={4} style={{ textAlign: 'center' }}>Content</Col>
+                                <Col span={16}>
                                     <TextArea rows={4} />
                                 </Col>
                             </Row>
-                            <Row>
-                                <Row>Customize<Checkbox onChange={this.onChange} /></Row>
-                                <Row>
-                                    <div><span>Begin day</span>
+                            <Row style={{ marginBottom: 10 }}>
+                                <Row style={{ width: '100%' }}>
+                                    <Col span={4} style={{ textAlign: 'center' }}>Customize <Checkbox onChange={this.onChange} /></Col>
+                                    <Col span={16}></Col>
+                                </Row>
+                                <Row style={{ width: "100%", marginTop: 10, marginBottom: 10 }}>
+                                    <Col span={6}>
+                                        <span>Begin day</span>
                                         <DatePicker onChange={this.onChange} />
-                                    </div>
-                                    <div><span>End day</span>
+                                    </Col>
+                                    <Col span={10}><span>End day</span>
                                         <DatePicker onChange={this.onChange} />
-                                    </div>
+                                    </Col>
                                 </Row>
                                 <Row>
                                     <span>Attachment</span>
@@ -368,22 +388,32 @@ class Student extends React.Component {
                 >
                     <Tabs defaultActiveKey="1" centered>
                         <TabPane tab="Submission" key="1">
-                            <div>Submission status</div>
-                            <div>Due date: <span>Tuesday, 20/10/2020</span></div>
-                            <div>Time remaining: <span>Remaining 20 hours</span></div>
-                            <div>Last modified</div>
-                            <div>File submission</div>
-                            <div>Submission comments</div>
-                            <Button>Submit</Button>
+                            <div style={{ fontWeight: 600 }}>Submission status</div>
+                            <div style={{ fontWeight: 600 }}><span>Due date:</span> <span>Tuesday, 20/10/2020</span></div>
+                            <div style={{ fontWeight: 600 }}><span>Time remaining: </span><span>Remaining 20 hours</span></div>
+                            <div style={{ fontWeight: 600 }}><span>Last modified </span><span>Remaining 20 hours</span></div>
+                            <div style={{ fontWeight: 600 }}>File submission</div>
+                            <div style={{ marginBottom: 10, fontWeight: 600 }}>
+                                <div>Submission comments</div>
+                                <TextArea rows={4} />
+                            </div>
+                            <div style={{
+                                textAlign: 'center'
+                            }}>
+
+                                <Button style={{
+                                    borderRadius: 20
+                                }} type="primary">Submit</Button>
+                            </div>
                         </TabPane>
                         <TabPane tab="Requirement" key="2">
-                            <div>[Content requirement]</div>
+                            <div style={{ fontWeight: 600 }}>[Content requirement]</div>
                             <div>
                                 - Completeness of certain preceding tasks;
                                 - The level of employee competence required to complete the work successfully;
                                 - The level of creativity required from performers to reach the goals of a task;
                     </div>
-                            <div>File Attachment</div>
+                            <div style={{ fontWeight: 600 }}>File Attachment</div>
                         </TabPane>
                         <TabPane tab="Grade" key="3">
                             Content of Tab Pane 3
@@ -438,7 +468,9 @@ class Student extends React.Component {
                     </Row>
                     <div style={{ width: '90%' }}>
                         <Row style={{ textAlign: 'left', width: '100%', padding: '10px 0' }}>
-                            <Checkbox onChange={this.onChange} style={{ color: '#ff0000' }}>Bulk Delete</Checkbox>
+                            <Button type="primary" onClick={this.start} disabled={!hasSelected} loading={this.state.loading}>
+                                UnSelectAll
+          </Button>
                         </Row>
                         <Row style={{ width: '100%' }}>
                             <Table rowSelection={rowSelection} columns={columns} dataSource={this.state.lstStdnt} style={{ width: '100%' }} />

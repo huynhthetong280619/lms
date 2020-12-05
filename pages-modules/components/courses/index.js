@@ -14,7 +14,7 @@ import styles from './styles.scss'
 import './overwrite.css'
 import { get, isEmpty, split, includes, omit } from 'lodash';
 import { withTranslation } from 'react-i18next'
-
+import moment from 'moment'
 
 const { TabPane } = Tabs;
 class Courses extends React.Component {
@@ -37,6 +37,10 @@ class Courses extends React.Component {
 
     generateColor = () => {
         return '#' + Math.random().toString(16).substr(-6);
+    }
+
+    transTime = (time) => {
+        return moment(time).format('MMM DD h:mm A')
     }
 
     render() {
@@ -132,14 +136,17 @@ class Courses extends React.Component {
                                 <TabPane tab={<span> <AlertOutlined twoToneColor="#ff0000" />{t('dl')}</span>} key="1">
                                     {this.state.deadlines.map(dl => (
                                         <Row key={dl._id} style={{marginBottom: 5}}>
-                                            <Col span={10} style={{textAlign: "center"}}><i>
-                                                <img src={fastTime} />
+                                            <Col span={10} style={{textAlign: "center", alignSelf: "center"}}><i>
+                                                <img src={fastTime} width="36px"/>
                                             </i></Col>
-                                            <Col span={14} style={{paddingLeft: 30}}>
+                                            <Col span={10} >
                                                 <div>{dl.name}</div>
                                                 <div>
-                                                    <span>Due to: </span>{dl.expireTime}</div>
-                                                <div>Time remaining: 2 hours</div>
+                                                    <span style={{fontWeight: 600}}>Due to: </span>{this.transTime(get(dl, 'expireTime'))}
+                                                </div>
+                                                <div>
+                                                    <span style={{fontWeight: 600}}>Time remaining:</span> 2 hours
+                                                </div>
                                             </Col>
                                         </Row>
                                     ))}
@@ -150,17 +157,20 @@ class Courses extends React.Component {
                                     </span>} key="2">
                                     <div>
                                     {this.state.dueTo.map(dt => (
-                                        <Row key={dt._id} style={{marginBottom: 5}}>
-                                            <Col span={10} style={{textAlign: "center"}}><i>
-                                                <img src={fastTime} />
-                                            </i></Col>
-                                            <Col span={14} style={{paddingLeft: 30}}>
-                                                <div>{dt.name}</div>
-                                                <div>
-                                                    <span>Due to: </span>{dt.expireTime}</div>
-                                                <div>Time remaining: 2 hours</div>
-                                            </Col>
-                                        </Row>
+                                            <Row key={dt._id} style={{marginBottom: 5, color: "#2ecc71"}}>
+                                                <Col span={10} style={{textAlign: "center", alignSelf: "center"}}><i>
+                                                    <img src={fastTime} width="36px"/>
+                                                </i></Col>
+                                                <Col span={10} >
+                                                    <div>{dt.name}</div>
+                                                    <div>
+                                                        <span style={{fontWeight: 600}}>Due to: </span>{this.transTime(get(dt, 'expireTime'))}
+                                                    </div>
+                                                    <div>
+                                                        <span style={{fontWeight: 600}}>Time remaining:</span> 2 hours
+                                                    </div>
+                                                </Col>
+                                            </Row>
                                     ))}
                                     </div>
                                 </TabPane>

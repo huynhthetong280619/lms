@@ -2,8 +2,10 @@ import fetch from 'node-fetch';
 import { get, isEmpty, split, includes, omit } from 'lodash';
 import {GLOBAL_CONFIG} from '../../config/index'
 import urljoin from 'url-join';
+require('isomorphic-fetch')
 
 const parseReponse = async response => {
+  console.log('parseResponse', response)
   try {
     return await response.json();
   } catch (ex) {
@@ -27,18 +29,21 @@ class RestClient {
   }
 
   createHeaders() {
-    let headers = { 'Content-Type': 'application/json' };
+    let headers = { 'Content-Type': 'application/json','Access-Control-Allow-Origin':'*'};
 
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiIxNzExMDM1NCIsImlhdCI6MTYwMTQyOTEwMX0.r4oaJSeAS70gbAXWr83p2lU0LKSwrAoW0-BE3_13Zkg';
+
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiIxNzExMDM1NSIsImlhdCI6MTYwNDgzMDY5N30.UoVA9_JoBW8Sh2ztyy6PxTliMEg7t42CDL1KKqLHV9E';
 
     if (token) {
-      headers = { ...headers, Authorization: `Bearer ${token}` };
+      headers = { ...headers, Authorization: `Bearer ${token}`};
     }
     console.log('header:', JSON.stringify(headers));
     return headers;
   }
 
   getUrl(path, options) {
+    
+
     const url = urljoin(GLOBAL_CONFIG.APPS_DOMAIN, path);
     console.log('url: ', url);
     return url;
@@ -69,13 +74,40 @@ class RestClient {
     }
   }
 
+  async asyncGetBody(path, ij_data) {
+    console.log('asyncGet')
+    try {
+      const response = await fetch(this.getUrl(path), {
+        headers: this.createHeaders(),
+        body: JSON.stringify(ij_data)
+      });
+
+      const data = await parseReponse(response);
+      if (response.status === 401 || get(data, 'error.code') === 401) {
+        this.exceptionHandler && this.exceptionHandler();
+      }
+
+      const hasError = !response.ok || !isEmpty(get(data, 'error'));
+      return {
+        hasError,
+        data,
+      };
+    } catch (ex) {
+      return {
+        hasError: true,
+        data: ex,
+      };
+    }
+  }
+
   async asyncPost(path, data, isFormData) {
-    if (!isServerSide) return;
+    console.log('asyncPost', JSON.stringify(data))
+    var proxyUrl = 'https://cors-anywhere.herokuapp.com/';
     try {
       const response = await fetch(this.getUrl(path), {
         method: 'POST',
         headers: isFormData ? { ...omit(this.createHeaders(), 'Content-Type') } : this.createHeaders(),
-        body: isFormData ? data : JSON.stringify(data),
+        body: JSON.stringify(data),
       });
 
       const resData = await parseReponse(response);
@@ -97,7 +129,6 @@ class RestClient {
   }
 
   async asyncPut(path, data) {
-    if (!isServerSide) return;
     try {
       const response = await fetch(this.getUrl(path), {
         method: 'PUT',
@@ -124,7 +155,6 @@ class RestClient {
   }
 
   async asyncDelete(path, data, options) {
-    if (!isServerSide) return;
     try {
       const response = await fetch(this.getUrl(path, options), {
         headers: this.createHeaders(),
@@ -151,7 +181,6 @@ class RestClient {
   }
 
   async asyncPatch(path, data, isFormData) {
-    if (!isServerSide) return;
     try {
       const response = await fetch(this.getUrl(path), {
         method: 'PATCH',
