@@ -1,8 +1,9 @@
 import fetch from 'node-fetch';
 import { get, isEmpty, split, includes, omit } from 'lodash';
-import {GLOBAL_CONFIG} from '../../config/index'
+import { GLOBAL_CONFIG } from '../../config/index'
 import urljoin from 'url-join';
 require('isomorphic-fetch')
+import glb_sv from '../../global/global.service';
 
 const parseReponse = async response => {
   console.log('parseResponse', response)
@@ -21,31 +22,40 @@ const parseReponse = async response => {
 };
 
 class RestClient {
-    constructor(props){
-    }
+  constructor(props) {
+  }
 
   setExceptionHandler(exceptionHandler) {
     this.exceptionHandler = exceptionHandler;
   }
 
   createHeaders() {
-    let headers = { 'Content-Type': 'application/json','Access-Control-Allow-Origin':'*'};
 
+    let token = null;
+    
+    console.log('glb_sv', glb_sv.isTeacher)
+    if(!glb_sv.isTeacher){
+      
+      // token student
+      token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiIxNzExMDM1NCIsImlhdCI6MTYwMTQyOTEwMX0.r4oaJSeAS70gbAXWr83p2lU0LKSwrAoW0-BE3_13Zkg';
+    }else{
+      // token teacher
 
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiIxNzExMDM1NSIsImlhdCI6MTYwNDgzMDY5N30.UoVA9_JoBW8Sh2ztyy6PxTliMEg7t42CDL1KKqLHV9E';
-
-    if (token) {
-      headers = { ...headers, Authorization: `Bearer ${token}`};
+      token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiJ0aGl2YW4iLCJpYXQiOjE2MDQ4MjcyOTF9.CdHuoyPgBRtbPpX1rqqZEPvyiaCEb-R2NHo4N01TOcY';
     }
-    console.log('header:', JSON.stringify(headers));
+    let headers = {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      mode: 'no-cors'
+    };
+
     return headers;
   }
 
-  getUrl(path, options) {
-    
-
+  getUrl(path) {
     const url = urljoin(GLOBAL_CONFIG.APPS_DOMAIN, path);
-    console.log('url: ', url);
+    console.log('url', url)
     return url;
   }
 
@@ -100,13 +110,39 @@ class RestClient {
     }
   }
 
-  async asyncPost(path, data, isFormData) {
-    console.log('asyncPost', JSON.stringify(data))
-    var proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+  async asyncPost(path, data) {
+console.log(path, data)
     try {
       const response = await fetch(this.getUrl(path), {
         method: 'POST',
-        headers: isFormData ? { ...omit(this.createHeaders(), 'Content-Type') } : this.createHeaders(),
+        headers: this.createHeaders(),
+        body: data,
+      });
+
+      const resData = await parseReponse(response);
+      if (response.status === 401 || get(resData, 'error.code') === 401) {
+        this.exceptionHandler && this.exceptionHandler();
+      }
+      const hasError = !response.ok || !isEmpty(get(resData, 'error'));
+      return {
+        hasError,
+        data: resData,
+      };
+    } catch (ex) {
+      console.log(ex);
+      return {
+        hasError: true,
+        data: ex,
+      };
+    }
+  }
+
+  async asyncPostFile(path, data){
+    console.log('body', data)
+    try {
+      const response = await fetch(this.getUrl(path), {
+        method: 'POST',
+        headers: this.createHeaders(),
         body: JSON.stringify(data),
       });
 
@@ -159,7 +195,7 @@ class RestClient {
       const response = await fetch(this.getUrl(path, options), {
         headers: this.createHeaders(),
         body: JSON.stringify(data),
-        method: 'delete',
+        method: 'DELETE',
       });
 
       const res = await parseReponse(response);
@@ -205,7 +241,7 @@ class RestClient {
       };
     }
   }
-  
+
 }
 
 export default new RestClient();

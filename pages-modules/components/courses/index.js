@@ -15,6 +15,7 @@ import './overwrite.css'
 import { get, isEmpty, split, includes, omit } from 'lodash';
 import { withTranslation } from 'react-i18next'
 import moment from 'moment'
+import glb_sv from '../../../assets/global/global.service'
 
 const { TabPane } = Tabs;
 class Courses extends React.Component {
@@ -29,9 +30,9 @@ class Courses extends React.Component {
 
     componentDidMount() {
         this.setState({
-            courses: this.props.listCourses,
-            deadlines: this.props.listDeadline,
-            dueTo: this.props.listDueAssginment
+            courses: this.props.listCourses || [],
+            deadlines: this.props.listDeadline || [],
+            dueTo: this.props.listDueAssginment || []
         })
     }
 
@@ -53,7 +54,8 @@ class Courses extends React.Component {
                         margin: '10px',
                         background: '#fff',
                         borderRadius: '10px',
-                        minHeight: '200px'
+                        minHeight: '200px',
+                        maxHeight: "768px"
                     }}>
                     <div>
                         <div style={{
@@ -101,12 +103,17 @@ class Courses extends React.Component {
                         </Row>
                     </div>
                 </Col>
-                <Col span={8}
+
+                {
+                    glb_sv.isTeacher ?
+
+                    <Col span={8}
                     style={{
                         margin: '10px',
                         background: '#fff',
                         borderRadius: '10px',
-                        minHeight: '200px'
+                        minHeight: '200px',
+                        maxHeight: "768px"
                     }}>
                     <div>
                         <div style={{
@@ -116,68 +123,96 @@ class Courses extends React.Component {
                             <i>
                                 <img src={deadline} />
                             </i>
-                            <span style={{ padding: '25px', fontSize: '2em' }}>{t('upcm_dl')}</span>
+                            <span style={{ padding: '25px', fontSize: '2em' }}>{t('mn_subject')}</span>
                         </div>
                     </div>
-                    <div>
-                        {/* Empty */}
-                        {/* <div style={{
-                            textAlign: 'center',
-                            padding: '45px'
-                        }}>
-                            <i>
-                                <img src={deadlineCalcular} />
-                            </i>
-                            <div style={{ color: '#c4c4c4', fontStyle: 'italic' }}>No upcoming deadline</div>
-                        </div> */}
-                        {/* Deadline */}
-                        <Row style={{ justifyContent: 'center' }}>
-                            <Tabs defaultActiveKey="1" centered>
-                                <TabPane tab={<span> <AlertOutlined twoToneColor="#ff0000" />{t('dl')}</span>} key="1">
-                                    {this.state.deadlines.map(dl => (
-                                        <Row key={dl._id} style={{marginBottom: 5}}>
-                                            <Col span={10} style={{textAlign: "center", alignSelf: "center"}}><i>
-                                                <img src={fastTime} width="36px"/>
-                                            </i></Col>
-                                            <Col span={10} >
-                                                <div>{dl.name}</div>
-                                                <div>
-                                                    <span style={{fontWeight: 600}}>Due to: </span>{this.transTime(get(dl, 'expireTime'))}
-                                                </div>
-                                                <div>
-                                                    <span style={{fontWeight: 600}}>Time remaining:</span> 2 hours
-                                                </div>
-                                            </Col>
-                                        </Row>
-                                    ))}
-                                </TabPane>
-                                <TabPane tab={
-                                    <span><CheckCircleTwoTone twoToneColor="#52c41a" />
-                                        {t('complt')}
-                                    </span>} key="2">
-                                    <div>
-                                    {this.state.dueTo.map(dt => (
-                                            <Row key={dt._id} style={{marginBottom: 5, color: "#2ecc71"}}>
-                                                <Col span={10} style={{textAlign: "center", alignSelf: "center"}}><i>
-                                                    <img src={fastTime} width="36px"/>
-                                                </i></Col>
-                                                <Col span={10} >
-                                                    <div>{dt.name}</div>
-                                                    <div>
-                                                        <span style={{fontWeight: 600}}>Due to: </span>{this.transTime(get(dt, 'expireTime'))}
-                                                    </div>
-                                                    <div>
-                                                        <span style={{fontWeight: 600}}>Time remaining:</span> 2 hours
-                                                    </div>
-                                                </Col>
-                                            </Row>
-                                    ))}
-                                    </div>
-                                </TabPane>
-                            </Tabs>
-                        </Row>
-                    </div>
                 </Col>
+                     :
+                    (
+                    <Col span={8}
+                                        style={{
+                                            margin: '10px',
+                                            background: '#fff',
+                                            borderRadius: '10px',
+                                            minHeight: '200px',
+                                            maxHeight: "768px"
+                                        }}>
+                                        <div>
+                                            <div style={{
+                                                textAlign: 'center',
+                                                padding: '10px 0'
+                                            }}>
+                                                <i>
+                                                    <img src={deadline} />
+                                                </i>
+                                                <span style={{ padding: '25px', fontSize: '2em' }}>{t('upcm_dl')}</span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            {/* Empty */}
+                                            {/* <div style={{
+                                                textAlign: 'center',
+                                                padding: '45px'
+                                            }}>
+                                                <i>
+                                                    <img src={deadlineCalcular} />
+                                                </i>
+                                                <div style={{ color: '#c4c4c4', fontStyle: 'italic' }}>No upcoming deadline</div>
+                                            </div> */}
+                                            {/* Deadline */}
+                                            <Row style={{ justifyContent: 'center' }}>
+                                                <Tabs defaultActiveKey="1" centered>
+                                                    <TabPane tab={<span> <AlertOutlined twoToneColor="#ff0000" />{t('dl')}</span>} key="1">
+                                                        {this.state.deadlines.length > 0 ? this.state.deadlines.map(dl => (
+                                                            <Row key={dl._id} style={{marginBottom: 5}}>
+                                                                <Col span={10} style={{textAlign: "center", alignSelf: "center"}}><i>
+                                                                    <img src={fastTime} width="36px"/>
+                                                                </i></Col>
+                                                                <Col span={10} >
+                                                                    <div>{dl.name}</div>
+                                                                    <div>
+                                                                        <span style={{fontWeight: 600}}>Due to: </span>{this.transTime(get(dl, 'expireTime'))}
+                                                                    </div>
+                                                                    <div>
+                                                                        <span style={{fontWeight: 600}}>Time remaining:</span> 2 hours
+                                                                    </div>
+                                                                </Col>
+                                                            </Row>
+                                                        )) : <Row>
+                                                                <img src={deadlineCalcular} />
+                                                                <div style={{width: "100%", color: '#cacaca', textAlign:'center'}}>No upcoming deadline</div>
+                                                            </Row>}
+                                                    </TabPane>
+                                                    <TabPane tab={
+                                                        <span><CheckCircleTwoTone twoToneColor="#52c41a" />
+                                                            {t('complt')}
+                                                        </span>} key="2">
+                                                        <div>
+                                                        {this.state.dueTo.map(dt => (
+                                                                <Row key={dt._id} style={{marginBottom: 5, color: "#2ecc71"}}>
+                                                                    <Col span={10} style={{textAlign: "center", alignSelf: "center"}}><i>
+                                                                        <img src={fastTime} width="36px"/>
+                                                                    </i></Col>
+                                                                    <Col span={10} >
+                                                                        <div>{dt.name}</div>
+                                                                        <div>
+                                                                            <span style={{fontWeight: 600}}>Due to: </span>{this.transTime(get(dt, 'expireTime'))}
+                                                                        </div>
+                                                                        <div>
+                                                                            <span style={{fontWeight: 600}}>Time remaining:</span> 2 hours
+                                                                        </div>
+                                                                    </Col>
+                                                                </Row>
+                                                        ))}
+                                                        </div>
+                                                    </TabPane>
+                                                </Tabs>
+                                            </Row>
+                                        </div>
+                                    </Col>
+                    )
+                }
+                
             </Row>
         </>
     }

@@ -15,10 +15,16 @@ const ExamsPage = ({examQuestion}) => {
 }
 
 
-ExamsPage.getInitialProps = async () => {
-
-    const res = await restClient.asyncGet(`/exam/5fc5faf66d1c0c08dca71b82/attempt?idSubject=lthdt01&idTimeline=5f75e682817a140f580937bc`)
+ExamsPage.getInitialProps = async (ctx) => {
     
+    console.log('ExamsPage')
+    const {params} = ctx.query
+    const [idExam, idTimeline] = params
+
+    console.log('aaaa', idExam, idTimeline)
+    const res = await restClient.asyncGet(`/exam/${idExam}/attempt?idSubject=lthdt01&idTimeline=${idTimeline}`)
+    
+    console.log('bbbb', res)
     if(res.hasError){
         return {
             examQuestion: null

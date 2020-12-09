@@ -1,8 +1,9 @@
-import { Row } from 'antd'
+import { Button, Row } from 'antd'
 import React, { Component } from 'react'
 
 import styles from './styles.scss'
 class Banner extends Component {
+
     render() {
         return <>
         <Row className={styles.bannerLayout}>
@@ -15,7 +16,7 @@ class Banner extends Component {
                 <h2 className={styles.bannerdescript}>
                     Shorten the distance, save time, high efficiency, support anytime, anywhere, ...
                 </h2>
-                <div className={styles.buttonView}>VIEW COURSE</div>
+                <a className={styles.buttonView} href="/courses">VIEW COURSE</a>
             </div>
         </Row>
         <Row className={styles.skewTop}></Row>

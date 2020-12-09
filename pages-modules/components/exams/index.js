@@ -5,6 +5,8 @@ import survey from '../../../assets/images/contents/surveylogo.png'
 import { get } from 'lodash'
 import './overwrite.css'
 import Countdown from "react-countdown";
+import restClient from '../../../assets/common/core/restClient';
+import { Redirect } from 'react-router'
 
 class Exams extends React.Component {
 
@@ -24,7 +26,8 @@ class Exams extends React.Component {
 
 
         this.setState({
-            answer: obj
+            answer: obj,
+            callBackRepsonse: false
         })
 
     }
@@ -54,7 +57,25 @@ class Exams extends React.Component {
             })
         })
 
+        
+
         // Push up to server
+        console.log(convert)
+        const data = {
+            idSubject: 'lthdt01',
+            idTimeline: '5f75e682817a140f580937bc',
+            data: convert
+        }
+        await restClient.asyncPut(`/exam/5fc5faf66d1c0c08dca71b82/submit`, data)
+        .then(res => {
+            if(!res.hasError){
+                console.log('Rest client', get(res, 'data'));
+            }
+            this.setState({
+                callBackRepsonse: true
+            })
+            console.log(res)
+        })
     }
 
 
@@ -62,10 +83,9 @@ class Exams extends React.Component {
         const radioStyle = {
             display: 'block',
             height: '30px',
-            lineHeight: '30px',
+            lineHeight: '30px'
         };
 
-        const { value } = this.state
         const { examQuestion } = this.props;
 
         console.log(examQuestion)
@@ -80,10 +100,12 @@ class Exams extends React.Component {
             }
           };
 
+        if(this.state.callBackRepsonse){
+            return <Redirect to="/quizzis" />
+        }
+
         return <>
             
-            
-
             <Row id="lms-ws-exam-component" style={{
                 width: '80%',
                 textAlign: 'center',
@@ -91,6 +113,7 @@ class Exams extends React.Component {
                 borderRadius: '15px',
                 minHeight: '20px'
             }}>
+                
                 <Row style={{ width: '100%' }}>
                     <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>NGÔN NGỮ LẬP TRÌNH TIÊN TIẾN</Col>
                 </Row>

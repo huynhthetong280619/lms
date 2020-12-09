@@ -7,9 +7,8 @@ import './overwrite.css'
 import message from '../../../assets/images/contents/chat.png'
 import notification from '../../../assets/images/contents/notification.png'
 import profile from '../../../assets/images/contents/profile.png'
-
+import logo from '../../../assets/logo/logo.png'
 class Headers extends Component {
-
     render() {
         const text = <div>
             <div>Sign in as</div>
@@ -21,10 +20,12 @@ class Headers extends Component {
                 <div>Sign out</div>
             </div>
         );
-        return <Row>
-            <Col xs={12}>
+        return <Row style={{paddingTop: 10, paddingBottom: 10}}>
+            <Col xs={8}>
                 <div>
-                    <span><a href="/">LOGO</a></span>
+                    <span><a href="/">
+                        <img src={logo} width={110}/>
+                        </a></span>
                 </div>
             </Col>
             <Col xs={12}>
@@ -32,6 +33,7 @@ class Headers extends Component {
                 {/* <div className={styles.blockLogin}>
                     <Button className={styles.btnLogin}>Login</Button>
                 </div> */}
+                <ul></ul>
                 <div style={{ textAlign: 'right' }}>
                     <Popover>
                         <span>

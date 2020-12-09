@@ -1,0 +1,11 @@
+#lms-ws-discussion-page .ant-form-item-control-input{
+    width: 100%;
+}
+
+#lms-ws-discussion-page .ant-comment-inner{
+    text-align: left;
+}
+
+#lms-ws-discussion-page .ant-comment-content-author{
+    display: block;
+}

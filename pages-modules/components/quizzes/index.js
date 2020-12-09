@@ -2,8 +2,9 @@ import React from 'react'
 import { Row, Col, Button, Table } from 'antd'
 
 import quizTime from '../../../assets/images/contents/quiz-time.png'
-import {get} from 'lodash'
+import { get } from 'lodash'
 import moment from 'moment'
+import restClient from '../../../assets/common/core/restClient'
 
 class Quiz extends React.Component {
 
@@ -11,42 +12,38 @@ class Quiz extends React.Component {
         return moment(time).format('MMM DD h:mm A')
     }
 
+    joinExam = async () => {
+        await restClient.asyncGet(`/exam/${this.props.idExam}/attempt?idSubject=lthdt01&idTimeline=${this.props.idTimeline}`)
+            .then(res => {
+                console.log(res)
+            })
+    }
+
     render() {
 
-        const dataSource = [
-            {
-                key: '1',
-                name: 'Mike',
-                age: 32,
-                address: '10 Downing Street',
-            },
-            {
-                key: '2',
-                name: 'John',
-                age: 42,
-                address: '10 Downing Street',
-            },
-        ];
+
 
         const columns = [
             {
-                title: 'Name',
-                dataIndex: 'name',
-                key: 'name',
+                title: 'Student',
+                dataIndex: 'student',
+                key: 'student',
+                render: data => <span> {get(data, 'surName') + " " + get(data, 'firstName')}</span>
             },
             {
-                title: 'Age',
-                dataIndex: 'age',
-                key: 'age',
+                title: 'Grade',
+                dataIndex: 'grade',
+                key: 'grade',
             },
             {
-                title: 'Address',
-                dataIndex: 'address',
-                key: 'address',
+                title: 'Review',
+                dataIndex: 'review',
+                key: 'review',
+                render: () => <a>Review</a>
             },
         ];
 
-        const {requirementExam} = this.props;
+        const { requirementExam } = this.props;
 
         console.log(requirementExam)
 
@@ -74,16 +71,19 @@ class Quiz extends React.Component {
                             <i>
                                 <img src={quizTime} />
                             </i>
-                    <div>{get(requirementExam, 'name')}</div>
+                            <div style={{fontSize: '2em'}}>{get(requirementExam, 'name')}</div>
                             <div>
-                    <div><span>Attemp allowed: </span> {get(get(requirementExam, 'setting'), 'attemptCount')}</div>
-                    <div><span>Open: </span> {this.transTime(get(requirementExam, 'startTime'))}</div>
-                                <div><span>Closed: </span> {this.transTime(get(requirementExam, 'expireTime'))}</div>
-                                <div>Status: Opening</div>
-                                <div>Grading method: Highest grade</div>
+                                <div><span style={{fontWeight: 700}}>Attemp allowed: </span> {get(get(requirementExam, 'setting'), 'attemptCount')}</div>
+                                <div><span style={{fontWeight: 700}}>Attemp available: </span> {get(requirementExam, 'attemptAvailable')}</div>
+                                <div><span style={{fontWeight: 700}}>Open: </span> {this.transTime(get(requirementExam, 'startTime'))}</div>
+                                <div><span style={{fontWeight: 700}}>Closed: </span> {this.transTime(get(requirementExam, 'expireTime'))}</div>
+                                <div><span style={{fontWeight: 700}}>Time remaining: </span> {get(requirementExam, 'timingRemain')}</div>
+                                <div><span style={{fontWeight: 700}}>Status: </span>{get(requirementExam, 'isAttempt')  ? <span style={{color: '#44bd32', fontWeight: 900}}>Opening</span> : <span style={{color: '#e84118', fontWeight: 900}}>Closed</span>}</div>
+                                <div><span style={{fontWeight: 700}}>Grading method: </span>Highest grade</div>
                             </div>
                             <div>
-                                <Button type="primary" href='/exams' style={{borderRadius: 20}}>Take quiz</Button>
+                                {(get(requirementExam,  'attemptAvailable') > 0 && get(requirementExam, 'isAttemp') == true) && <Button type="primary" href={`/exams/${this.props.idExam}/${this.props.idTimeline}`} style={{ borderRadius: 20 }} onClick={() => this.joinExam()}>Take quiz</Button>}
+                                {(get(requirementExam,  'attemptAvailable') == 0) && <div style={{color: '#ff4000', fontStyle: 'italic', fontWeight: 900}}>Hết số lần cho phép làm bài quiz</div>}
                             </div>
                         </div>
 
@@ -95,7 +95,7 @@ class Quiz extends React.Component {
                             borderRadius: "20px"
 
                         }}>
-                            <Table dataSource={dataSource} columns={columns} />
+                            <Table dataSource={get(requirementExam, 'submissions')} columns={columns} />
                         </div>
                     </div>
                 </div>

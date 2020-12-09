@@ -15,6 +15,7 @@ import kt from '../../../assets/images/contents/kt.png'
 import maxresdefault from '../../../assets/images/contents/maxresdefault.png'
 import nn from '../../../assets/images/contents/nn.png'
 import xd from '../../../assets/images/contents/xd.png'
+import { withTranslation } from 'react-i18next'
 
 
 const contentStyle = {
@@ -28,6 +29,7 @@ const contentStyle = {
 class IndexContent extends Component {
 
     render() {
+        const {t} = this.props
         return <>
             <Row className="lms_ws_content" style={{background: '#fff'}}>
                 <Col className={styles.carouselIntro} span={10}>
@@ -46,9 +48,9 @@ class IndexContent extends Component {
                     </div>
                 </Col>
                 <Col span={10} style={{alignSelf: 'center'}}>
-                    <div className={styles.titleContent}>OUR</div>
-                    <div className={styles.titleContent}>TOP</div>
-                    <div className={styles.titleContent}>INSTRUCTORS</div>
+                    <div className={styles.titleContent}>{t('our')}</div>
+                    <div className={styles.titleContent}>{t('top')}</div>
+                    <div className={styles.titleContent}>{t('instructor')}</div>
                 </Col>
             </Row>
             <Row className={styles.skewBottom}></Row>
@@ -60,73 +62,73 @@ class IndexContent extends Component {
                         fontWeight: '700',
                         fontSize: '48px',
                         color: '#fff'
-                    }}>FACULTIES</div>
+                    }}>{t('faculties')}</div>
                 <Row className={styles.fullWidth}>
-                    <Col className={styles.facilityItem}>
+                    <Col className={styles.facilityItem} span={7}>
                         <i>
                             <img src={ckm} />
                         </i>
-                        <span style={{ paddingLeft: '6px' }}>Mechanical Engineering</span>
+                <span style={{ paddingLeft: '6px' }}>{t('mechanical_engineering')}</span>
                     </Col>
-                    <Col className={styles.facilityItem}>
+                    <Col className={styles.facilityItem} span={7}>
                         <i>
                             <img src={clc} />
                         </i>
-                        <span style={{ paddingLeft: '6px' }}>Mechanical Engineering</span>
+                        <span style={{ paddingLeft: '6px' }}>{t('high_quality_training')}</span>
                     </Col>
-                    <Col className={styles.facilityItem}>
+                    <Col className={styles.facilityItem} span={7}>
                         <i>
                             <img src={cnhhtp} />
                         </i>
-                        <span style={{ paddingLeft: '6px' }}>Mechanical Engineering</span>
+                <span style={{ paddingLeft: '6px' }}>{t('chemical_food_technology')}</span>
                     </Col>
                 </Row>
                 <Row className={styles.fullWidth}>
-                    <Col className={styles.facilityItem}>
+                    <Col className={styles.facilityItem} span={7}>
                         <i>
                             <img src={cnmtt} />
                         </i>
-                        <span style={{ paddingLeft: '6px' }}>Mechanical Engineering</span>
+                <span style={{ paddingLeft: '6px' }}>{t('garment_techonolog_fashion_design')}</span>
                     </Col>
-                    <Col className={styles.facilityItem}>
+                    <Col className={styles.facilityItem} span={7}>
                         <i>
                             <img src={ddt} />
                         </i>
-                        <span style={{ paddingLeft: '6px' }}>Mechanical Engineering</span>
+                <span style={{ paddingLeft: '6px' }}>{t('electrical_electronic_enginering')}</span>
                     </Col>
-                    <Col className={styles.facilityItem}>
+                    <Col className={styles.facilityItem} span={7}>
                         <i>
                             <img src={khud} />
                         </i>
-                        <span style={{ paddingLeft: '6px' }}>Mechanical Engineering</span>
+                <span style={{ paddingLeft: '6px' }}>{t('applied_science')}</span>
                     </Col>
                 </Row>
                 <Row className={styles.fullWidth}>
-                    <Col className={styles.facilityItem}>
+                    <Col className={styles.facilityItem} span={7}>
                         <i>
                             <img src={kt} />
                         </i>
-                        <span style={{ paddingLeft: '6px' }}>Mechanical Engineering</span>
+                <span style={{ paddingLeft: '6px' }}>{t('economics')}</span>
                     </Col>
-                    <Col className={styles.facilityItem}>
+                    <Col className={styles.facilityItem} span={7}>
                         <i>
                             <img src={maxresdefault} />
                         </i>
-                        <span style={{ paddingLeft: '6px' }}>Mechanical Engineering</span>
+                <span style={{ paddingLeft: '6px' }}>{t('vehicle_energy_engineering')}</span>
                     </Col>
-                    <Col className={styles.facilityItem}>
+                    <Col className={styles.facilityItem} span={7}>
                         <i>
                             <img src={nn} />
                         </i>
-                        <span style={{ paddingLeft: '6px' }}>Mechanical Engineering</span>
+                <span style={{ paddingLeft: '6px' }}>{t('foreign_language')}</span>
                     </Col>
                 </Row>
-                <Row>
-                    <Col className={styles.facilityItem}>
+                <Row className={styles.fullWidth}>
+                    <Col className={styles.facilityItem} span={7}>
                         <i>
                             <img src={xd} />
                         </i>
-                        <span style={{ paddingLeft: '6px' }}>Mechanical Engineering</span>
+                         <span style={{ paddingLeft: '6px' }}>{t('civil_engineering')}</span>
                     </Col>
                 </Row>
             </Row>
@@ -138,7 +140,7 @@ class IndexContent extends Component {
                         fontWeight: '700',
                         fontSize: '48px',
                         color: '#fff'
-                    }}>COURSE LEARN FREE
+                    }}>{t('course_learn_free')}
                 </div>
                 <Row className={styles.fullWidth}>
                     <Col span={8}>
@@ -228,4 +230,4 @@ class IndexContent extends Component {
 }
 
 
-export default IndexContent
+export default withTranslation('translations')(IndexContent)

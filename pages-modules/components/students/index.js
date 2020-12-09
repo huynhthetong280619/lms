@@ -247,7 +247,7 @@ class Student extends React.Component {
                     width={1000}
                 >
                     <Tabs defaultActiveKey="1" centered>
-                        <TabPane tab="Create notification" key="1">
+                        <TabPane tab="Add student" key="1">
                             <Row style={{ marginBottom: 10 }}>
                                 <Col span={4} style={{ textAlign: 'center' }}>Subject</Col>
                                 <Col span={16}>

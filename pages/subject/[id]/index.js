@@ -16,7 +16,6 @@ const SubjectCourse = ({subject, id}) => {
 SubjectCourse.getInitialProps = async (ctx) => {
     const {id} = ctx.query;
     const res = await RestClient.asyncGet(`/subject/${id}`)
-
     return {
         subject: get(res, 'data'),
         id

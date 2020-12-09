@@ -8,7 +8,10 @@ const { TextArea } = Input;
 import { UserOutlined } from '@ant-design/icons'
 import discussion from '../../../assets/images/contents/discussion.jpg'
 import discusad from '../../../assets/images/contents/discusad.png'
+import TextField from '@material-ui/core/TextField'
+import restClient from '../../../assets/common/core/restClient'
 
+import './overwrite.css'
 const CommentList = ({ comments }) => (
     <List
         dataSource={comments}
@@ -74,7 +77,7 @@ class ForumPage extends React.Component {
         const { comments, submitting, value } = this.state;
 
         return <IndexLayout>
-            <Row style={{
+            <Row id="lms-ws-discussion-page" style={{
                 width: '80%',
                 textAlign: 'center',
                 background: '#fff',
@@ -138,6 +141,19 @@ class ForumPage extends React.Component {
             </Row>
         </IndexLayout>
     }
+}
+
+ForumPage.getInitialProps = async () => {
+    console.log('Forum page')
+
+    const idSubject = 'lthdt01';
+    const idTimeline = '5f75e682817a140f580937bc';
+    const idForum = '5fad2f61861b9f1e9c7f275b';
+    const idTopic = '5fad36ada3422322d4d33a00';
+    
+    const res = await restClient.asyncGet(`/discussion?idSubject=${idSubject}&idTimeline=${idTimeline}&idForum=${idForum}&idTopic=${idTopic}` )
+    console.log(res);
+    return {}
 }
 
 export default ForumPage

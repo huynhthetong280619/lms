@@ -24,6 +24,7 @@ PageCourse.getInitialProps = async () => {
 
     resAssignment = resAssignment.filter(obj => obj.isSubmit === true)
 
+    
 
     return {
         listCourses: resCourse,

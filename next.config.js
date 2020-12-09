@@ -16,7 +16,6 @@ module.exports = withTM(
             APPS_DATA_HOST: process.env.APPS_DATA_HOST,
           },
           webpack: (config, { isServer }) => {
-            console.log('process', process.env.APPS_DOMAIN);
 
             if (isServer) {
               const antStyles = /antd\/.*?\/style\/css.*?/;
