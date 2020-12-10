@@ -1,23 +1,31 @@
 import React from 'react'
 import { Layout } from 'antd'
+import Headers from '../components/header'
+import Footers from '../components/footer'
+import Banner from '../components/banner'
 
 const { Header, Content, Footer } = Layout
 
-
 import styles from './styles.scss'
+import './overwrites.css'
+import { withTranslation } from 'react-i18next';
+
+
+
 
 const IndexLayout = ({ children }) => {
+
     return (
-        <Layout className={styles.container}>
-            <Header className="header--component">
-                <div>LAYOUT HEADER</div>
+        <Layout className={styles.mainLayout}>
+            <Header className={styles.header}>
+                <Headers />
             </Header>
-            <Content>{ children }</Content>
-            <Footer>
-                <div>LAYOUT FOOTER</div>
+            <Content className={styles.content}>{ children }</Content>
+            <Footer className={styles.footer}>
+                <Footers />
             </Footer>
         </Layout>
     )
 }
 
-export default IndexLayout
+export default withTranslation('translations')(IndexLayout)

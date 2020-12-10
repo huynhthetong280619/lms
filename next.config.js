@@ -1,26 +1,47 @@
-const withPlugins = require('next-compose-plugins');
-const sass = require("@zeit/next-sass")
-const css = require("@zeit/next-css")
+const withSass = require('@zeit/next-sass');
+const withCss = require('@zeit/next-css');
+const withFonts = require('next-fonts');
+const withAssetsImport = require('next-assets-import');
+const withTM = require('next-transpile-modules')(['antd']);
 
-const nextConfig = {
-  webpack: function (config) {
-  config.module.rules.push({
-    test: /\.(eot|woff|woff2|ttf|svg|png|jpg|gif)$/,
-    use: {
-    loader: 'url-loader',
-      options: {
-        limit: 100000,
-        name: '[name].[ext]'
-      }
-    }
-  })
-  return config
-  }
-}
+module.exports = withTM(
+  withFonts(
+    withAssetsImport(
+      withSass({
+        ...withCss({
+          publicRuntimeConfig: {
+            DEBUG: process.env.DEBUG || 'app:pages:*',
+            DEBUG_ENABLED: process.env.DEBUG_ENABLED,
+            APPS_DOMAIN: process.env.APPS_DOMAIN,
+            APPS_DATA_HOST: process.env.APPS_DATA_HOST,
+          },
+          webpack: (config, { isServer }) => {
 
-module.exports = withPlugins([
-  [css],
-  [sass, {
-     cssModules: true
-   }],
-], nextConfig);
+            if (isServer) {
+              const antStyles = /antd\/.*?\/style\/css.*?/;
+              const origExternals = [...config.externals];
+              config.externals = [
+                (context, request, callback) => {
+                  if (request.match(antStyles)) return callback();
+                  if (typeof origExternals[0] === 'function') {
+                    origExternals[0](context, request, callback);
+                  } else {
+                    callback();
+                  }
+                },
+                ...(typeof origExternals[0] === 'function' ? [] : origExternals),
+              ];
+
+              config.module.rules.unshift({
+                test: antStyles,
+                use: 'null-loader',
+              });
+            }
+            return config;
+          },
+        }),
+        cssModules: true,
+      }),
+    ),
+  ),
+);

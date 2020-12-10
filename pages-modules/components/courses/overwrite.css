@@ -1,0 +1,19 @@
+.wrapper-container{
+    font-size: 2em;
+}
+
+.ant-tabs.ant-tabs-top.ant-tabs-centered{
+    width: 96%;
+}
+
+.ant-tabs-nav-list{
+    width: 100%;
+}
+
+.ant-tabs-tab{
+    width: 100%;
+}
+
+.ant-tabs-content-holder{
+    width: 100%;
+}

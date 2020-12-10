@@ -1,4 +1,5 @@
-import '../styles/globals.css'
+import '../styles/antd.css'
+import '../i18n';
 
 function MyApp({ Component, pageProps }) {
   return <Component {...pageProps} />
