@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 import { Button, Col, Row } from 'antd'
 
 import styles from './styles.scss'
-import VN_FLAG from '../../../assets/images/contents/VN_FLAG.png'
-import ENG_FLAG from '../../../assets/images/contents/England_flag.png'
+import vn from '../../../assets/images/contents/vn.png'
+import en from '../../../assets/images/contents/en.png'
 
 import { withTranslation } from 'react-i18next';
 import i18n from '../../../i18n';
@@ -13,7 +13,7 @@ class Footers extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            langFlag: VN_FLAG,
+            langFlag: vn,
             lang: glb_sv.lang
         }
     }
@@ -23,7 +23,7 @@ class Footers extends Component {
             lang
         });
         glb_sv.lang = lang
-        lang == 'vi' ? this.setState({ langFlag: VN_FLAG }) : this.setState({ langFlag: ENG_FLAG });
+        lang == 'vi' ? this.setState({ langFlag: vn }) : this.setState({ langFlag: en });
         i18n.changeLanguage(lang)
     }
 
