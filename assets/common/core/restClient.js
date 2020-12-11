@@ -38,6 +38,7 @@ class RestClient {
       
       // token student
       token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiIxNzExMDM1NCIsImlhdCI6MTYwMTQyOTEwMX0.r4oaJSeAS70gbAXWr83p2lU0LKSwrAoW0-BE3_13Zkg';
+      
     }else{
       // token teacher
 
@@ -84,24 +85,26 @@ class RestClient {
     }
   }
 
-  async asyncGetBody(path, ij_data) {
-    console.log('asyncGet')
+  async asyncDownLoad(path) {
+
+    let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiJ0aGl2YW4iLCJpYXQiOjE2MDQ4MjcyOTF9.CdHuoyPgBRtbPpX1rqqZEPvyiaCEb-R2NHo4N01TOcY'
+    let headers = {
+      Authorization: `Bearer ${token}`,
+      // 'Content-Type': 'multipart/form-data;boundary=<calculated when request is sent>',
+      'Access-Control-Allow-Origin': '*',
+      mode: 'no-cors'
+    };
+
     try {
       const response = await fetch(this.getUrl(path), {
-        headers: this.createHeaders(),
-        body: JSON.stringify(ij_data)
-      });
-
-      const data = await parseReponse(response);
-      if (response.status === 401 || get(data, 'error.code') === 401) {
-        this.exceptionHandler && this.exceptionHandler();
-      }
-
-      const hasError = !response.ok || !isEmpty(get(data, 'error'));
-      return {
-        hasError,
-        data,
-      };
+        headers,
+      })
+      .then(res => res.blob())
+      .then(blob => {
+        var file = window.URL.createObjectURL(blob);
+        window.location.assign(file)
+      })
+      
     } catch (ex) {
       return {
         hasError: true,
@@ -111,12 +114,12 @@ class RestClient {
   }
 
   async asyncPost(path, data) {
-console.log(path, data)
+    console.log(path, data)
     try {
       const response = await fetch(this.getUrl(path), {
         method: 'POST',
         headers: this.createHeaders(),
-        body: data,
+        body: JSON.stringify(data),
       });
 
       const resData = await parseReponse(response);
@@ -138,12 +141,31 @@ console.log(path, data)
   }
 
   async asyncPostFile(path, data){
-    console.log('body', data)
+    let token = null;
+    
+    console.log('glb_sv', glb_sv.isTeacher)
+    if(!glb_sv.isTeacher){
+      
+      // token student
+      token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiIxNzExMDM1NCIsImlhdCI6MTYwMTQyOTEwMX0.r4oaJSeAS70gbAXWr83p2lU0LKSwrAoW0-BE3_13Zkg';
+      
+    }else{
+      // token teacher
+
+      token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiJ0aGl2YW4iLCJpYXQiOjE2MDQ4MjcyOTF9.CdHuoyPgBRtbPpX1rqqZEPvyiaCEb-R2NHo4N01TOcY';
+    }
+    let headers = {
+      Authorization: `Bearer ${token}`,
+      // 'Content-Type': 'multipart/form-data;boundary=<calculated when request is sent>',
+      'Access-Control-Allow-Origin': '*',
+      mode: 'no-cors'
+    };
+    
     try {
       const response = await fetch(this.getUrl(path), {
         method: 'POST',
-        headers: this.createHeaders(),
-        body: JSON.stringify(data),
+        headers,
+        body: data,
       });
 
       const resData = await parseReponse(response);
@@ -241,6 +263,9 @@ console.log(path, data)
       };
     }
   }
+
+
+  
 
 }
 

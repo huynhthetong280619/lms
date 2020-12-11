@@ -7,13 +7,14 @@ import ENG_FLAG from '../../../assets/images/contents/England_flag.png'
 
 import { withTranslation } from 'react-i18next';
 import i18n from '../../../i18n';
+import glb_sv from '../../../assets/global/global.service'
 
 class Footers extends Component {
     constructor(props) {
         super(props)
         this.state = {
             langFlag: VN_FLAG,
-            lang: 'vi'
+            lang: glb_sv.lang
         }
     }
 
@@ -21,6 +22,7 @@ class Footers extends Component {
         this.setState({
             lang
         });
+        glb_sv.lang = lang
         lang == 'vi' ? this.setState({ langFlag: VN_FLAG }) : this.setState({ langFlag: ENG_FLAG });
         i18n.changeLanguage(lang)
     }
