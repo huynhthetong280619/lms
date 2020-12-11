@@ -7,6 +7,7 @@ import './overwrite.css'
 import Countdown from "react-countdown";
 import restClient from '../../../assets/common/core/restClient';
 import { Redirect } from 'react-router'
+import Router from 'next/router'
 
 class Exams extends React.Component {
 
@@ -70,10 +71,8 @@ class Exams extends React.Component {
         .then(res => {
             if(!res.hasError){
                 console.log('Rest client', get(res, 'data'));
+                Router.push('/')
             }
-            this.setState({
-                callBackRepsonse: true
-            })
             console.log(res)
         })
     }
@@ -99,10 +98,6 @@ class Exams extends React.Component {
               return <span>{hours} hours {minutes} minutes {seconds} seconds</span>;
             }
           };
-
-        if(this.state.callBackRepsonse){
-            return <Redirect to="/quizzis" />
-        }
 
         return <>
             

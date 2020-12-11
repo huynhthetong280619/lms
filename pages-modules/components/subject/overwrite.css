@@ -21,3 +21,11 @@
 .ant-select-item.ant-select-item-option{
     width: 100%;
 }
+
+.DayPickerInput input{
+    width: 200px;
+}
+
+.ant-timeline-item-content{
+    padding-left: 30px;
+}

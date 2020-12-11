@@ -128,18 +128,21 @@ class Forum extends React.Component {
                             justifyContent: ' center'
                         }}>
                             {
-                                this.state.detailForum.map(({ create, name, description }) => {
+                                this.state.detailForum.map(({ _id, create, name, description }) => {
                                     return (
-                                        <Card
-                                            hoverable
-                                            style={{
-                                                width: 240, margin: '10px',
-                                                borderRadius: '25px'
-                                            }}
-                                            cover={<img alt="example" src={get(create, 'urlAvatar')} />}
-                                        >
-                                            <Meta title={name} description={description} />
-                                        </Card>
+                                        <a href={`/forums/disscuss/${_id}?idSubject=${this.props.idSubject}&idTimeline=${this.props.idTimeline}&idForum=${this.props.idForum}`}>
+                                            <Card
+
+                                                hoverable
+                                                style={{
+                                                    width: 240, margin: '10px',
+                                                    borderRadius: '25px'
+                                                }}
+                                                cover={<img alt="example" src={get(create, 'urlAvatar')} />}
+                                            >
+                                                <Meta title={name} description={description} />
+                                            </Card>
+                                        </a>
                                     )
                                 })
                             }

@@ -8,33 +8,35 @@ import message from '../../../assets/images/contents/chat.png'
 import notification from '../../../assets/images/contents/notification.png'
 import profile from '../../../assets/images/contents/profile.png'
 import logo from '../../../assets/logo/logo.png'
-class Headers extends Component {
-    render() {
-        const text = <div>
-            <div>Sign in as</div>
-            <div>No name</div>
-        </div>;
-        const content = (
-            <div className="popover-login">
-                <a href='/profiles'>Your profile</a>
-                <div>Sign out</div>
-            </div>
-        );
-        return <Row style={{paddingTop: 10, paddingBottom: 10}}>
+
+const Headers = () => {
+
+    const text = (<div>
+        <div>Sign in as</div>
+        <div>No name</div>
+    </div>);
+
+    const content = (
+        <div className="popover-login">
+            <a href='/profiles'>Your profile</a>
+            <div>Sign out</div>
+        </div>)
+    return (
+        <Row style={{ paddingTop: 10, paddingBottom: 10 }}>
             <Col xs={8}>
                 <div>
                     <span><a href="/">
-                        <img src={logo} width={110}/>
-                        </a></span>
+                        <img src={logo} width={110} />
+                    </a></span>
                 </div>
             </Col>
             <Col xs={12}>
                 {/* Authentication */}
-                {/* <div className={styles.blockLogin}>
-                    <Button className={styles.btnLogin}>Login</Button>
-                </div> */}
-                <ul></ul>
-                <div style={{ textAlign: 'right' }}>
+                <div className={styles.blockLogin}>
+                        <Button className={styles.btnLogin}>Login</Button>
+                </div>
+                {/* <ul></ul> */}
+                {/* <div style={{ textAlign: 'right' }}>
                     <Popover>
                         <span>
                             <i>
@@ -62,9 +64,11 @@ class Headers extends Component {
                         </span>
                     </Popover>
                 </div>
+             */}
             </Col>
         </Row>
-    }
+    )
 }
+
 
 export default Headers
