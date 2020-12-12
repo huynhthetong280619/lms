@@ -69,5 +69,9 @@
     "setting_file": "Cấu hình thêm tệp",
     "setting_timeline": "Cấu hình mốc thời gian",
 
-    "submit_assign": "Nộp bài"
+    "submit_assign": "Nộp bài",
+    "code_student": "Mã số sinh viên",
+    "grade": "Điểm",
+    "surName": "Họ",
+    "firstName": "Tên"
 }

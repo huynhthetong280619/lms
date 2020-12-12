@@ -21,14 +21,14 @@ import { withTranslation } from 'react-i18next';
 import restClient from '../../../assets/common/core/restClient';
 import { MoreOutlined, ClockCircleOutlined, SettingOutlined, AndroidOutlined, DeleteOutlined, AlertOutlined , CheckCircleTwoTone  } from '@ant-design/icons'
 import moment from 'moment'
-import fetch from 'node-fetch';
 require('isomorphic-fetch');
-import DayPickerInput from 'react-day-picker/DayPickerInput';
 import 'react-day-picker/lib/style.css';
 import glb_sv from '../../../assets/global/global.service';
 import newInfo from '../../../assets/images/contents/new.png';
 import deadline from '../../../assets/images/courses/deadline.png'
 import deadlineCalcular from '../../../assets/images/courses/deadlineCalcular.png'
+import points from '../../../assets/images/contents/statistics-point.png'
+import DayPickerInputCustomize from '../../basic-component/time-picker';
 
 
 const { Option } = Select;
@@ -93,7 +93,8 @@ class Subject extends React.Component {
             isOpenSetting: true,
             deadlines: [],
             dueTo: [],
-            timelineIdRequirement: null
+            timelineIdRequirement: null,
+            orderTl: false
         }
     }
 
@@ -171,11 +172,12 @@ class Subject extends React.Component {
             .then(data => console.log('updateTimeline', data))
     }
 
-    handleSwitchMode = (e) => {
+    onOrderTimeLine = (status) => {
         this.setState({
             isTeacher: !this.state.isTeacher
         })
-        if (e === false) {
+
+        if (status === false) {
             this.updateTimelines();
             return;
         }
@@ -634,7 +636,8 @@ class Subject extends React.Component {
                             padding: 10,
                             background: "#cacaca",
                             marginBottom: 30,
-                            fontWeight: 600
+                            fontWeight: 600,
+                            cursor: this.state.isTeacher && 'all-scroll'
                         }}
                     >
                         <Col span={6}>
@@ -712,6 +715,7 @@ class Subject extends React.Component {
                     {
                         assignments != null ? (
                             assignments.map(assign => (
+                                !glb_sv.isTeacher ?
                                 <Row style={{ marginBottom: 10 }} onClick={() => {
                                     this.getRequirementAssignment(assign._id, this.props.idSubject, id);
                                     this.setState({ visible: true })
@@ -728,6 +732,23 @@ class Subject extends React.Component {
                                         fontSize: '20px',
                                     }}>
                                         <div>[{t('exercise')}] {assign.name}</div> {this.state.isTeacher && <DeleteOutlined style={{ marginLeft: 10, color: '#ff4000' }} />}
+                                    </Col>
+                                </Row>
+                                :
+
+                                <Row style={{ marginBottom: 10 }} key={assign._id}>
+                                    <Col span={2} style={{
+                                        textAlign: 'center',
+                                        alignSelf: 'center'
+                                    }}>
+                                        <i>
+                                            <img src={assignment} width={36} />
+                                        </i>
+                                    </Col>
+                                    <Col span={20} style={{
+                                        fontSize: '20px',
+                                    }}>
+                                        <a  href={`/manage/${assign._id}?idSubject=${this.props.idSubject}&idTimeline=${id}`}>[{t('exercise')}] {assign.name}</a> {this.state.isTeacher && <DeleteOutlined style={{ marginLeft: 10, color: '#ff4000' }} />}
                                     </Col>
                                 </Row>
                             ))
@@ -854,7 +875,7 @@ class Subject extends React.Component {
 
                 </div>
                 {
-                    glb_sv.isTeacher && <Row style={{ marginBottom: 10 }} >
+                    glb_sv.isTeacher ? <Row style={{ marginBottom: 10 }} >
                     <Col span={2} style={{
                         textAlign: 'center',
                         alignSelf: 'center'
@@ -867,6 +888,24 @@ class Subject extends React.Component {
                         fontSize: '20px',
                     }}>
                         <a href="/students">Quản lý sinh viên</a>
+                    </Col>
+                </Row>
+
+                :
+
+                <Row style={{ marginBottom: 10 }} >
+                    <Col span={2} style={{
+                        textAlign: 'center',
+                        alignSelf: 'center'
+                    }}>
+                        <i>
+                            <img src={points} width={36} />
+                        </i>
+                    </Col>
+                    <Col span={20} style={{
+                        fontSize: '20px',
+                    }}>
+                        <a href="/points">Quản lý điểm số</a>
                     </Col>
                 </Row>
 
@@ -963,7 +1002,8 @@ class Subject extends React.Component {
                                     margin: '10px',
                                     background: '#fff',
                                     borderRadius: '10px',
-                                    minHeight: '200px'
+                                    minHeight: '200px',
+                                    maxHeight: 726
                                 }}>
                                 <div
                                     style={{
@@ -971,7 +1011,7 @@ class Subject extends React.Component {
                                         padding: 10
                                     }}>
 
-                                    <Tabs defaultActiveKey="2">
+                                    <Tabs defaultActiveKey="1">
                                         <TabPane
                                             tab={
                                                 <span>
@@ -980,8 +1020,16 @@ class Subject extends React.Component {
                                                 </span>
                                             }
                                             key="1"
+                                            style={{height: 'auto'}}
                                         >
-                                            Tab 1
+                                            <Row>
+                                                <Col span={10}>
+                                                <span style={{fontWeight: 600}}>Sắp xếp mốc thời gian</span>
+                                                </Col>
+                                                <Col span={10}>
+                                                <Switch defaultChecked={false} onChange={e => this.onOrderTimeLine(e)} />
+                                                </Col>
+                                            </Row>
 </TabPane>
                                         <TabPane
                                             tab={
@@ -991,6 +1039,7 @@ class Subject extends React.Component {
                                                 </span>
                                             }
                                             key="2"
+                                            style={{height: 'auto'}}
                                         >
 
                                             <Row style={{
@@ -1086,7 +1135,8 @@ class Subject extends React.Component {
                                                                 <span>{t('startTime')}</span>
                                                             </Col>
                                                             <Col>
-                                                                <DayPickerInput value={get(this.state.quiz, 'startTime')} onDayChange={e => this.handleSelectStartTimeQuiz(e)} style={{ width: 200 }} />
+                                                                {/* <DayPickerInput value={get(this.state.quiz, 'startTime')} onDayChange={e => this.handleSelectStartTimeQuiz(e)} style={{ width: 200 }} /> */}
+                                                                <DayPickerInputCustomize value={get(this.state.quiz, 'startTime')} onDayChange={e => this.handleSelectStartTimeQuiz(e)} style={{ width: 200 }}/>
                                                             </Col>
                                                         </Row>
                                                         <Row style={{ margin: '10px 0' }}>
@@ -1094,12 +1144,12 @@ class Subject extends React.Component {
                                                                 <span>{t('expireTime')}</span>
                                                             </Col>
                                                             <Col>
-                                                                <DayPickerInput value={get(this.state.quiz, 'expireTime')} onDayChange={e => this.handleSelectExpireTimeQuiz(e)} style={{ width: 200 }} />
+                                                                <DayPickerInputCustomize value={get(this.state.quiz, 'expireTime')} onDayChange={e => this.handleSelectExpireTimeQuiz(e)} style={{ width: 200 }} />
                                                             </Col>
                                                         </Row>
                                                         <Row style={{ margin: '10px 0' }}>
                                                             <Col style={{ fontWeight: 700 }}>
-                                                                {t('setttings')}
+                                                                {t('settings')}
                                                             </Col>
                                                         </Row>
 
@@ -1213,7 +1263,7 @@ class Subject extends React.Component {
                                                                 <span>{t('startTime')}</span>
                                                             </Col>
                                                             <Col>
-                                                                <DayPickerInput value={get(this.state.assignment.setting, 'startTime')} onDayChange={e => this.handleSelectStartTime(e)} style={{ width: 200 }} />
+                                                                <DayPickerInputCustomize value={get(this.state.assignment.setting, 'startTime')} onDayChange={e => this.handleSelectStartTime(e)} style={{ width: 200 }} />
                                                             </Col>
                                                         </Row>
                                                         <Row style={{ margin: '10px 0' }}>
@@ -1221,7 +1271,7 @@ class Subject extends React.Component {
                                                                 <span>{t('expireTime')}</span>
                                                             </Col>
                                                             <Col>
-                                                                <DayPickerInput value={get(this.state.assignment.setting, 'expireTime')} onDayChange={e => this.handleSelectExpireTime(e)} style={{ width: 200 }} />
+                                                                <DayPickerInputCustomize value={get(this.state.assignment.setting, 'expireTime')} onDayChange={e => this.handleSelectExpireTime(e)} style={{ width: 200 }} />
                                                             </Col>
                                                         </Row>
                                                         <Row style={{ margin: '10px 0' }}>
@@ -1238,7 +1288,7 @@ class Subject extends React.Component {
                                                                 <span>{t('overDueDate')}</span>
                                                             </Col>
                                                             <Col>
-                                                                <DayPickerInput value={get(this.state.assignment.setting, 'overDueDate')} onDayChange={e => this.handleSelectoverDueDate(e)} style={{ width: 200 }} />
+                                                                <DayPickerInputCustomize value={get(this.state.assignment.setting, 'overDueDate')} onDayChange={e => this.handleSelectoverDueDate(e)} style={{ width: 200 }} />
                                                             </Col>
                                                         </Row>
                                                         <Row style={{ margin: '10px 0' }}>

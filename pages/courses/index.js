@@ -19,7 +19,8 @@ PageCourse.getInitialProps = async () => {
     
     resCourse = get(resCourse, 'data');
     resAssignment = get(resAssignment, 'data')
-
+    
+    console.log('PageCourse', resCourse, resAssignment)
     const overDueAssignment = resAssignment.filter(obj => !obj.isSubmit);
 
     resAssignment = resAssignment.filter(obj => obj.isSubmit === true)

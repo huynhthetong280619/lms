@@ -3,19 +3,24 @@ import IndexLayout from '../../pages-modules/layouts/layout'
 import restClient from '../../assets/common/core/restClient'
 import Student from '../../pages-modules/components/students/index'
 import {get} from 'lodash'
-const StudentPage = ({ listStudent }) => {
+const StudentPage = ({ listStudent, lstSubmissionCore, idSubject }) => {
     return (
         <IndexLayout>
-            <Student listStudent={listStudent}/>
+            <Student listStudent={listStudent} lstSubmissionCore={lstSubmissionCore} idSubject={idSubject}/>
         </IndexLayout>
     )
 }
 
 StudentPage.getInitialProps = async () => {
-    const res = await restClient.asyncGet('/subject/lthdt01/students')
+    const idSubject = 'lthdt01';
 
+    const [listStudent, lstSubmissionCore]= await Promise.all([restClient.asyncGet(`/subject/${idSubject}/students`), restClient.asyncGet(`/subject/lthdt01/score`)])
+    
+    console.log('getInitial', lstSubmissionCore)
     return {
-        listStudent: get(res, 'data')
+        listStudent: get(listStudent, 'data'),
+        lstSubmissionCore: get(lstSubmissionCore, 'data'),
+        idSubject
     }
 }
 
