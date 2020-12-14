@@ -132,14 +132,14 @@ class Discussion extends React.Component {
                     minHeight: '20px'
                 }}>
                     <Row style={{ width: '100%' }}>
-                        <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>NGÔN NGỮ LẬP TRÌNH TIÊN TIẾN</Col>
+                        <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject}</Col>
                     </Row>
                     <div style={{ width: '90%' }}>
                         <div style={{ textAlign: 'left', width: '100%', padding: '10px 0' }}>
                             <span>
                                 <img src={discussion} width="80px" />
                             </span>
-            <span style={{ fontWeight: '700' }}>[ TOPIC ] {get(this.props.detailTopic, 'name').toUpperCase()}</span>
+                            <span style={{ fontWeight: '700' }}>[ TOPIC ] {get(this.props.detailTopic, 'name').toUpperCase()}</span>
                         </div>
                         <div style={{ width: '100%', minHeight: '150px' }}>
                             <div style={{
@@ -155,16 +155,16 @@ class Discussion extends React.Component {
                                     textAlign: "left"
                                 }}>
                                     <div>
-                                        <Avatar size={64} icon={<img  src={get(get(this.props.detailTopic, 'create'), 'urlAvatar')}/>} />
+                                        <Avatar size={64} icon={<img src={get(get(this.props.detailTopic, 'create'), 'urlAvatar')} />} />
                                     </div>
                                     <div style={{ paddingLeft: "10px" }}>
-                                        <div>{get(get(this.props.detailTopic, 'create'), 'surName') + " " +get(get(this.props.detailTopic, 'create'), 'firstName') }  • <span>{moment().from(moment.utc(get(this.props.detailTopic, 'time')))}</span></div>
+                                        <div>{get(get(this.props.detailTopic, 'create'), 'surName') + " " + get(get(this.props.detailTopic, 'create'), 'firstName')}  • <span>{moment().from(moment.utc(get(this.props.detailTopic, 'time')))}</span></div>
                                         <div>@{get(get(this.props.detailTopic, 'create'), '_id')}</div>
                                     </div>
                                 </div>
                                 <div style={{ paddingLeft: "70px" }}>
-                                   {get(this.props.detailTopic, 'content')}
-                        </div>
+                                    {get(this.props.detailTopic, 'content')}
+                                </div>
                             </div>
                             {comments.length > 0 && <CommentList comments={comments} />}
                             <Comment

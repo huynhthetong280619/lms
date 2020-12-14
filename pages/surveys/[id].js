@@ -1,6 +1,7 @@
 import React from 'react'
 import IndexLayout from '../../pages-modules/layouts/layout'
 import { Row, Col, Button, Tabs, Radio, Input, Progress, Badge } from 'antd'
+import glb_sv from '../../assets/global/global.service'
 
 const { TabPane } = Tabs;
 
@@ -37,7 +38,7 @@ class SurveyPage extends React.Component {
                 minHeight: '20px'
             }}>
                 <Row style={{ width: '100%' }}>
-                    <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>NGÔN NGỮ LẬP TRÌNH TIÊN TIẾN</Col>
+                    <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>{glb_sv.nameSubject}</Col>
                 </Row>
                 <div style={{ width: '90%' }}>
                     <div style={{ textAlign: 'left', width: '100%', padding: '10px 0' }}>

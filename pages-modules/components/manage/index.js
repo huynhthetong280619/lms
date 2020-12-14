@@ -1,6 +1,7 @@
 import { Row, Col, Table, Input } from 'antd';
 import React from 'react'
 import {get} from 'lodash'
+import restClient from '../../../assets/common/core/restClient';
 
 class Manage extends React.Component {
 
@@ -8,7 +9,8 @@ class Manage extends React.Component {
         super(props);
 
         this.state = {
-            lstSubmission: []
+            lstSubmission: [],
+            grade: 0
         }
     }
 
@@ -18,9 +20,22 @@ class Manage extends React.Component {
         })
     }
 
+    enterGradeVerif = async (idSubmission) => {
+        const data = {
+            idSubject: this.props.idSubject,
+            idTimeline: this.props.idTimeline,
+            grade: this.state.grade
+        }
+
+        await restClient.asyncPost(`/assignment/${this.props.idAssign}/grade/${idSubmission}`, data)
+        .then(res => {
+            console.log('enterGradeVerif', res)
+        })
+    }
+
     render() {
 
-        console.log(get(this.props.lstSubmission))
+        console.log(this.props.lstSubmission)
 
         const columns = [
             { title: 'Họ và tên', dataIndex: 'student', key: 'student', render: data => <span>{get(data, 'surName') + " "+ get(data,'firstName')}</span> },
@@ -29,75 +44,18 @@ class Manage extends React.Component {
                 render: data => <a>{data.name}</a>
             },
             {
-                title: 'Grade', dataIndex: 'grade', key: 'grade',
-                render: data => <Input type="text" value={data} />
+                title: 'Grade', dataIndex: 'feedBack', key: 'feedBack',
+                render: data => <Input type="text" value={get(data,'grade') || this.state.grade} onChange={(e) => this.setState({grade: e.target.value})}/>
             },
             {
                 title: 'Action',
                 dataIndex: '',
                 key: 'x',
-                render: () => <a>Confirm</a>,
+                render: (data) => <a onClick={() => this.enterGradeVerif(data._id)}>Confirm</a>,
             },
         ];
 
-        const data = [
-            {
-                key: 1,
-                name: 'Huỳnh Thế Tông',
-                file: '17110384.rar',
-                grade: 10,
-                description: 'My name is John Brown, I am 32 years old, living in New York No. 1 Lake Park.',
-            },
-            {
-                key: 2,
-                name: 'Nguyễn Anh Quân',
-                file: '17110354.rar',
-                grade: 10,
-                description: 'My name is John Brown, I am 32 years old, living in New York No. 1 Lake Park.',
-            },
-            {
-                key: 3,
-                name: 'Huỳnh Thế Tông',
-                file: '17110384.rar',
-                grade: 10,
-                description: 'My name is John Brown, I am 32 years old, living in New York No. 1 Lake Park.',
-            },
-            {
-                key: 4,
-                name: 'Nguyễn Anh Quân',
-                file: '17110354.rar',
-                grade: 10,
-                description: 'My name is John Brown, I am 32 years old, living in New York No. 1 Lake Park.',
-            },
-            {
-                key: 5,
-                name: 'Huỳnh Thế Tông',
-                file: '17110384.rar',
-                grade: 10,
-                description: 'My name is John Brown, I am 32 years old, living in New York No. 1 Lake Park.',
-            },
-            {
-                key: 6,
-                name: 'Nguyễn Anh Quân',
-                file: '17110354.rar',
-                grade: 10,
-                description: 'My name is John Brown, I am 32 years old, living in New York No. 1 Lake Park.',
-            },
-            {
-                key: 7,
-                name: 'Huỳnh Thế Tông',
-                file: '17110384.rar',
-                grade: 10,
-                description: 'My name is John Brown, I am 32 years old, living in New York No. 1 Lake Park.',
-            },
-            {
-                key: 8,
-                name: 'Nguyễn Anh Quân',
-                file: '17110354.rar',
-                grade: 10,
-                description: 'My name is John Brown, I am 32 years old, living in New York No. 1 Lake Park.',
-            }
-        ];
+        
         return (
             <Row id="lms-ws-exam-component" style={{
                 width: '80%',
@@ -108,7 +66,7 @@ class Manage extends React.Component {
             }}>
 
                 <Row style={{ width: '100%' }}>
-                    <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>NGÔN NGỮ LẬP TRÌNH TIÊN TIẾN</Col>
+                    <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject}</Col>
                 </Row>
                 <Row>
                     <Table

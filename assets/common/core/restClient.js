@@ -96,11 +96,12 @@ class RestClient {
     };
 
     try {
-      const response = await fetch(this.getUrl(path), {
+      await fetch(this.getUrl(path), {
         headers,
       })
       .then(res => res.blob())
       .then(blob => {
+        
         var file = window.URL.createObjectURL(blob);
         window.location.assign(file)
       })

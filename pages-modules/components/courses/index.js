@@ -83,8 +83,10 @@ class Courses extends React.Component {
                         <Row style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
                             {
                                 this.state.courses.map(course => (
-                                    <Link href={`/subject/${course._id}`} key={course._id}>
-                                        <Col span={6} style={{
+                                        <a className="ant-col ant-col-6"
+                                        href={`/subject/${course._id}`}
+                                        key={course._id}
+                                        style={{
                                             margin: '15px',
                                             flexGrow: '1',
                                             cursor: 'pointer'
@@ -96,8 +98,7 @@ class Courses extends React.Component {
                                                 fontWeight: "600",
                                                 marginTop: 10
                                             }}>{course.name}</div>
-                                        </Col>
-                                    </Link>
+                                        </a>
                                 ))
                             }
                         </Row>
@@ -174,7 +175,7 @@ class Courses extends React.Component {
                                                                         <span style={{fontWeight: 600}}>Due to: </span>{this.transTime(get(dl, 'expireTime'))}
                                                                     </div>
                                                                     <div>
-                                                                        <span style={{fontWeight: 600}}>Time remaining:</span> 2 hours
+                                                                        <span style={{fontWeight: 600}}>Time remaining:</span> {moment.utc(get(dl, 'expireTime')).fromNow()}
                                                                     </div>
                                                                 </Col>
                                                             </Row>
@@ -199,7 +200,7 @@ class Courses extends React.Component {
                                                                             <span style={{fontWeight: 600}}>Due to: </span>{this.transTime(get(dt, 'expireTime'))}
                                                                         </div>
                                                                         <div>
-                                                                            <span style={{fontWeight: 600}}>Time remaining:</span> 2 hours
+                                                                            <span style={{fontWeight: 600}}>Time remaining:</span> {moment.utc(get(dt, 'expireTime')).fromNow()}
                                                                         </div>
                                                                     </Col>
                                                                 </Row>

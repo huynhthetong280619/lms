@@ -484,7 +484,7 @@ class Student extends React.Component {
                     minHeight: '20px'
                 }}>
                     <Row style={{ width: '100%' }}>
-                        <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>NGÔN NGỮ LẬP TRÌNH TIÊN TIẾN</Col>
+                        <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject}</Col>
                         <Col span={4} style={{ padding: '25px 0' }}>
                             <Popover placement="bottom" title="Tùy chọn" content={content} visible={this.state.isHover} onVisibleChange={this.handleHoverChange}>
                                 <i>

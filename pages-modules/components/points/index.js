@@ -3,7 +3,7 @@ import { get, head } from 'lodash'
 import { CSVLink } from "react-csv";
 import excel from '../../../assets/images/contents/excel.png'
 import {  Row,Col, Table, Select , Tag, Space  } from 'antd'
-
+import glb_sv from '../../../assets/global/global.service'
 import statisticsPoint from '../../../assets/images/contents/statistics-point.png'
 
 const columnsGrade = [
@@ -46,7 +46,7 @@ class Points extends React.Component {
                 minHeight: '20px'
             }}>
                 <Row style={{ width: '100%' }}>
-                    <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>NGÔN NGỮ LẬP TRÌNH TIÊN TIẾN</Col>
+                    <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject}</Col>
                 </Row>
                 <div style={{ width: '90%' }}>
                     <div style={{ textAlign: 'left', width: '100%', padding: '10px 0' }}>
@@ -66,7 +66,7 @@ class Points extends React.Component {
                         }}>
                                
                             <Row style={{ border: '2px solid #cacaca' }}>
-                                <Table pagination={false} columns={columnsGrade} dataSource={this.state.lstSubmissionCore} scroll={{ y: 240 }} style={{ width: '100%' }} />
+                                <Table rowKey="name" pagination={false} columns={columnsGrade} dataSource={this.state.lstSubmissionCore} scroll={{ y: 240 }} style={{ width: '100%' }} />
                             </Row>
 
                         </div>

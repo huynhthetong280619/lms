@@ -1,5 +1,5 @@
 import React from 'react'
-import { Row, Col, Popover, Modal, Tooltip, Tabs, Input, Timeline, Select, Button, Checkbox, InputNumber } from 'antd'
+import { Row, Col, Popover, Modal, Tooltip, Tabs, Input, Timeline, Select, Button, Checkbox, InputNumber, notification, Spin } from 'antd'
 import { Switch } from 'antd';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
@@ -19,7 +19,7 @@ import quiz from '../../../assets/images/contents/quiz.png'
 import student from '../../../assets/images/contents/student.png'
 import { withTranslation } from 'react-i18next';
 import restClient from '../../../assets/common/core/restClient';
-import { MoreOutlined, ClockCircleOutlined, SettingOutlined, AndroidOutlined, DeleteOutlined, AlertOutlined , CheckCircleTwoTone  } from '@ant-design/icons'
+import { MoreOutlined, EyeOutlined, SettingOutlined, AndroidOutlined,  AlertOutlined , CheckCircleTwoTone  } from '@ant-design/icons'
 import moment from 'moment'
 require('isomorphic-fetch');
 import 'react-day-picker/lib/style.css';
@@ -29,7 +29,7 @@ import deadline from '../../../assets/images/courses/deadline.png'
 import deadlineCalcular from '../../../assets/images/courses/deadlineCalcular.png'
 import points from '../../../assets/images/contents/statistics-point.png'
 import DayPickerInputCustomize from '../../basic-component/time-picker';
-
+import {NotificationContainer, NotificationManager} from 'react-notifications';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -94,17 +94,18 @@ class Subject extends React.Component {
             deadlines: [],
             dueTo: [],
             timelineIdRequirement: null,
-            orderTl: false
+            orderTl: false,
+            isLoading: false
         }
     }
 
     async componentDidMount() {
         console.log('componentDidMount', this.props.subject, this.props.lstQuizzis, this.props.lstTimeline);
 
-
+       
         this.setState({
             lstTimelines: this.props.lstTimeline,
-            timelineId: get(head(this.props.lstTimeline), '_id')
+            timelineId: get(head(this.props.lstTimeline), '_id'),
         })
 
 
@@ -283,10 +284,17 @@ class Subject extends React.Component {
     submissionFile = async (idAssignment) => {
         console.log(idAssignment)
         const formData = new FormData();
+        this.setState({
+            isLoading: true
+        })
         formData.append('file', this.state.FileAssign)
         await restClient.asyncPostFile(`/assignment/${idAssignment}/submit?idSubject=${this.props.idSubject}&idTimeline=${this.state.timelineIdRequirement}`, formData)
         .then(res => {
             if(!res.hasError){
+                this.notifySuccess('Thành công!', 'Nộp bài thành công')
+                this.setState({
+                    isLoading: false
+                })
                 console.log('Notification', res)
             }
         })
@@ -296,12 +304,19 @@ class Subject extends React.Component {
         const formData = new FormData();
         formData.append('file', this.state.FileData)
 
+        this.setState({
+            isLoading: true
+        })
+
         console.log(formData.get('file'))
         console.log(this.state.FileData, formData)
         await restClient.asyncPostFile(`/timeline/${this.state.timelineId}/upload?idSubject=${this.props.idSubject}`, formData)
             .then(res => {
-                if(!res.hasError){
                     if (!res.hasError) {
+                        this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công document')
+                        this.setState({
+                            isLoading: false
+                        })
                         let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === this.state.timelineId)
     
                         head(timelineUpdate).files.push(res.data)
@@ -316,9 +331,7 @@ class Subject extends React.Component {
                         })
     
     
-                    }
-                }
-                
+                    }                
             })
     }
 
@@ -329,12 +342,18 @@ class Subject extends React.Component {
             idTimeline: this.state.timelineId,
             data: this.state.quiz
         }
-
+        this.setState({
+            isLoading: true
+        })
         console.log('data', data)
         await restClient.asyncPost('/exam', data)
             .then(res => {
                 console.log(res)
                 if (!res.hasError) {
+                    this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công quiz')
+                    this.setState({
+                        isLoading: false
+                    })
                     let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === data.idTimeline)
 
                     head(timelineUpdate).quiz.push(res.data)
@@ -374,10 +393,17 @@ class Subject extends React.Component {
             idTimeline: this.state.timelineId,
             data: this.state.assignment
         }
+        this.setState({
+            isLoading: true
+        })
         await restClient.asyncPost('/assignment', data)
             .then(res => {
                 console.log(res)
                 if (!res.hasError) {
+                    this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công assignment')
+                    this.setState({
+                        isLoading: false
+                    })
                     let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === data.idTimeline)
 
                     head(timelineUpdate).assignments.push(res.data)
@@ -409,17 +435,59 @@ class Subject extends React.Component {
             })
     }
 
+    notifySuccess = (message, description) => {
+        notification.success({
+          message,
+          description,
+          placement: 'bottomRight'
+        });
+      };
+
+      notifyWarning = (message, description) => {
+        notification.warning({
+          message,
+          description,
+          placement: 'bottomRight'
+        });
+      };
+
+
+      notifyError = (message, description) => {
+        notification.error({
+          message,
+          description,
+          placement: 'bottomRight'
+        });
+      };
+
     createTimeline = async () => {
+        if(this.state.timeLine.name.trim() == '' || this.state.timeLine.description.trim() == ''){
+            this.notifyWarning('Cảnh báo', 'Hãy nhập đầy đủ thông tin cần thiết');
+            return;
+        }
+
+        this.setState({
+            isLoading: true
+        })
+
         const data = {
             idSubject: this.props.idSubject,
             data: this.state.timeLine
         }
+
         await restClient.asyncPost('/timeline', data)
             .then(res => {
                 if (!res.hasError) {
+                    this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công timeline')
                     this.setState({
-                        timelines: [...this.state.timelines, get(res, 'data')]
+                        timelines: [...this.state.timelines, get(res, 'data')],
+                        isLoading: false,
+                        timeLine: {
+                            name: '',
+                            description: ''
+                        }
                     })
+
                 }
             })
     }
@@ -565,10 +633,33 @@ class Subject extends React.Component {
             })
     }
 
+    createNotification = (type, title, message) => {
+        return () => {
+          switch (type) {
+            case 'info':
+              NotificationManager.info(message);
+              break;
+            case 'success':
+              NotificationManager.success(message, title);
+              break;
+            case 'warning':
+              NotificationManager.warning(message, title, 3000);
+              break;
+            case 'error':
+              NotificationManager.error(message, title, 5000, () => {
+                alert('callback');
+              });
+              break;
+          }
+        };
+      };
+
+
     render() {
 
         const { t } = this.props;
 
+        
 
         console.log('this.state.timelines', this.state.timelines)
 
@@ -703,7 +794,7 @@ class Subject extends React.Component {
                                     <Col span={20} style={{
                                         fontSize: '20px',
                                     }}>
-                                        <div>[{t('Files')}] {f.name}</div> {this.state.isTeacher && <DeleteOutlined style={{ marginLeft: 10, color: '#ff4000' }} />}
+                                        <div style={{display: 'inline-block'}}>[{t('Files')}] {f.name}</div>
                                     </Col>
                                 </Row>
                             ))
@@ -731,7 +822,7 @@ class Subject extends React.Component {
                                     <Col span={20} style={{
                                         fontSize: '20px',
                                     }}>
-                                        <div>[{t('exercise')}] {assign.name}</div> {this.state.isTeacher && <DeleteOutlined style={{ marginLeft: 10, color: '#ff4000' }} />}
+                                        <div>[{t('exercise')}] {assign.name}</div>
                                     </Col>
                                 </Row>
                                 :
@@ -748,7 +839,7 @@ class Subject extends React.Component {
                                     <Col span={20} style={{
                                         fontSize: '20px',
                                     }}>
-                                        <a  href={`/manage/${assign._id}?idSubject=${this.props.idSubject}&idTimeline=${id}`}>[{t('exercise')}] {assign.name}</a> {this.state.isTeacher && <DeleteOutlined style={{ marginLeft: 10, color: '#ff4000' }} />}
+                                        <a  href={`/manage/${assign._id}?idSubject=${this.props.idSubject}&idTimeline=${id}`}>[{t('exercise')}] {assign.name}</a> 
                                     </Col>
                                 </Row>
                             ))
@@ -771,7 +862,7 @@ class Subject extends React.Component {
                                     <Col span={20} style={{
                                         fontSize: '20px',
                                     }}>
-                                        <a href={`/forums/${fr._id}?idSubject=${this.props.idSubject}&idTimeline=${id}`}>[{t('discussion_forum')}] {fr.name}</a>{this.state.isTeacher && <DeleteOutlined style={{ marginLeft: 10, color: '#ff4000' }} />}
+                                        <a href={`/forums/${fr._id}?idSubject=${this.props.idSubject}&idTimeline=${id}`}>[{t('discussion_forum')}] {fr.name}</a>
                                     </Col>
 
                                 </Row>
@@ -795,7 +886,7 @@ class Subject extends React.Component {
                                     <Col span={20} style={{
                                         fontSize: '20px',
                                     }}>
-                                        <a href={`/quizzis/${ex._id}/${id}`}>[{t('quiz')}] {ex.name}</a>{this.state.isTeacher && <DeleteOutlined style={{ marginLeft: 10, color: '#ff4000' }} />}
+                                        <a href={`/quizzis/${ex._id}?idSubject=${this.props.idSubject}&idTimeline=${id}`}>[{t('quiz')}] {ex.name}</a>
                                     </Col>
                                 </Row>
                             ))
@@ -829,7 +920,7 @@ class Subject extends React.Component {
                                 }}>
                                     <i>
                                     </i>
-                                    <span style={{ padding: '25px', fontSize: '2em' }}>NGÔN NGỮ LẬP TRÌNH TIÊN TIẾN</span>
+                                    <span style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject}</span>
                                 </div>
 
                             </div>
@@ -870,7 +961,7 @@ class Subject extends React.Component {
                     }}>
                         <i>
                         </i>
-                        <span style={{ padding: '25px', fontSize: '2em' }}>NGÔN NGỮ LẬP TRÌNH TIÊN TIẾN</span>
+                        <span style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject}</span>
                     </div>
 
                 </div>
@@ -887,7 +978,7 @@ class Subject extends React.Component {
                     <Col span={20} style={{
                         fontSize: '20px',
                     }}>
-                        <a href="/students">Quản lý sinh viên</a>
+                        <a href={`/students?idSubject=${this.props.idSubject}`}>Quản lý sinh viên</a>
                     </Col>
                 </Row>
 
@@ -905,7 +996,7 @@ class Subject extends React.Component {
                     <Col span={20} style={{
                         fontSize: '20px',
                     }}>
-                        <a href="/points">Quản lý điểm số</a>
+                        <a href={`/points/${this.props.idSubject}`}>Quản lý điểm số</a>
                     </Col>
                 </Row>
 
@@ -923,7 +1014,7 @@ class Subject extends React.Component {
         )
 
 
-
+        console.log(get(get(this.state.assigmentRequirement, 'submission')?.feedBack, 'grade'))
         return (
             <>
                 <Modal
@@ -974,7 +1065,7 @@ class Subject extends React.Component {
                             <div>Grade status</div>
                             <div>
                                 <span style={{ fontWeight: 600 }}>Grade: </span>
-                                <span>{get(head(get(this.state.assigmentRequirement, 'submission'))?.feedBack, 'grade')}</span>
+                                <span>{get(get(this.state.assigmentRequirement, 'submission')?.feedBack, 'grade')}</span>
                             </div>
                             <div>
                                 <span style={{ fontWeight: 600 }}>Grade on: </span>
@@ -1005,6 +1096,7 @@ class Subject extends React.Component {
                                     minHeight: '200px',
                                     maxHeight: 726
                                 }}>
+                                    
                                 <div
                                     style={{
                                         textAlign: 'center',
@@ -1061,9 +1153,11 @@ class Subject extends React.Component {
                                             <div style={{
                                                 border: "2px solid #cacaca",
                                                 padding: "20px 0",
-                                                borderRadius: "11px"
+                                                borderRadius: "11px",
+                                                position: 'relative'
 
                                             }}>
+                                                {this.state.isLoading && <Spin style={{position: 'absolute', top: '50%', left: '50%', zIndex: 100}}/>}
                                                 {
                                                     this.state.isOpenSetting && <div style={{
                                                         fontStyle: "italic",
@@ -1465,6 +1559,7 @@ class Subject extends React.Component {
                                     minHeight: '200px',
                                     maxHeight: "768px"
                                 }}>
+                                
                                 <div>
                                     <div style={{
                                         textAlign: 'center',
@@ -1539,6 +1634,7 @@ class Subject extends React.Component {
                                 </div>
                             </Col>
                     }
+                
                 </Row>
             </>
         )
