@@ -95,7 +95,8 @@ class Subject extends React.Component {
             dueTo: [],
             timelineIdRequirement: null,
             orderTl: false,
-            isLoading: false
+            isLoading: false,
+            isLoadingRequirement: true
         }
     }
 
@@ -190,16 +191,27 @@ class Subject extends React.Component {
 
     getRequirementAssignment = async (id, idSubject, idTimeline) => {
         console.log('getRequirementAssignment', idTimeline);
-
+        this.setState({
+            isLoadingRequirement: true
+        })
         await restClient.asyncGet(`/assignment/${id}?idSubject=${idSubject}&idTimeline=${idTimeline}`)
         .then(res => {
             if(!res.hasError){
+                // this.setState({
+                //     isLoadingRequirement: false
+                // })
                 console.log('getRequirementAssignment', res);
 
                 this.setState({
                     assigmentRequirement: get(res, 'data'),
                     timelineIdRequirement: idTimeline
+                }, () => {
+                    this.setState({
+                        visible: true
+                    })
                 })
+
+                // return true;
             }
         })
 
@@ -721,7 +733,8 @@ class Subject extends React.Component {
 
         const template = (id, name, description, assignments, exams, forums, infomation, files) => (
             <div style={{ margin: '0 10px 10px 10px', border: "2px solid #cacaca" }}>
-                <div >
+                <div style={{position: 'relative'}}>
+                {this.state.isLoadingRequirement && <Spin style={{position: 'absolute', top: '50%', left: '50%', zIndex: 100}}/>}
                     <Row
                         style={{
                             padding: 10,
@@ -807,10 +820,13 @@ class Subject extends React.Component {
                         assignments != null ? (
                             assignments.map(assign => (
                                 !glb_sv.isTeacher ?
-                                <Row style={{ marginBottom: 10 }} onClick={() => {
-                                    this.getRequirementAssignment(assign._id, this.props.idSubject, id);
-                                    this.setState({ visible: true })
+                                <Row style={{ marginBottom: 10, position: 'relative' }} onClick={() => {
+                                     this.getRequirementAssignment(assign._id, this.props.idSubject, id);
+                                    // if(flagLoading){
+                                    //     this.setState({ visible: true })
+                                    // }
                                 }} key={assign._id}>
+                                   
                                     <Col span={2} style={{
                                         textAlign: 'center',
                                         alignSelf: 'center'
