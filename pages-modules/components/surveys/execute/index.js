@@ -2,7 +2,6 @@ import React from 'react'
 import { Row, Col, Badge, Radio, Button } from 'antd'
 
 import '../overwrite.css'
-import glb_sv from '../../assets/global/global.service'
 import survey from '../../../../assets/images/contents/surveylogo.png'
 
 class SurveyExecute extends React.Component{
@@ -17,7 +16,7 @@ class SurveyExecute extends React.Component{
                 minHeight: '20px'
             }}>
                 <Row style={{ width: '100%' }}>
-                    <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>{glb_sv.nameSubject}</Col>
+                    <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>''</Col>
                 </Row>
                 <div style={{ width: '90%' }}>
                     <div style={{ textAlign: 'left', width: '100%', padding: '10px 0' }}>
