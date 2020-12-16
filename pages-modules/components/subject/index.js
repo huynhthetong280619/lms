@@ -1,5 +1,5 @@
 import React from 'react'
-import { Row, Col, Popover, Modal, Tooltip, Tabs, Input, Timeline, Select, Button, Checkbox, InputNumber } from 'antd'
+import { Row, Col, Popover, Modal, Tooltip, Tabs, Input, Timeline, Select, Button, Checkbox, InputNumber, notification, Spin } from 'antd'
 import { Switch } from 'antd';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
@@ -19,17 +19,17 @@ import quiz from '../../../assets/images/contents/quiz.png'
 import student from '../../../assets/images/contents/student.png'
 import { withTranslation } from 'react-i18next';
 import restClient from '../../../assets/common/core/restClient';
-import { MoreOutlined, ClockCircleOutlined, SettingOutlined, AndroidOutlined, DeleteOutlined, AlertOutlined , CheckCircleTwoTone  } from '@ant-design/icons'
+import { MoreOutlined, EyeOutlined, SettingOutlined, AndroidOutlined,  AlertOutlined , CheckCircleTwoTone, LoadingOutlined   } from '@ant-design/icons'
 import moment from 'moment'
-import fetch from 'node-fetch';
 require('isomorphic-fetch');
-import DayPickerInput from 'react-day-picker/DayPickerInput';
 import 'react-day-picker/lib/style.css';
 import glb_sv from '../../../assets/global/global.service';
 import newInfo from '../../../assets/images/contents/new.png';
 import deadline from '../../../assets/images/courses/deadline.png'
 import deadlineCalcular from '../../../assets/images/courses/deadlineCalcular.png'
-
+import points from '../../../assets/images/contents/statistics-point.png'
+import DayPickerInputCustomize from '../../basic-component/time-picker';
+import {NotificationContainer, NotificationManager} from 'react-notifications';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -93,17 +93,20 @@ class Subject extends React.Component {
             isOpenSetting: true,
             deadlines: [],
             dueTo: [],
-            timelineIdRequirement: null
+            timelineIdRequirement: null,
+            orderTl: false,
+            isLoading: false,
+            isLoadingRequirement: true
         }
     }
 
     async componentDidMount() {
         console.log('componentDidMount', this.props.subject, this.props.lstQuizzis, this.props.lstTimeline);
 
-
+       
         this.setState({
             lstTimelines: this.props.lstTimeline,
-            timelineId: get(head(this.props.lstTimeline), '_id')
+            timelineId: get(head(this.props.lstTimeline), '_id'),
         })
 
 
@@ -171,11 +174,12 @@ class Subject extends React.Component {
             .then(data => console.log('updateTimeline', data))
     }
 
-    handleSwitchMode = (e) => {
+    onOrderTimeLine = (status) => {
         this.setState({
             isTeacher: !this.state.isTeacher
         })
-        if (e === false) {
+
+        if (status === false) {
             this.updateTimelines();
             return;
         }
@@ -187,16 +191,27 @@ class Subject extends React.Component {
 
     getRequirementAssignment = async (id, idSubject, idTimeline) => {
         console.log('getRequirementAssignment', idTimeline);
-
+        this.setState({
+            isLoadingRequirement: true
+        })
         await restClient.asyncGet(`/assignment/${id}?idSubject=${idSubject}&idTimeline=${idTimeline}`)
         .then(res => {
             if(!res.hasError){
+                // this.setState({
+                //     isLoadingRequirement: false
+                // })
                 console.log('getRequirementAssignment', res);
 
                 this.setState({
                     assigmentRequirement: get(res, 'data'),
                     timelineIdRequirement: idTimeline
+                }, () => {
+                    this.setState({
+                        visible: true
+                    })
                 })
+
+                // return true;
             }
         })
 
@@ -281,10 +296,17 @@ class Subject extends React.Component {
     submissionFile = async (idAssignment) => {
         console.log(idAssignment)
         const formData = new FormData();
+        this.setState({
+            isLoading: true
+        })
         formData.append('file', this.state.FileAssign)
         await restClient.asyncPostFile(`/assignment/${idAssignment}/submit?idSubject=${this.props.idSubject}&idTimeline=${this.state.timelineIdRequirement}`, formData)
         .then(res => {
             if(!res.hasError){
+                this.notifySuccess('Thành công!', 'Nộp bài thành công')
+                this.setState({
+                    isLoading: false
+                })
                 console.log('Notification', res)
             }
         })
@@ -294,12 +316,19 @@ class Subject extends React.Component {
         const formData = new FormData();
         formData.append('file', this.state.FileData)
 
+        this.setState({
+            isLoading: true
+        })
+
         console.log(formData.get('file'))
         console.log(this.state.FileData, formData)
         await restClient.asyncPostFile(`/timeline/${this.state.timelineId}/upload?idSubject=${this.props.idSubject}`, formData)
             .then(res => {
-                if(!res.hasError){
                     if (!res.hasError) {
+                        this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công document')
+                        this.setState({
+                            isLoading: false
+                        })
                         let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === this.state.timelineId)
     
                         head(timelineUpdate).files.push(res.data)
@@ -314,9 +343,7 @@ class Subject extends React.Component {
                         })
     
     
-                    }
-                }
-                
+                    }                
             })
     }
 
@@ -327,12 +354,18 @@ class Subject extends React.Component {
             idTimeline: this.state.timelineId,
             data: this.state.quiz
         }
-
+        this.setState({
+            isLoading: true
+        })
         console.log('data', data)
         await restClient.asyncPost('/exam', data)
             .then(res => {
                 console.log(res)
                 if (!res.hasError) {
+                    this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công quiz')
+                    this.setState({
+                        isLoading: false
+                    })
                     let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === data.idTimeline)
 
                     head(timelineUpdate).quiz.push(res.data)
@@ -372,10 +405,17 @@ class Subject extends React.Component {
             idTimeline: this.state.timelineId,
             data: this.state.assignment
         }
+        this.setState({
+            isLoading: true
+        })
         await restClient.asyncPost('/assignment', data)
             .then(res => {
                 console.log(res)
                 if (!res.hasError) {
+                    this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công assignment')
+                    this.setState({
+                        isLoading: false
+                    })
                     let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === data.idTimeline)
 
                     head(timelineUpdate).assignments.push(res.data)
@@ -407,17 +447,59 @@ class Subject extends React.Component {
             })
     }
 
+    notifySuccess = (message, description) => {
+        notification.success({
+          message,
+          description,
+          placement: 'bottomRight'
+        });
+      };
+
+      notifyWarning = (message, description) => {
+        notification.warning({
+          message,
+          description,
+          placement: 'bottomRight'
+        });
+      };
+
+
+      notifyError = (message, description) => {
+        notification.error({
+          message,
+          description,
+          placement: 'bottomRight'
+        });
+      };
+
     createTimeline = async () => {
+        if(this.state.timeLine.name.trim() == '' || this.state.timeLine.description.trim() == ''){
+            this.notifyWarning('Cảnh báo', 'Hãy nhập đầy đủ thông tin cần thiết');
+            return;
+        }
+
+        this.setState({
+            isLoading: true
+        })
+
         const data = {
             idSubject: this.props.idSubject,
             data: this.state.timeLine
         }
+
         await restClient.asyncPost('/timeline', data)
             .then(res => {
                 if (!res.hasError) {
+                    this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công timeline')
                     this.setState({
-                        timelines: [...this.state.timelines, get(res, 'data')]
+                        timelines: [...this.state.timelines, get(res, 'data')],
+                        isLoading: false,
+                        timeLine: {
+                            name: '',
+                            description: ''
+                        }
                     })
+
                 }
             })
     }
@@ -563,10 +645,33 @@ class Subject extends React.Component {
             })
     }
 
+    createNotification = (type, title, message) => {
+        return () => {
+          switch (type) {
+            case 'info':
+              NotificationManager.info(message);
+              break;
+            case 'success':
+              NotificationManager.success(message, title);
+              break;
+            case 'warning':
+              NotificationManager.warning(message, title, 3000);
+              break;
+            case 'error':
+              NotificationManager.error(message, title, 5000, () => {
+                alert('callback');
+              });
+              break;
+          }
+        };
+      };
+
+
     render() {
 
         const { t } = this.props;
 
+        
 
         console.log('this.state.timelines', this.state.timelines)
 
@@ -628,13 +733,15 @@ class Subject extends React.Component {
 
         const template = (id, name, description, assignments, exams, forums, infomation, files) => (
             <div style={{ margin: '0 10px 10px 10px', border: "2px solid #cacaca" }}>
-                <div >
+                <div style={{position: 'relative'}}>
+                {/* {this.state.isLoadingRequirement && <Spin style={{position: 'absolute', top: '50%', left: '50%', zIndex: 100}}/>} */}
                     <Row
                         style={{
                             padding: 10,
                             background: "#cacaca",
                             marginBottom: 30,
-                            fontWeight: 600
+                            fontWeight: 600,
+                            cursor: this.state.isTeacher && 'all-scroll'
                         }}
                     >
                         <Col span={6}>
@@ -700,7 +807,7 @@ class Subject extends React.Component {
                                     <Col span={20} style={{
                                         fontSize: '20px',
                                     }}>
-                                        <div>[{t('Files')}] {f.name}</div> {this.state.isTeacher && <DeleteOutlined style={{ marginLeft: 10, color: '#ff4000' }} />}
+                                        <div style={{display: 'inline-block'}}>[{t('Files')}] {f.name}</div>
                                     </Col>
                                 </Row>
                             ))
@@ -712,10 +819,14 @@ class Subject extends React.Component {
                     {
                         assignments != null ? (
                             assignments.map(assign => (
-                                <Row style={{ marginBottom: 10 }} onClick={() => {
-                                    this.getRequirementAssignment(assign._id, this.props.idSubject, id);
-                                    this.setState({ visible: true })
+                                !glb_sv.isTeacher ?
+                                <Row style={{ marginBottom: 10, position: 'relative', cursor: 'pointer' }} onClick={() => {
+                                     this.getRequirementAssignment(assign._id, this.props.idSubject, id);
+                                    // if(flagLoading){
+                                    //     this.setState({ visible: true })
+                                    // }
                                 }} key={assign._id}>
+                                   
                                     <Col span={2} style={{
                                         textAlign: 'center',
                                         alignSelf: 'center'
@@ -727,7 +838,24 @@ class Subject extends React.Component {
                                     <Col span={20} style={{
                                         fontSize: '20px',
                                     }}>
-                                        <div>[{t('exercise')}] {assign.name}</div> {this.state.isTeacher && <DeleteOutlined style={{ marginLeft: 10, color: '#ff4000' }} />}
+                                        <div>[{t('exercise')}] {assign.name}</div>
+                                    </Col>
+                                </Row>
+                                :
+
+                                <Row style={{ marginBottom: 10 }} key={assign._id}>
+                                    <Col span={2} style={{
+                                        textAlign: 'center',
+                                        alignSelf: 'center'
+                                    }}>
+                                        <i>
+                                            <img src={assignment} width={36} />
+                                        </i>
+                                    </Col>
+                                    <Col span={20} style={{
+                                        fontSize: '20px',
+                                    }}>
+                                        <a  href={`/manage/${assign._id}?idSubject=${this.props.idSubject}&idTimeline=${id}`}>[{t('exercise')}] {assign.name}</a> 
                                     </Col>
                                 </Row>
                             ))
@@ -750,7 +878,7 @@ class Subject extends React.Component {
                                     <Col span={20} style={{
                                         fontSize: '20px',
                                     }}>
-                                        <a href={`/forums/${fr._id}?idSubject=${this.props.idSubject}&idTimeline=${id}`}>[{t('discussion_forum')}] {fr.name}</a>{this.state.isTeacher && <DeleteOutlined style={{ marginLeft: 10, color: '#ff4000' }} />}
+                                        <a href={`/forums/${fr._id}?idSubject=${this.props.idSubject}&idTimeline=${id}`}>[{t('discussion_forum')}] {fr.name}</a>
                                     </Col>
 
                                 </Row>
@@ -774,7 +902,7 @@ class Subject extends React.Component {
                                     <Col span={20} style={{
                                         fontSize: '20px',
                                     }}>
-                                        <a href={`/quizzis/${ex._id}/${id}`}>[{t('quiz')}] {ex.name}</a>{this.state.isTeacher && <DeleteOutlined style={{ marginLeft: 10, color: '#ff4000' }} />}
+                                        <a href={`/quizzis/${ex._id}?idSubject=${this.props.idSubject}&idTimeline=${id}`}>[{t('quiz')}] {ex.name}</a>
                                     </Col>
                                 </Row>
                             ))
@@ -808,7 +936,7 @@ class Subject extends React.Component {
                                 }}>
                                     <i>
                                     </i>
-                                    <span style={{ padding: '25px', fontSize: '2em' }}>NGÔN NGỮ LẬP TRÌNH TIÊN TIẾN</span>
+                                    <span style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject}</span>
                                 </div>
 
                             </div>
@@ -849,12 +977,12 @@ class Subject extends React.Component {
                     }}>
                         <i>
                         </i>
-                        <span style={{ padding: '25px', fontSize: '2em' }}>NGÔN NGỮ LẬP TRÌNH TIÊN TIẾN</span>
+                        <span style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject}</span>
                     </div>
 
                 </div>
                 {
-                    glb_sv.isTeacher && <Row style={{ marginBottom: 10 }} >
+                    glb_sv.isTeacher ? <Row style={{ marginBottom: 10 }} >
                     <Col span={2} style={{
                         textAlign: 'center',
                         alignSelf: 'center'
@@ -866,7 +994,25 @@ class Subject extends React.Component {
                     <Col span={20} style={{
                         fontSize: '20px',
                     }}>
-                        <a href="/students">Quản lý sinh viên</a>
+                        <a href={`/students?idSubject=${this.props.idSubject}`}>Quản lý sinh viên</a>
+                    </Col>
+                </Row>
+
+                :
+
+                <Row style={{ marginBottom: 10 }} >
+                    <Col span={2} style={{
+                        textAlign: 'center',
+                        alignSelf: 'center'
+                    }}>
+                        <i>
+                            <img src={points} width={36} />
+                        </i>
+                    </Col>
+                    <Col span={20} style={{
+                        fontSize: '20px',
+                    }}>
+                        <a href={`/points/${this.props.idSubject}`}>Quản lý điểm số</a>
                     </Col>
                 </Row>
 
@@ -884,7 +1030,7 @@ class Subject extends React.Component {
         )
 
 
-
+        console.log(get(get(this.state.assigmentRequirement, 'submission')?.feedBack, 'grade'))
         return (
             <>
                 <Modal
@@ -894,6 +1040,7 @@ class Subject extends React.Component {
                     onCancel={this.handleCancel}
                     okButtonProps={{ style: { display: 'none' } }}
                     cancelButtonProps={{ style: { display: 'none' } }}
+                    footer={null}
                 >
                     <Tabs defaultActiveKey="1" centered>
                         <TabPane tab="Submission" key="1">
@@ -905,7 +1052,7 @@ class Subject extends React.Component {
                                 </div>
                                 <div style={{ margin: '10px 0'}}>
                                     <span style={{ fontWeight: 600 }}>Time remaining: </span>
-                                    <span>{moment.utc(get(this.state.assigmentRequirement.setting, 'startTime')).from(moment.utc(get(this.state.assigmentRequirement.setting, 'expireTime')))}</span>
+                                    <span>{get(this.state.assigmentRequirement, 'timingRemain')}</span>
                                 </div>
                                 <div style={{ margin: '10px 0'}}>
                                     <span style={{ fontWeight: 600 }}>Last modified: </span>
@@ -915,13 +1062,30 @@ class Subject extends React.Component {
                                     <span style={{ fontWeight: 600 }}>File submissions: </span>
                                     <Input type="file" onChange={e => this.handleProcessFileSubmissioin(e)} style={{ width: 200, borderRadius: 20 }} />
                                 </div>
+                                {
+                                    (this.state.assigmentRequirement.submission !== null )&& <div style={{ margin: '10px 0'}}>
+                                    <div style={{
+                                        border:'1px dashed #cacaca',
+                                        padding: '5px 20px',
+                                        textAlign: 'center'
+                                    }}>
+                                        <img src={word} />
+                                        <div>{get(this.state.assigmentRequirement.submission, 'file')?.name}</div>
+                                    </div>
+                                </div>
+                                }
+                                
 
                             </div>
-                            <Row style={{marginTop: 10}}>
+                            {
+                                get(this.state.assigmentRequirement, 'isCanSubmit') && 
+                                <Row style={{marginTop: 10}}>
                                 <div>
-                                    <Button type="primary" onClick={() => this.submissionFile(get(this.state.assigmentRequirement, '_id'))} style={{borderRadius: 20}}>{t('submit_assign')}</Button>
+                                    <Button type="primary" onClick={() => this.submissionFile(get(this.state.assigmentRequirement, '_id'))} style={{borderRadius: 20}}><Spin spinning={this.state.isLoading} indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />{t('submit_assign')}</Button>
                                 </div>
                             </Row>
+                            }
+                           
                         </TabPane>
                         <TabPane tab="Requirement" key="2">
                             <div style={{ fontWeight: "700" }}>[Content requirement]</div>
@@ -935,7 +1099,7 @@ class Subject extends React.Component {
                             <div>Grade status</div>
                             <div>
                                 <span style={{ fontWeight: 600 }}>Grade: </span>
-                                <span>{get(head(get(this.state.assigmentRequirement, 'submission'))?.feedBack, 'grade')}</span>
+                                <span>{get(get(this.state.assigmentRequirement, 'submission')?.feedBack, 'grade')}</span>
                             </div>
                             <div>
                                 <span style={{ fontWeight: 600 }}>Grade on: </span>
@@ -963,15 +1127,17 @@ class Subject extends React.Component {
                                     margin: '10px',
                                     background: '#fff',
                                     borderRadius: '10px',
-                                    minHeight: '200px'
+                                    minHeight: '200px',
+                                    maxHeight: 726
                                 }}>
+                                    
                                 <div
                                     style={{
                                         textAlign: 'center',
                                         padding: 10
                                     }}>
 
-                                    <Tabs defaultActiveKey="2">
+                                    <Tabs defaultActiveKey="1">
                                         <TabPane
                                             tab={
                                                 <span>
@@ -980,8 +1146,16 @@ class Subject extends React.Component {
                                                 </span>
                                             }
                                             key="1"
+                                            style={{height: 'auto'}}
                                         >
-                                            Tab 1
+                                            <Row>
+                                                <Col span={10}>
+                                                <span style={{fontWeight: 600}}>Sắp xếp mốc thời gian</span>
+                                                </Col>
+                                                <Col span={10}>
+                                                <Switch defaultChecked={false} onChange={e => this.onOrderTimeLine(e)} />
+                                                </Col>
+                                            </Row>
 </TabPane>
                                         <TabPane
                                             tab={
@@ -991,6 +1165,7 @@ class Subject extends React.Component {
                                                 </span>
                                             }
                                             key="2"
+                                            style={{height: 'auto'}}
                                         >
 
                                             <Row style={{
@@ -1012,9 +1187,11 @@ class Subject extends React.Component {
                                             <div style={{
                                                 border: "2px solid #cacaca",
                                                 padding: "20px 0",
-                                                borderRadius: "11px"
+                                                borderRadius: "11px",
+                                                position: 'relative'
 
                                             }}>
+                                                {this.state.isLoading && <Spin style={{position: 'absolute', top: '50%', left: '50%', zIndex: 100}}/>}
                                                 {
                                                     this.state.isOpenSetting && <div style={{
                                                         fontStyle: "italic",
@@ -1086,7 +1263,8 @@ class Subject extends React.Component {
                                                                 <span>{t('startTime')}</span>
                                                             </Col>
                                                             <Col>
-                                                                <DayPickerInput value={get(this.state.quiz, 'startTime')} onDayChange={e => this.handleSelectStartTimeQuiz(e)} style={{ width: 200 }} />
+                                                                {/* <DayPickerInput value={get(this.state.quiz, 'startTime')} onDayChange={e => this.handleSelectStartTimeQuiz(e)} style={{ width: 200 }} /> */}
+                                                                <DayPickerInputCustomize value={get(this.state.quiz, 'startTime')} onDayChange={e => this.handleSelectStartTimeQuiz(e)} style={{ width: 200 }}/>
                                                             </Col>
                                                         </Row>
                                                         <Row style={{ margin: '10px 0' }}>
@@ -1094,12 +1272,12 @@ class Subject extends React.Component {
                                                                 <span>{t('expireTime')}</span>
                                                             </Col>
                                                             <Col>
-                                                                <DayPickerInput value={get(this.state.quiz, 'expireTime')} onDayChange={e => this.handleSelectExpireTimeQuiz(e)} style={{ width: 200 }} />
+                                                                <DayPickerInputCustomize value={get(this.state.quiz, 'expireTime')} onDayChange={e => this.handleSelectExpireTimeQuiz(e)} style={{ width: 200 }} />
                                                             </Col>
                                                         </Row>
                                                         <Row style={{ margin: '10px 0' }}>
                                                             <Col style={{ fontWeight: 700 }}>
-                                                                {t('setttings')}
+                                                                {t('settings')}
                                                             </Col>
                                                         </Row>
 
@@ -1213,7 +1391,7 @@ class Subject extends React.Component {
                                                                 <span>{t('startTime')}</span>
                                                             </Col>
                                                             <Col>
-                                                                <DayPickerInput value={get(this.state.assignment.setting, 'startTime')} onDayChange={e => this.handleSelectStartTime(e)} style={{ width: 200 }} />
+                                                                <DayPickerInputCustomize value={get(this.state.assignment.setting, 'startTime')} onDayChange={e => this.handleSelectStartTime(e)} style={{ width: 200 }} />
                                                             </Col>
                                                         </Row>
                                                         <Row style={{ margin: '10px 0' }}>
@@ -1221,7 +1399,7 @@ class Subject extends React.Component {
                                                                 <span>{t('expireTime')}</span>
                                                             </Col>
                                                             <Col>
-                                                                <DayPickerInput value={get(this.state.assignment.setting, 'expireTime')} onDayChange={e => this.handleSelectExpireTime(e)} style={{ width: 200 }} />
+                                                                <DayPickerInputCustomize value={get(this.state.assignment.setting, 'expireTime')} onDayChange={e => this.handleSelectExpireTime(e)} style={{ width: 200 }} />
                                                             </Col>
                                                         </Row>
                                                         <Row style={{ margin: '10px 0' }}>
@@ -1238,7 +1416,7 @@ class Subject extends React.Component {
                                                                 <span>{t('overDueDate')}</span>
                                                             </Col>
                                                             <Col>
-                                                                <DayPickerInput value={get(this.state.assignment.setting, 'overDueDate')} onDayChange={e => this.handleSelectoverDueDate(e)} style={{ width: 200 }} />
+                                                                <DayPickerInputCustomize value={get(this.state.assignment.setting, 'overDueDate')} onDayChange={e => this.handleSelectoverDueDate(e)} style={{ width: 200 }} />
                                                             </Col>
                                                         </Row>
                                                         <Row style={{ margin: '10px 0' }}>
@@ -1413,8 +1591,9 @@ class Subject extends React.Component {
                                     background: '#fff',
                                     borderRadius: '10px',
                                     minHeight: '200px',
-                                    maxHeight: "768px"
+                                    maxHeight: "556px"
                                 }}>
+                                
                                 <div>
                                     <div style={{
                                         textAlign: 'center',
@@ -1441,12 +1620,20 @@ class Subject extends React.Component {
                                     <Row style={{ justifyContent: 'center' }}>
                                         <Tabs defaultActiveKey="1" centered>
                                             <TabPane tab={<span> <AlertOutlined twoToneColor="#ff0000" />{t('dl')}</span>} key="1">
+                                            <div style={{maxHeight: '400px',
+overflowY: 'auto'}}>
                                                 {this.state.deadlines.length > 0 ? this.state.deadlines.map(dl => (
-                                                    <Row key={dl._id} style={{ marginBottom: 5 }}>
+                                                    <Row key={dl._id} style={{ marginBottom: 5, border: "2px solid #cacaca",
+                                                    padding: "10px 0", cursor: 'pointer' }} onClick={() => {
+                                                        this.getRequirementAssignment(dl._id, dl.idSubject, dl.idTimeline);
+                                                       // if(flagLoading){
+                                                       //     this.setState({ visible: true })
+                                                       // }
+                                                   }}>
                                                         <Col span={10} style={{ textAlign: "center", alignSelf: "center" }}><i>
                                                             <img src={fastTime} width="36px" />
                                                         </i></Col>
-                                                        <Col span={10} >
+                                                        <Col span={12} >
                                                             <div>{dl.name}</div>
                                                             <div>
                                                                 <span style={{ fontWeight: 600 }}>Due to: </span>{this.transTime(get(dl, 'expireTime'))}
@@ -1460,14 +1647,17 @@ class Subject extends React.Component {
                                                         <img src={deadlineCalcular} />
                                                         <div style={{ width: "100%", color: '#cacaca', textAlign: 'center' }}>No upcoming deadline</div>
                                                     </Row>}
+                                                    </div>
                                             </TabPane>
                                             <TabPane tab={
                                                 <span><CheckCircleTwoTone twoToneColor="#52c41a" />
                                                     {t('complt')}
                                                 </span>} key="2">
-                                                <div>
+                                                <div style={{maxHeight: '400px',
+overflowY: 'auto'}}>
                                                     {this.state.dueTo.map(dt => (
-                                                        <Row key={dt._id} style={{ marginBottom: 5, color: "#2ecc71" }}>
+                                                        <Row key={dt._id} style={{ marginBottom: 5, color: "#2ecc71", border: "2px solid #cacaca",
+                                                        padding: "10px 0" }}>
                                                             <Col span={10} style={{ textAlign: "center", alignSelf: "center" }}><i>
                                                                 <img src={fastTime} width="36px" />
                                                             </i></Col>
@@ -1489,6 +1679,7 @@ class Subject extends React.Component {
                                 </div>
                             </Col>
                     }
+                
                 </Row>
             </>
         )

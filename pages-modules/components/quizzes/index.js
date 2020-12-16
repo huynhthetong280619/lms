@@ -56,7 +56,7 @@ class Quiz extends React.Component {
                 minHeight: '20px'
             }}>
                 <Row style={{ width: '100%' }}>
-                    <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>NGÔN NGỮ LẬP TRÌNH TIÊN TIẾN</Col>
+                    <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject}</Col>
                 </Row>
                 <div style={{ width: '90%' }}>
                     <div style={{ width: '100%', minHeight: '150px' }}>
@@ -95,7 +95,7 @@ class Quiz extends React.Component {
                             borderRadius: "20px"
 
                         }}>
-                            <Table dataSource={get(requirementExam, 'submissions')} columns={columns} />
+                            <Table pagination={false} dataSource={get(requirementExam, 'submissions')} columns={columns} rowKey="_id" scroll={{ y: 240 }}/>
                         </div>
                     </div>
                 </div>

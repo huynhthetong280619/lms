@@ -24,7 +24,10 @@ class Footers extends Component {
         });
         glb_sv.lang = lang
         lang == 'vi' ? this.setState({ langFlag: vn }) : this.setState({ langFlag: en });
-        i18n.changeLanguage(lang)
+        if(lang) i18n.changeLanguage(lang)
+        if (typeof (Storage) !== 'undefined') {
+            localStorage.setItem('langNewUser', lang);
+        }
     }
 
     render() {
@@ -54,7 +57,7 @@ class Footers extends Component {
             <Row>
                 <Col span={10}>
                     <img src={this.state.langFlag} alt="" style={{ width: 22.5, height: 22.5, marginBottom: 4 }} />
-                    <select style={{ marginLeft: 5 }} value={this.state.lang} onChange={e => this.handleChangeLanguage(e.target.value)} className="form-control cursor_ponter form-control-sm acntTopDiv disabled">
+                    <select style={{ marginLeft: 5 }} value={glb_sv.lang} onChange={e => this.handleChangeLanguage(e.target.value)} className="form-control cursor_ponter form-control-sm acntTopDiv disabled">
                         <option value="vi">Tiếng Việt</option>
                         <option value="en">English</option>
                     </select>

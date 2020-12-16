@@ -1,5 +1,5 @@
 import React from 'react'
-import { Row, Col, Modal, Input, Card } from 'antd'
+import { Row, Col, Modal, Input, Card, notification } from 'antd'
 
 import discussion from '../../../assets/images/contents/discussion.jpg'
 import discusad from '../../../assets/images/contents/discusad.png'
@@ -19,7 +19,8 @@ class Forum extends React.Component {
             isModalCreateTopic: false,
             detailForum: [],
             topic_name: '',
-            topic_desc: ''
+            topic_desc: '',
+            isLoading: false
         }
     }
 
@@ -46,20 +47,27 @@ class Forum extends React.Component {
 
     createForum = async () => {
         const data = {
-            idSubject: 'lthdt01',
-            idTimeline: '5f75e682817a140f580937bc',
-            idForum: '5fad2f61861b9f1e9c7f275b',
+            idSubject: this.props.idSubject,
+            idTimeline: this.props.idTimeline,
+            idForum: this.props.idForum,
             data: {
                 name: this.state.topic_name,
                 content: this.state.topic_desc
             }
         }
+        this.setState({
+            isLoading: true
+        })
 
         await restClient.asyncPost('/topic', data)
             .then(res => {
-                console.log(res)
+                console.log('Create topic', res)
 
                 if (!res.hasError) {
+                    this.notifySuccess('Thành công!', 'Tạo chủ đề thành công')
+                this.setState({
+                    isLoading: false
+                })
                     this.setState({
                         detailForum: [...this.state.detailForum, get(res, 'data')]
                     })
@@ -67,6 +75,31 @@ class Forum extends React.Component {
 
             })
     }
+
+    notifySuccess = (message, description) => {
+        notification.success({
+          message,
+          description,
+          placement: 'bottomRight'
+        });
+      };
+
+      notifyWarning = (message, description) => {
+        notification.warning({
+          message,
+          description,
+          placement: 'bottomRight'
+        });
+      };
+
+
+      notifyError = (message, description) => {
+        notification.error({
+          message,
+          description,
+          placement: 'bottomRight'
+        });
+      };
 
 
     render() {
@@ -107,7 +140,7 @@ class Forum extends React.Component {
                     </Row>
                 </Modal>
                 <Row style={{ width: '100%' }}>
-                    <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>{get(forum, 'name')}</Col>
+                    <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject}</Col>
                 </Row>
                 <div style={{ width: '90%' }}>
                     <div style={{ textAlign: 'left', width: '100%', padding: '10px 0' }}>
@@ -130,7 +163,7 @@ class Forum extends React.Component {
                             {
                                 this.state.detailForum.map(({ _id, create, name, description }) => {
                                     return (
-                                        <a href={`/forums/disscuss/${_id}?idSubject=${this.props.idSubject}&idTimeline=${this.props.idTimeline}&idForum=${this.props.idForum}`}>
+                                        <a href={`/forums/disscuss/${_id}?idSubject=${this.props.idSubject}&idTimeline=${this.props.idTimeline}&idForum=${this.props.idForum}`} key={_id}>
                                             <Card
 
                                                 hoverable

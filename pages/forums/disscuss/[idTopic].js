@@ -4,28 +4,33 @@ import IndexLayout from '../../../pages-modules/layouts/layout'
 import restClient from '../../../assets/common/core/restClient'
 import { get } from 'lodash'
 
-const DiscussionPage = ({ lstDiscussion, idTopic, idSubject, idTimeline, idForum, detailTopic }) => {
+const DiscussionPage = ({ lstDiscussion, idTopic, idSubject, idTimeline, idForum, detailTopic, subject }) => {
     console.log('lstDiscussion', lstDiscussion)
+    const nameSubject = get(subject, 'name')
+
+    console.log('Discussion', nameSubject)
     return <IndexLayout>
-        <Discussion lstDiscussion={lstDiscussion} idTopic={idTopic} idSubject={idSubject} idTimeline={idTimeline} idForum={idForum} detailTopic={detailTopic} />
+        <Discussion lstDiscussion={lstDiscussion} idTopic={idTopic} idSubject={idSubject} idTimeline={idTimeline} idForum={idForum} detailTopic={detailTopic} nameSubject={nameSubject} />
     </IndexLayout>
 
 }
 
 DiscussionPage.getInitialProps = async (ctx) => {
-    console.log('Forum page', ctx)
     const { idTopic, idSubject, idTimeline, idForum } = ctx.query
 
-    const [lstDiscussion, detailTopic] = await Promise.all([restClient.asyncGet(`/discussion?idSubject=${idSubject}&idTimeline=${idTimeline}&idForum=${idForum}&idTopic=${idTopic}`),
-    restClient.asyncGet(`/topic/${idTopic}?idSubject=${idSubject}&idTimeline=${idTimeline}&idForum=${idForum}`)
+    const [lstDiscussion, detailTopic, subject] = await Promise.all([restClient.asyncGet(`/discussion?idSubject=${idSubject}&idTimeline=${idTimeline}&idForum=${idForum}&idTopic=${idTopic}`),
+    restClient.asyncGet(`/topic/${idTopic}?idSubject=${idSubject}&idTimeline=${idTimeline}&idForum=${idForum}`), restClient.asyncGet(`/subject/${idSubject}`)
     ])
+
+    console.log('DiscussionPage', subject)
     return {
         lstDiscussion: get(lstDiscussion, 'data'),
         idTopic,
         idSubject,
         idTimeline,
         idForum,
-        detailTopic: get(detailTopic, 'data')
+        detailTopic: get(detailTopic, 'data'),
+        subject: get(subject, 'data')
     }
 }
 

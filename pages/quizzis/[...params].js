@@ -6,22 +6,25 @@ import restClient from '../../assets/common/core/restClient';
 import {get} from 'lodash'
 
 
-const QuizPage = ({requirementExam, idExam,idTimeline }) => {
+const QuizPage = ({requirementExam, idExam,idTimeline, subject }) => {
+    const nameSubject = get(subject, 'name')
     return <IndexLayout>
-       <Quiz requirementExam={requirementExam} idExam={idExam} idTimeline={idTimeline}/>
+       <Quiz requirementExam={requirementExam} idExam={idExam} idTimeline={idTimeline} nameSubject={nameSubject}/>
     </IndexLayout>
 }
 
 QuizPage.getInitialProps = async (ctx) => {
-    const {params} = ctx.query
-    const [idExam, idTimeline] = params
-    console.log('aaaa', idExam, idTimeline)
-    const res = await restClient.asyncGet(`/exam/${idExam}?idSubject=lthdt01&idTimeline=${idTimeline}`);
+    console.log('Quiz page', ctx)
+    const {params, idTimeline, idSubject} = ctx.query
+    const [idExam] = params
+    const [requirement, subject] = await Promise.all([restClient.asyncGet(`/exam/${idExam}?idSubject=${idSubject}&idTimeline=${idTimeline}`), restClient.asyncGet(`/subject/${idSubject}`)]);
     
+    console.log('Quiz', requirement, subject)
     return {
-        requirementExam: get(res, 'data'),
+        requirementExam: get(requirement, 'data'),
         idExam,
-        idTimeline
+        idTimeline,
+        subject: get(subject, 'data')
     }
 }
 

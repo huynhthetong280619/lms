@@ -1,6 +1,6 @@
 import React from 'react'
 import { InboxOutlined } from '@ant-design/icons'
-import { Checkbox, Row, Table, Tag, Space, Col, Popover, Modal, Tabs, Input, DatePicker, Upload, message, Button } from 'antd'
+import { Checkbox, Row, Table, Tag, Space, Col, Popover, Modal, Tabs, Input, DatePicker, Upload, message, Button, Select } from 'antd'
 
 import options from '../../../assets/images/contents/option.png'
 import add from '../../../assets/images/contents/add.png'
@@ -9,15 +9,16 @@ import notificationEmpty from '../../../assets/images/contents/notifications.png
 import assignment from '../../../assets/images/contents/asignment.png'
 import survey from '../../../assets/images/contents/survey.png'
 import { withTranslation } from 'react-i18next'
+import { get, head } from 'lodash'
+import { CSVLink } from "react-csv";
+import excel from '../../../assets/images/contents/excel.png'
+
 const { TabPane } = Tabs;
 const { TextArea } = Input;
 
 import './overwrite.css'
 import RestClient from '../../../assets/common/core/restClient'
 
-function onChange(e) {
-    console.log(`checked = ${e.target.checked}`);
-}
 
 const { Dragger } = Upload;
 
@@ -37,33 +38,6 @@ const props = {
         }
     },
 };
-
-
-
-const data = [
-    {
-        key: '1',
-        name: 'John Brown',
-        age: 32,
-        address: 'New York No. 1 Lake Park',
-        tags: ['nice', 'developer'],
-    },
-    {
-        key: '2',
-        name: 'Jim Green',
-        age: 42,
-        address: 'London No. 1 Lake Park',
-        tags: ['loser'],
-    },
-    {
-        key: '3',
-        name: 'Joe Black',
-        age: 32,
-        address: 'Sidney No. 1 Lake Park',
-        tags: ['cool', 'teacher'],
-    },
-];
-
 
 const columnsSurvey = [
     {
@@ -118,6 +92,20 @@ const dataSurvey = [
 ];
 
 
+const columnsChildGrade = [
+    {
+        title: "Mã số sinh viên",
+        dataIndex: "student",
+        key: "student",
+        render: data => <span>{data._id}</span>
+    },
+    {
+        title: "Điểm",
+        dataIndex: "grade",
+        key: "grade",
+        render: data => data !== null ? data : <span style={{color: '#ff4000', fontStyle: 'italic'}}>Chưa nộp bài</span>
+    }
+]
 
 class Student extends React.Component {
 
@@ -129,25 +117,52 @@ class Student extends React.Component {
         isHover: false,
         lstStdnt: [],
         selectedRowKeys: [],
-        loading: false
+        loading: false,
+        lstSubmissionCore: [],
+        testId: null,
+        lstStudentCoreTest: [],
+        lstStdnt: []
+    }
+
+    componentDidMount() {
+        console.log('componentDidmount', this.state.lstSubmissionCore)
+        this.setState({
+            lstStdnt: this.props.listStudent,
+            lstSubmissionCore: this.props.lstSubmissionCore,
+            lstStudentCoreTest: get(head(this.props.lstSubmissionCore), 'submissions'),
+            testId: get(head(this.props.lstSubmissionCore), '_id'),
+            nameTestId: get(head(this.props.lstSubmissionCore), 'name')
+        })
+    }
+
+    handleSelectTest = (e) => {
+        const result = this.state.lstSubmissionCore.filter(item => get(item, '_id') === e)
+
+        this.setState({
+            testId: e,
+            nameTestId: get(head(result), 'submissions'),
+            lstStudentCoreTest: get(head(result), 'submissions')
+        })
     }
 
 
     handleDeleteStudent = async (record) => {
-        const res = await RestClient.asyncDelete(`/${record._id}`);
+        await RestClient.asyncDelete(`/subject/${this.props.idSubject}/remove-student`, {
+            idStudent: record._id
+        })
+        .then(res => {
+            console.log('delete', res)
+            if (!res.hasError) {
+                const temp = this.state.lstStdnt.filter(item => item._id !== record._id);
 
-        if(res.hasError){
-            return;
-        }
-    }
+                this.setState({
+                    lstStdnt: temp
+                })
 
-    componentDidMount() {
-        this.setState({
-            lstStdnt: this.props.listStudent
+                return;
+            }
         })
     }
-
-    
 
     handleHoverChange = (visible) => {
         this.setState({ isHover: visible })
@@ -176,6 +191,8 @@ class Student extends React.Component {
 
     render() {
 
+        const {t} = this.props;
+
         console.log('render', this.props.listStudent)
         const content = (
             <div>
@@ -194,7 +211,7 @@ class Student extends React.Component {
                 render: (data) => <img src={data} width="102px" />
             },
             {
-                title: 'MSSV',
+                title: t('code_student'),
                 dataIndex: '_id',
                 key: '_id',
             },
@@ -204,17 +221,17 @@ class Student extends React.Component {
                 key: 'emailAddress'
             },
             {
-                title: 'Sure Name',
+                title: t('surName'),
                 dataIndex: 'surName',
                 key: 'surName',
             },
             {
-                title: 'First Name',
+                title: t('firstName'),
                 dataIndex: 'firstName',
                 key: 'firstName',
             },
-        
-        
+
+
             {
                 title: 'Action',
                 key: 'action',
@@ -236,6 +253,19 @@ class Student extends React.Component {
 
         const hasSelected = selectedRowKeys.length > 0;
 
+        console.log(this.state.lstSubmissionCore)
+
+        const headersCSV = [
+            {label: t('code_student'), key: 'student._id'},
+            {label: t('grade'), key: 'grade'}
+        ]
+
+        const headersCSVClass = [
+            {label: t('code_student'), key: '_id'},
+            {label: t('Email'), key: 'emailAddress'},
+            {label: t('surName'), key: 'surName'},
+            {label: t('firstName'), key: 'firstName'},
+        ]
         return (
             <>
                 <Modal
@@ -457,7 +487,7 @@ class Student extends React.Component {
                     minHeight: '20px'
                 }}>
                     <Row style={{ width: '100%' }}>
-                        <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>NGÔN NGỮ LẬP TRÌNH TIÊN TIẾN</Col>
+                        <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject}</Col>
                         <Col span={4} style={{ padding: '25px 0' }}>
                             <Popover placement="bottom" title="Tùy chọn" content={content} visible={this.state.isHover} onVisibleChange={this.handleHoverChange}>
                                 <i>
@@ -466,16 +496,84 @@ class Student extends React.Component {
                             </Popover>
                         </Col>
                     </Row>
-                    <div style={{ width: '90%' }}>
-                        <Row style={{ textAlign: 'left', width: '100%', padding: '10px 0' }}>
-                            <Button type="primary" onClick={this.start} disabled={!hasSelected} loading={this.state.loading}>
-                                UnSelectAll
+
+                    <Row style={{ width: '90%', marginBottom: 30 }}>
+                        <Tabs defaultActiveKey="1" centered style={{ width: "100%" }}>
+                            <TabPane tab="Lớp học" key="1">
+                                <div style={{ width: '90%' }}>
+                                    <Row style={{ textAlign: 'left', width: '100%', padding: '10px 0' }}>
+                                        <Button type="primary" onClick={this.start} disabled={!hasSelected} loading={this.state.loading}>
+                                            UnSelectAll
           </Button>
-                        </Row>
-                        <Row style={{ width: '100%' }}>
-                            <Table rowSelection={rowSelection} columns={columns} dataSource={this.state.lstStdnt} style={{ width: '100%' }} />
-                        </Row>
-                    </div>
+                                    </Row>
+                                    <Row style={{marginBottom: 10 }}>
+                                    <div style={{width: "100%", textAlign: 'left'}}><span>Xuất file excel</span>
+                                    <CSVLink
+                                    filename={ "Danh Sách lớp.csv"}
+                                    data={this.state.lstStdnt}
+                                    headers={headersCSVClass}
+                                    target="_blank"
+                                    style={{ color: "inherit", marginLeft: 5 }}
+                                    >
+                                    <span
+                                        id="Tooltip_history_csv"
+                                        className="left5"
+                                        placement="top"
+                                        style={{ padding: 0, marginTop: 3 }}
+                                    >
+                                        <img src={excel} width={20}/>
+                                     </span>
+            </CSVLink>
+                                    </div>
+                                    
+                                </Row>
+                                    <Row style={{ width: '100%' }}>
+                                        <Table rowSelection={rowSelection} columns={columns} dataSource={this.state.lstStdnt} style={{ width: '100%' }} />
+                                    </Row>
+                                </div>
+
+                            </TabPane>
+                            <TabPane tab="Bài kiểm tra" key="2">
+                                <Row style={{marginBottom: 20}}>
+                                    <Select defaultValue={this.state.testId} style={{ width: 200 }} onChange={e => this.handleSelectTest(e)}>
+                                        {
+                                            this.state.lstSubmissionCore.map(q => (<Option value={q._id} key={q._id} style={{ width: '100%' }}>{q.name}</Option>))
+                                        }
+                                    </Select>
+                                </Row>
+                                <Row style={{marginBottom: 10 }}>
+                                    <div style={{width: "100%", textAlign: 'left'}}><span>Xuất file excel</span>
+                                    <CSVLink
+                                    filename={this.state.nameTestId + ".csv"}
+                                    data={this.state.lstStudentCoreTest}
+                                    headers={headersCSV}
+                                    target="_blank"
+                                    style={{ color: "inherit", marginLeft: 5 }}
+                                    >
+                                    <span
+                                        id="Tooltip_history_csv"
+                                        className="left5"
+                                        placement="top"
+                                        style={{ padding: 0, marginTop: 3 }}
+                                    >
+                                        <img src={excel} width={20}/>
+                                     </span>
+            </CSVLink>
+                                    </div>
+                                    
+                                </Row>
+                                <Row style={{border: '2px solid #cacaca'}}>
+                                    <Table pagination={false} columns={columnsChildGrade} dataSource={this.state.lstStudentCoreTest} style={{ width: '100%' }} />
+                                </Row>
+                            </TabPane>
+                            <TabPane tab="Tab 3" key="3">
+                                Content of Tab Pane 3
+                            </TabPane>
+                        </Tabs>
+                    </Row>
+
+
+
                 </Row>
             </>
         )
