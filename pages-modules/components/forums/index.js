@@ -1,5 +1,5 @@
 import React from 'react'
-import { Row, Col, Modal, Input, Card } from 'antd'
+import { Row, Col, Modal, Input, Card, notification } from 'antd'
 
 import discussion from '../../../assets/images/contents/discussion.jpg'
 import discusad from '../../../assets/images/contents/discusad.png'
@@ -19,7 +19,8 @@ class Forum extends React.Component {
             isModalCreateTopic: false,
             detailForum: [],
             topic_name: '',
-            topic_desc: ''
+            topic_desc: '',
+            isLoading: false
         }
     }
 
@@ -54,12 +55,19 @@ class Forum extends React.Component {
                 content: this.state.topic_desc
             }
         }
+        this.setState({
+            isLoading: true
+        })
 
         await restClient.asyncPost('/topic', data)
             .then(res => {
                 console.log('Create topic', res)
 
                 if (!res.hasError) {
+                    this.notifySuccess('Thành công!', 'Tạo chủ đề thành công')
+                this.setState({
+                    isLoading: false
+                })
                     this.setState({
                         detailForum: [...this.state.detailForum, get(res, 'data')]
                     })
@@ -67,6 +75,31 @@ class Forum extends React.Component {
 
             })
     }
+
+    notifySuccess = (message, description) => {
+        notification.success({
+          message,
+          description,
+          placement: 'bottomRight'
+        });
+      };
+
+      notifyWarning = (message, description) => {
+        notification.warning({
+          message,
+          description,
+          placement: 'bottomRight'
+        });
+      };
+
+
+      notifyError = (message, description) => {
+        notification.error({
+          message,
+          description,
+          placement: 'bottomRight'
+        });
+      };
 
 
     render() {

@@ -102,8 +102,12 @@ class RestClient {
       .then(res => res.blob())
       .then(blob => {
         
-        var file = window.URL.createObjectURL(blob);
-        window.location.assign(file)
+        console.log('blob', blob)
+        // var file = window.URL.createObjectURL(blob);
+        // window.location.assign(file)
+      }).
+      catch(err => {
+        console.log('edxxxx')
       })
       
     } catch (ex) {

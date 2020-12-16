@@ -1,11 +1,11 @@
-import { Row, Col, Table, Input } from 'antd';
+import { Row, Col, Table, Input, Popconfirm } from 'antd';
 import React from 'react'
-import {get} from 'lodash'
+import { get } from 'lodash'
 import restClient from '../../../assets/common/core/restClient';
 
 class Manage extends React.Component {
 
-    constructor(props){
+    constructor(props) {
         super(props);
 
         this.state = {
@@ -14,9 +14,9 @@ class Manage extends React.Component {
         }
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.setState({
-            lstSubmission: get(this.props.lstSubmission,'submission')
+            lstSubmission: get(this.props.lstSubmission, 'submission')
         })
     }
 
@@ -28,9 +28,16 @@ class Manage extends React.Component {
         }
 
         await restClient.asyncPost(`/assignment/${this.props.idAssign}/grade/${idSubmission}`, data)
-        .then(res => {
-            console.log('enterGradeVerif', res)
-        })
+            .then(res => {
+                console.log('enterGradeVerif', res)
+            })
+    }
+
+    downloadFile = async (idTimeline, idFile) => {
+        await restClient.asyncDownLoad(`/timeline/${idTimeline}/download/${idFile}?idSubject=${this.props.idSubject}`)
+            .then(res => {
+                console.log(res)
+            })
     }
 
     render() {
@@ -38,24 +45,34 @@ class Manage extends React.Component {
         console.log(this.props.lstSubmission)
 
         const columns = [
-            { title: 'Họ và tên', dataIndex: 'student', key: 'student', render: data => <span>{get(data, 'surName') + " "+ get(data,'firstName')}</span> },
+            { title: 'Họ và tên', dataIndex: 'student', key: 'student', render: data => <span>{get(data, 'surName') + " " + get(data, 'firstName')}</span> },
             {
                 title: 'File submission', dataIndex: 'file', key: 'file',
-                render: data => <a>{data.name}</a>
+                render: data => <a onClick={() => this.downloadFile(this.props.idTimeline, data._id)}>{data.name}</a>
             },
             {
                 title: 'Grade', dataIndex: 'feedBack', key: 'feedBack',
-                render: data => <Input type="text" value={get(data,'grade') || this.state.grade} onChange={(e) => this.setState({grade: e.target.value})}/>
+                render: data => <Input type="text" value={get(data, 'grade') || this.state.grade} onChange={(e) => this.setState({ grade: e.target.value })} />
             },
             {
                 title: 'Action',
                 dataIndex: '',
                 key: 'x',
-                render: (data) => <a onClick={() => this.enterGradeVerif(data._id)}>Confirm</a>,
+                render: (data) => (
+                    <Popconfirm
+                        title="Bạn có chắc chắn xác nhận hay không?"
+                        onConfirm={() => this.enterGradeVerif(data._id)}
+                        onCancel={() => console.log('Cancel')}
+                        okText="Yes"
+                        cancelText="No"
+                    >
+                        <a href='#'>Confirm</a>,
+                    </Popconfirm>
+                )
             },
         ];
 
-        
+
         return (
             <Row id="lms-ws-exam-component" style={{
                 width: '80%',
@@ -66,18 +83,22 @@ class Manage extends React.Component {
             }}>
 
                 <Row style={{ width: '100%' }}>
-                    <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject}</Col>
+                    <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>{get(this.props.lstSubmission, 'name')}</Col>
                 </Row>
-                <Row>
-                    <Table
-                        columns={columns}
-                        pagination={{ pageSize: 50 }} scroll={{ y: 240 }}
-                        expandable={{
-                            expandedRowRender: record => <p style={{ margin: 15 }}>{record.description}</p>,
-                            rowExpandable: record => record.name !== 'Not Expandable',
-                        }}
-                        dataSource={this.state.lstSubmission}
-                    />
+                <Row style={{width: '100%', padding: 10}}>
+                    <div style={{width: '100%', border: '1px solid #cacaca'}}>
+                        <Table
+                            columns={columns}
+                            pagination={{ pageSize: 50 }} scroll={{ y: 240 }}
+                            expandable={{
+                                expandedRowRender: record => <p style={{ margin: 15 }}>{record.description}</p>,
+                                rowExpandable: record => record.name !== 'Not Expandable',
+                            }}
+                            dataSource={this.state.lstSubmission}
+                            rowKey="student"
+                            pagination={false}
+                        />
+                    </div>
                 </Row>
             </Row>
         )

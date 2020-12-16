@@ -15,7 +15,8 @@ const columnsGrade = [
     {
         title: "Điểm",
         dataIndex: "grade",
-        key: "grade"
+        key: "grade",
+        render: data => (data == null ? (<span style={{color: '#ff4000', fontStyle: 'italic'}}>Chưa nộp bài</span>) : data)
     }
 ]
 
@@ -53,7 +54,7 @@ class Points extends React.Component {
                         <span>
                             <img src={statisticsPoint} width="80px" />
                         </span>
-                        <span style={{ fontWeight: '700' }}>[Statistics-Point]</span>
+                        <span style={{ fontWeight: '700' }}>[Statistics-Point] Thống kế điểm kiểm tra</span> 
                     </div>
                     <div style={{ width: '100%', minHeight: '150px' }}>
                         <div style={{

@@ -161,11 +161,14 @@ class Courses extends React.Component {
                                                 <div style={{ color: '#c4c4c4', fontStyle: 'italic' }}>No upcoming deadline</div>
                                             </div> */}
                                             {/* Deadline */}
-                                            <Row style={{ justifyContent: 'center' }}>
+                                            <Row style={{ justifyContent: 'center', padding: "5px 0" }}>
                                                 <Tabs defaultActiveKey="1" centered>
                                                     <TabPane tab={<span> <AlertOutlined twoToneColor="#ff0000" />{t('dl')}</span>} key="1">
+                                                        <div style={{maxHeight: '400px',
+overflowY: 'auto'}}>
                                                         {this.state.deadlines.length > 0 ? this.state.deadlines.map(dl => (
-                                                            <Row key={dl._id} style={{marginBottom: 5}}>
+                                                            <Row key={dl._id} style={{marginBottom: 5,  border: "2px solid #cacaca",
+                                                            padding: "10px 0"}}>
                                                                 <Col span={10} style={{textAlign: "center", alignSelf: "center"}}><i>
                                                                     <img src={fastTime} width="36px"/>
                                                                 </i></Col>
@@ -183,14 +186,17 @@ class Courses extends React.Component {
                                                                 <img src={deadlineCalcular} />
                                                                 <div style={{width: "100%", color: '#cacaca', textAlign:'center'}}>No upcoming deadline</div>
                                                             </Row>}
+                                                            </div>
                                                     </TabPane>
                                                     <TabPane tab={
                                                         <span><CheckCircleTwoTone twoToneColor="#52c41a" />
                                                             {t('complt')}
                                                         </span>} key="2">
-                                                        <div>
+                                                        <div style={{maxHeight: '400px',
+overflowY: 'auto'}}>
                                                         {this.state.dueTo.map(dt => (
-                                                                <Row key={dt._id} style={{marginBottom: 5, color: "#2ecc71"}}>
+                                                                <Row key={dt._id} style={{marginBottom: 5, color: "#2ecc71", border: "2px solid #cacaca",
+                                                                padding: "10px 0"}}>
                                                                     <Col span={10} style={{textAlign: "center", alignSelf: "center"}}><i>
                                                                         <img src={fastTime} width="36px"/>
                                                                     </i></Col>

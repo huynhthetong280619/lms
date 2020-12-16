@@ -19,7 +19,7 @@ import quiz from '../../../assets/images/contents/quiz.png'
 import student from '../../../assets/images/contents/student.png'
 import { withTranslation } from 'react-i18next';
 import restClient from '../../../assets/common/core/restClient';
-import { MoreOutlined, EyeOutlined, SettingOutlined, AndroidOutlined,  AlertOutlined , CheckCircleTwoTone  } from '@ant-design/icons'
+import { MoreOutlined, EyeOutlined, SettingOutlined, AndroidOutlined,  AlertOutlined , CheckCircleTwoTone, LoadingOutlined   } from '@ant-design/icons'
 import moment from 'moment'
 require('isomorphic-fetch');
 import 'react-day-picker/lib/style.css';
@@ -734,7 +734,7 @@ class Subject extends React.Component {
         const template = (id, name, description, assignments, exams, forums, infomation, files) => (
             <div style={{ margin: '0 10px 10px 10px', border: "2px solid #cacaca" }}>
                 <div style={{position: 'relative'}}>
-                {this.state.isLoadingRequirement && <Spin style={{position: 'absolute', top: '50%', left: '50%', zIndex: 100}}/>}
+                {/* {this.state.isLoadingRequirement && <Spin style={{position: 'absolute', top: '50%', left: '50%', zIndex: 100}}/>} */}
                     <Row
                         style={{
                             padding: 10,
@@ -820,7 +820,7 @@ class Subject extends React.Component {
                         assignments != null ? (
                             assignments.map(assign => (
                                 !glb_sv.isTeacher ?
-                                <Row style={{ marginBottom: 10, position: 'relative' }} onClick={() => {
+                                <Row style={{ marginBottom: 10, position: 'relative', cursor: 'pointer' }} onClick={() => {
                                      this.getRequirementAssignment(assign._id, this.props.idSubject, id);
                                     // if(flagLoading){
                                     //     this.setState({ visible: true })
@@ -1040,6 +1040,7 @@ class Subject extends React.Component {
                     onCancel={this.handleCancel}
                     okButtonProps={{ style: { display: 'none' } }}
                     cancelButtonProps={{ style: { display: 'none' } }}
+                    footer={null}
                 >
                     <Tabs defaultActiveKey="1" centered>
                         <TabPane tab="Submission" key="1">
@@ -1051,7 +1052,7 @@ class Subject extends React.Component {
                                 </div>
                                 <div style={{ margin: '10px 0'}}>
                                     <span style={{ fontWeight: 600 }}>Time remaining: </span>
-                                    <span>{moment.utc(get(this.state.assigmentRequirement.setting, 'startTime')).from(moment.utc(get(this.state.assigmentRequirement.setting, 'expireTime')))}</span>
+                                    <span>{get(this.state.assigmentRequirement, 'timingRemain')}</span>
                                 </div>
                                 <div style={{ margin: '10px 0'}}>
                                     <span style={{ fontWeight: 600 }}>Last modified: </span>
@@ -1061,13 +1062,30 @@ class Subject extends React.Component {
                                     <span style={{ fontWeight: 600 }}>File submissions: </span>
                                     <Input type="file" onChange={e => this.handleProcessFileSubmissioin(e)} style={{ width: 200, borderRadius: 20 }} />
                                 </div>
+                                {
+                                    (this.state.assigmentRequirement.submission !== null )&& <div style={{ margin: '10px 0'}}>
+                                    <div style={{
+                                        border:'1px dashed #cacaca',
+                                        padding: '5px 20px',
+                                        textAlign: 'center'
+                                    }}>
+                                        <img src={word} />
+                                        <div>{get(this.state.assigmentRequirement.submission, 'file')?.name}</div>
+                                    </div>
+                                </div>
+                                }
+                                
 
                             </div>
-                            <Row style={{marginTop: 10}}>
+                            {
+                                get(this.state.assigmentRequirement, 'isCanSubmit') && 
+                                <Row style={{marginTop: 10}}>
                                 <div>
-                                    <Button type="primary" onClick={() => this.submissionFile(get(this.state.assigmentRequirement, '_id'))} style={{borderRadius: 20}}>{t('submit_assign')}</Button>
+                                    <Button type="primary" onClick={() => this.submissionFile(get(this.state.assigmentRequirement, '_id'))} style={{borderRadius: 20}}><Spin spinning={this.state.isLoading} indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />{t('submit_assign')}</Button>
                                 </div>
                             </Row>
+                            }
+                           
                         </TabPane>
                         <TabPane tab="Requirement" key="2">
                             <div style={{ fontWeight: "700" }}>[Content requirement]</div>
@@ -1573,7 +1591,7 @@ class Subject extends React.Component {
                                     background: '#fff',
                                     borderRadius: '10px',
                                     minHeight: '200px',
-                                    maxHeight: "768px"
+                                    maxHeight: "556px"
                                 }}>
                                 
                                 <div>
@@ -1602,12 +1620,20 @@ class Subject extends React.Component {
                                     <Row style={{ justifyContent: 'center' }}>
                                         <Tabs defaultActiveKey="1" centered>
                                             <TabPane tab={<span> <AlertOutlined twoToneColor="#ff0000" />{t('dl')}</span>} key="1">
+                                            <div style={{maxHeight: '400px',
+overflowY: 'auto'}}>
                                                 {this.state.deadlines.length > 0 ? this.state.deadlines.map(dl => (
-                                                    <Row key={dl._id} style={{ marginBottom: 5 }}>
+                                                    <Row key={dl._id} style={{ marginBottom: 5, border: "2px solid #cacaca",
+                                                    padding: "10px 0", cursor: 'pointer' }} onClick={() => {
+                                                        this.getRequirementAssignment(dl._id, dl.idSubject, dl.idTimeline);
+                                                       // if(flagLoading){
+                                                       //     this.setState({ visible: true })
+                                                       // }
+                                                   }}>
                                                         <Col span={10} style={{ textAlign: "center", alignSelf: "center" }}><i>
                                                             <img src={fastTime} width="36px" />
                                                         </i></Col>
-                                                        <Col span={10} >
+                                                        <Col span={12} >
                                                             <div>{dl.name}</div>
                                                             <div>
                                                                 <span style={{ fontWeight: 600 }}>Due to: </span>{this.transTime(get(dl, 'expireTime'))}
@@ -1621,14 +1647,17 @@ class Subject extends React.Component {
                                                         <img src={deadlineCalcular} />
                                                         <div style={{ width: "100%", color: '#cacaca', textAlign: 'center' }}>No upcoming deadline</div>
                                                     </Row>}
+                                                    </div>
                                             </TabPane>
                                             <TabPane tab={
                                                 <span><CheckCircleTwoTone twoToneColor="#52c41a" />
                                                     {t('complt')}
                                                 </span>} key="2">
-                                                <div>
+                                                <div style={{maxHeight: '400px',
+overflowY: 'auto'}}>
                                                     {this.state.dueTo.map(dt => (
-                                                        <Row key={dt._id} style={{ marginBottom: 5, color: "#2ecc71" }}>
+                                                        <Row key={dt._id} style={{ marginBottom: 5, color: "#2ecc71", border: "2px solid #cacaca",
+                                                        padding: "10px 0" }}>
                                                             <Col span={10} style={{ textAlign: "center", alignSelf: "center" }}><i>
                                                                 <img src={fastTime} width="36px" />
                                                             </i></Col>

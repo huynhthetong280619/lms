@@ -95,13 +95,15 @@ const dataSurvey = [
 const columnsChildGrade = [
     {
         title: "Mã số sinh viên",
-        dataIndex: "idStudent",
-        key: "idStudent"
+        dataIndex: "student",
+        key: "student",
+        render: data => <span>{data._id}</span>
     },
     {
         title: "Điểm",
         dataIndex: "grade",
-        key: "grade"
+        key: "grade",
+        render: data => data !== null ? data : <span style={{color: '#ff4000', fontStyle: 'italic'}}>Chưa nộp bài</span>
     }
 ]
 
@@ -128,7 +130,8 @@ class Student extends React.Component {
             lstStdnt: this.props.listStudent,
             lstSubmissionCore: this.props.lstSubmissionCore,
             lstStudentCoreTest: get(head(this.props.lstSubmissionCore), 'submissions'),
-            testId: get(head(this.props.lstSubmissionCore), '_id')
+            testId: get(head(this.props.lstSubmissionCore), '_id'),
+            nameTestId: get(head(this.props.lstSubmissionCore), 'name')
         })
     }
 
@@ -253,7 +256,7 @@ class Student extends React.Component {
         console.log(this.state.lstSubmissionCore)
 
         const headersCSV = [
-            {label: t('code_student'), key: 'idStudent'},
+            {label: t('code_student'), key: 'student._id'},
             {label: t('grade'), key: 'grade'}
         ]
 
