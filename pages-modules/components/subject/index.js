@@ -273,11 +273,14 @@ class Subject extends React.Component {
     }
 
     handleSelectStartTimeQuiz(day) {
-        this.setState({ quiz: { ...this.state.quiz, startTime: (new Date(day)).getTime() } });
+        console.log('handleSelectStartTimeQuiz', day)
+        this.setState({ quiz: { ...this.state.quiz, startTime: (new Date(day)) } });
     }
 
     handleSelectExpireTimeQuiz(day) {
-        this.setState({ quiz: { ...this.state.quiz, expireTime: (new Date(day)).getTime() } });
+        console.log('handleSelectExpireTimeQuiz', day)
+
+        this.setState({ quiz: { ...this.state.quiz, expireTime: (new Date(day)) } });
     }
 
 
@@ -368,7 +371,8 @@ class Subject extends React.Component {
                     })
                     let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === data.idTimeline)
 
-                    head(timelineUpdate).quiz.push(res.data)
+                    console.log('timelineUpdate', timelineUpdate)
+                    head(timelineUpdate).exams.push(res.data)
 
 
                     console.log(timelineUpdate)

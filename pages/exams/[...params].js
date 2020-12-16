@@ -11,25 +11,27 @@ const ExamsPage = ({examQuestion, subject}) => {
     console.log('examQuestion', examQuestion)
 
     return <IndexLayout>
-         <Exams examQuestion={examQuestion} subject={subject}/>
+         <Exams examQuestion={examQuestion} subject={subject} nameSubject={nameSubject}/>
     </IndexLayout>
 }
 
 
 ExamsPage.getInitialProps = async (ctx) => {
     
-    console.log('ExamsPage')
-    const {params} = ctx.query
-    const [idExam, idTimeline, idSubject] = params
+    console.log('ExamsPage', ctx)
+    const {params, idTimeline, idSubject} = ctx.query
+    const [idExam ] = params
 
     console.log('aaaa', idExam, idTimeline)
-    const [exams, subject] = await Promise.all([restClient.asyncGet(`/exam/${idExam}/attempt?idSubject=${idSubject}&idTimeline=${idTimeline}`, restClient), restClient.asyncGet(`/subject/${idSubject}`)])
+    const [exams, subject] = await Promise.all([restClient.asyncGet(`/exam/${idExam}/attempt?idSubject=${idSubject}&idTimeline=${idTimeline}`), restClient.asyncGet(`/subject/${idSubject}`)])
     
     if(exams.hasError){
         return {
             examQuestion: null
         };
     }
+
+    console.log('examQuestion', exams)
 
     return {
         examQuestion: get(exams, 'data'),

@@ -24,7 +24,8 @@ CustomOverlay.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-export default function DayPickerInputCustomize({value, event, style}) {
+export default function DayPickerInputCustomize({value, onDayChange, style}) {
+  console.log('event', onDayChange)
   return (
     <DayPickerInput
       overlayComponent={CustomOverlay}
@@ -33,7 +34,7 @@ export default function DayPickerInputCustomize({value, event, style}) {
       }}
       keepFocus={false}
       value={value}
-      onDayChange={event}
+      onDayChange={onDayChange}
       style={style}
     />
   );

@@ -110,7 +110,7 @@ class Exams extends React.Component {
             }}>
                 
                 <Row style={{ width: '100%' }}>
-                    <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>{this.props.subject}</Col>
+                    <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject}</Col>
                 </Row>
                 <Row>
                     <Countdown date={Date.now() + get(examQuestion, 'timeToDo')} renderer={renderer}/>

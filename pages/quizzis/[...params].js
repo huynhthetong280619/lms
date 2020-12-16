@@ -6,10 +6,10 @@ import restClient from '../../assets/common/core/restClient';
 import {get} from 'lodash'
 
 
-const QuizPage = ({requirementExam, idExam,idTimeline, subject }) => {
+const QuizPage = ({requirementExam, idExam,idTimeline, subject, idSubject }) => {
     const nameSubject = get(subject, 'name')
     return <IndexLayout>
-       <Quiz requirementExam={requirementExam} idExam={idExam} idTimeline={idTimeline} nameSubject={nameSubject}/>
+       <Quiz requirementExam={requirementExam} idExam={idExam} idTimeline={idTimeline} nameSubject={nameSubject} idSubject={idSubject}/>
     </IndexLayout>
 }
 
@@ -24,7 +24,8 @@ QuizPage.getInitialProps = async (ctx) => {
         requirementExam: get(requirement, 'data'),
         idExam,
         idTimeline,
-        subject: get(subject, 'data')
+        subject: get(subject, 'data'),
+        idSubject
     }
 }
 

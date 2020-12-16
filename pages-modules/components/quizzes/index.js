@@ -82,7 +82,7 @@ class Quiz extends React.Component {
                                 <div><span style={{fontWeight: 700}}>Grading method: </span>Highest grade</div>
                             </div>
                             <div>
-                                {(get(requirementExam,  'attemptAvailable') > 0 && get(requirementExam, 'isAttempt') == true) && <Button type="primary" href={`/exams/${this.props.idExam}/${this.props.idTimeline}`} style={{ borderRadius: 20 }} onClick={() => this.joinExam()}>Take quiz</Button>}
+                                {(get(requirementExam,  'attemptAvailable') > 0 && get(requirementExam, 'isAttempt') == true) && <Button type="primary" href={`/exams/${this.props.idExam}?idSubject=${this.props.idSubject}&idTimeline=${this.props.idTimeline}`} style={{ borderRadius: 20 }} onClick={() => this.joinExam()}>Take quiz</Button>}
                                 {(get(requirementExam,  'attemptAvailable') == 0) && <div style={{color: '#ff4000', fontStyle: 'italic', fontWeight: 900}}>Hết số lần cho phép làm bài quiz</div>}
                             </div>
                         </div>
