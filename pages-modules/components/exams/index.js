@@ -8,7 +8,6 @@ import Countdown from "react-countdown";
 import restClient from '../../../assets/common/core/restClient';
 import { Redirect } from 'react-router'
 import Router from 'next/router'
-import glb_sv from '../../assets/global/global.service'
 
 class Exams extends React.Component {
 
@@ -111,7 +110,7 @@ class Exams extends React.Component {
             }}>
                 
                 <Row style={{ width: '100%' }}>
-                    <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>{glb_sv.nameSubject}</Col>
+                    <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>{this.props.subject}</Col>
                 </Row>
                 <Row>
                     <Countdown date={Date.now() + get(examQuestion, 'timeToDo')} renderer={renderer}/>
