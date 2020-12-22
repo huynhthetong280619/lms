@@ -1,6 +1,12 @@
 import React, { Component } from 'react'
 import { Button, Col, Row, Popover, Menu, Modal, Input, Tooltip } from 'antd'
 
+import { GoogleLogin } from 'react-google-login';
+import { GOOGLE_CLIENT_ID, FACEBOOK_CLIENT_ID } from '../../../assets/constants/const'
+import restClient from '../../../assets/common/core/restClient'
+import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
+
+
 import styles from './styles.scss'
 import './overwrite.css'
 
@@ -15,7 +21,9 @@ class Headers extends React.Component {
 
     state = {
         current: 'mail',
-        isVisible: false
+        isVisible: false,
+        username: '',
+        password: ''
     };
 
     openLogin = () => {
@@ -36,6 +44,47 @@ class Headers extends React.Component {
         this.setState({ current: e.key });
     };
 
+    handleLogin = async () => {
+        console.log(this.state.username);
+        console.log(this.state.password);
+        const data = {
+            code: this.state.username,
+            password: this.state.password
+        }
+        await restClient.asyncPost(`/user/authenticate`, data)
+            .then(res => {
+                console.log(res.data);
+            })
+
+    }
+
+    responseGoogle = async (response) => {
+        const token = response.tokenId;
+        console.log(token);
+        const data = {
+            token: token
+        }
+
+        await restClient.asyncPost(`/user/auth/google`, data)
+            .then(res => {
+                console.log(res.data);
+            })
+    }
+
+    responseFacebook= async (response) => {
+        console.log(response);
+        // const token = response.tokenId;
+        // console.log(token);
+        // const data = {
+        //     token: token
+        // }
+
+        // await restClient.asyncPost(`/user/auth/google`, data)
+        //     .then(res => {
+        //         console.log(res.data);
+        //     })
+    }
+
     render() {
         const text = (<div>
             <div>Sign in as</div>
@@ -54,14 +103,14 @@ class Headers extends React.Component {
             <Row style={{ paddingTop: 10, paddingBottom: 10 }} className="lms_ws_header--">
                 <Modal title="Login form" centered={true} visible={this.state.isVisible} onOk={this.handleOk} onCancel={this.handleCancel} footer={null}>
                     <Row style={{ margin: '10px 0' }}>
-                        <Input size="large" placeholder="Enter your email..." prefix={<UserOutlined />} style={{ borderRadius: 20 }} />
+                        <Input size="large" onChange={(text) => { this.setState({ username: text.target.value }) }} placeholder="Enter your email..." prefix={<UserOutlined />} style={{ borderRadius: 20 }} />
                     </Row>
                     <Row style={{ margin: '10px 0' }}>
-                        <Input size="large" placeholder="Enter your password..." prefix={<KeyOutlined />} style={{ borderRadius: 20 }} />
+                        <Input size="large" onChange={(text) => { this.setState({ password: text.target.value }) }} placeholder="Enter your password..." prefix={<KeyOutlined />} style={{ borderRadius: 20 }} />
                     </Row>
                     <Row style={{ textAlign: 'center', margin: '10px 0' }}>
                         <div>
-                            <Button type='primary' style={{ borderRadius: 20, width: 100, padding: '5px 0', fontSize: 20, lineHeight: '20px' }}>Login</Button>
+                            <Button type='primary' onClick={this.handleLogin} style={{ borderRadius: 20, width: 100, padding: '5px 0', fontSize: 20, lineHeight: '20px' }}>Login</Button>
                         </div>
                     </Row>
                     <Row style={{ textAlign: 'center' }}>
@@ -70,19 +119,34 @@ class Headers extends React.Component {
                             fontWeight: 600
                         }}>Other login</div>
                         <Row style={{ width: "100%" }}>
-                            <Col span={12} style={{ cursor: 'pointer' }}>
-                                <div>
-                                    <GoogleOutlined style={{ color: "#ff4000", fontSize: 50 }} /></div><div style={{
-                                        fontWeight: 700,
-                                        color: '#756c6c'
-                                    }}>Login with Google</div>
-                            </Col>
-                            <Col span={12} style={{ cursor: 'pointer' }}>
-                                <FacebookOutlined style={{ color: "#0B83ED", fontSize: 50 }} /><div style={{
-                                    fontWeight: 700,
-                                    color: '#756c6c'
-                                }}>Login with Facebook</div>
-                            </Col>
+                            <GoogleLogin
+                                clientId={GOOGLE_CLIENT_ID}
+                                render={renderProps => (
+                                    <Col span={12} style={{ cursor: 'pointer' }}>
+                                        <div>
+                                            <GoogleOutlined onClick={renderProps.onClick} disabled={renderProps.disabled} style={{ color: "#ff4000", fontSize: 50 }} /></div><div style={{
+                                                fontWeight: 700,
+                                                color: '#756c6c'
+                                            }}>Login with Google</div>
+                                    </Col>
+                                )}
+                                onSuccess={this.responseGoogle}
+                                onFailure={this.responseGoogle}
+                                cookiePolicy={'single_host_origin'}
+                            />
+                            <FacebookLogin
+                                appId={FACEBOOK_CLIENT_ID}
+                                callback={this.responseFacebook}
+                                render={renderProps => (
+                                    <Col span={12} style={{ cursor: 'pointer' }}>
+                                        <FacebookOutlined onClick={renderProps.onClick} disabled={renderProps.disabled} style={{ color: "#0B83ED", fontSize: 50 }} /><div style={{
+                                            fontWeight: 700,
+                                            color: '#756c6c'
+                                        }}>Login with Facebook</div>
+                                    </Col>
+                                )}
+                            />
+
                         </Row>
 
                     </Row>

@@ -60,6 +60,8 @@
     "react-datepicker": "^3.3.0",
     "react-day-picker": "^7.4.8",
     "react-dom": "16.13.1",
+    "react-facebook-login": "^4.1.1",
+    "react-google-login": "^5.1.25",
     "react-i18next": "^11.7.3",
     "react-modal-login": "^1.4.5",
     "react-notifications": "^1.7.2",
