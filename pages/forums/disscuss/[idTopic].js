@@ -22,15 +22,15 @@ DiscussionPage.getInitialProps = async (ctx) => {
     restClient.asyncGet(`/topic/${idTopic}?idSubject=${idSubject}&idTimeline=${idTimeline}&idForum=${idForum}`), restClient.asyncGet(`/subject/${idSubject}`)
     ])
 
-    console.log('DiscussionPage', subject)
+    console.log('DiscussionPage', subject, lstDiscussion, detailTopic)
     return {
         lstDiscussion: get(lstDiscussion, 'data'),
         idTopic,
         idSubject,
         idTimeline,
         idForum,
-        detailTopic: get(detailTopic, 'data'),
-        subject: get(subject, 'data')
+        detailTopic: get(detailTopic, 'data').topic,
+        subject: get(subject, 'data').subject
     }
 }
 

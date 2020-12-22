@@ -11,6 +11,9 @@ const SubjectCourse = ({subject, idSubject, lstTimeline, lstQuizzis, lstDeadline
     const deadline = lstDeadline.filter(obj => obj.isSubmit === false)
     const nameSubject = get(subject, 'name');
 
+    console.log(
+        'subject', subject
+    )
     return (
         <IndexLayout>
             <Subject subject={subject} idSubject={idSubject} lstTimeline={lstTimeline} lstQuizzis={lstQuizzis} lstDeadline={deadline} lstDueTo={lstDueTo} nameSubject={nameSubject}/>
@@ -31,10 +34,10 @@ SubjectCourse.getInitialProps = async (ctx) => {
 
     return {
         idSubject,
-        subject: get(lstSubject, 'data'),
-        lstTimeline: get(lstTimeline, 'data'),
-        lstQuizzis: get(lstQuizzis, 'data'),
-        lstDeadline: get(lstDeadline, 'data'),
+        subject: get(lstSubject, 'data').subject,
+        lstTimeline: get(lstTimeline, 'data').timelines,
+        lstQuizzis: get(lstQuizzis, 'data').quizBank,
+        lstDeadline: get(lstDeadline, 'data').deadline,
     }
 }
 

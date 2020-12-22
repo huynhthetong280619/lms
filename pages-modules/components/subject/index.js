@@ -10,16 +10,20 @@ import add from '../../../assets/images/contents/add.png'
 import forum from '../../../assets/images/contents/forum.png'
 import excel from '../../../assets/images/contents/excel.png'
 import fastTime from '../../../assets/images/courses/fastTime.png'
+import file from '../../../assets/images/contents/file.png'
 import pdf from '../../../assets/images/contents/pdf.png'
+import video from '../../../assets/images/contents/video.png'
 import loudspeaker from '../../../assets/images/contents/loudspeaker.png'
 import timeline from '../../../assets/images/contents/timeline.png'
 import word from '../../../assets/images/contents/word.png'
 import assignment from '../../../assets/images/contents/assignment.png'
 import quiz from '../../../assets/images/contents/quiz.png'
+import lock from '../../../assets/images/contents/lock.png'
 import student from '../../../assets/images/contents/student.png'
+import external from '../../../assets/images/contents/external.png'
 import { withTranslation } from 'react-i18next';
 import restClient from '../../../assets/common/core/restClient';
-import { MoreOutlined, EyeOutlined, SettingOutlined, AndroidOutlined,  AlertOutlined , CheckCircleTwoTone, LoadingOutlined   } from '@ant-design/icons'
+import { MoreOutlined, EyeOutlined, SettingOutlined, AndroidOutlined, AlertOutlined, CheckCircleTwoTone, LoadingOutlined } from '@ant-design/icons'
 import moment from 'moment'
 require('isomorphic-fetch');
 import 'react-day-picker/lib/style.css';
@@ -29,7 +33,7 @@ import deadline from '../../../assets/images/courses/deadline.png'
 import deadlineCalcular from '../../../assets/images/courses/deadlineCalcular.png'
 import points from '../../../assets/images/contents/statistics-point.png'
 import DayPickerInputCustomize from '../../basic-component/time-picker';
-import {NotificationContainer, NotificationManager} from 'react-notifications';
+import { NotificationContainer, NotificationManager } from 'react-notifications';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -103,7 +107,7 @@ class Subject extends React.Component {
     async componentDidMount() {
         console.log('componentDidMount', this.props.subject, this.props.lstQuizzis, this.props.lstTimeline);
 
-       
+
         this.setState({
             lstTimelines: this.props.lstTimeline,
             timelineId: get(head(this.props.lstTimeline), '_id'),
@@ -124,7 +128,7 @@ class Subject extends React.Component {
         })
 
 
-        if(!glb_sv.isTeacher){
+        if (!glb_sv.isTeacher) {
             this.setState({
                 deadlines: this.props.lstDeadline,
                 dueTo: this.props.lstDueTo
@@ -195,25 +199,25 @@ class Subject extends React.Component {
             isLoadingRequirement: true
         })
         await restClient.asyncGet(`/assignment/${id}?idSubject=${idSubject}&idTimeline=${idTimeline}`)
-        .then(res => {
-            if(!res.hasError){
-                // this.setState({
-                //     isLoadingRequirement: false
-                // })
-                console.log('getRequirementAssignment', res);
+            .then(res => {
+                if (!res.hasError) {
+                    // this.setState({
+                    //     isLoadingRequirement: false
+                    // })
+                    console.log('getRequirementAssignment', res);
 
-                this.setState({
-                    assigmentRequirement: get(res, 'data'),
-                    timelineIdRequirement: idTimeline
-                }, () => {
                     this.setState({
-                        visible: true
+                        assigmentRequirement: get(res, 'data'),
+                        timelineIdRequirement: idTimeline
+                    }, () => {
+                        this.setState({
+                            visible: true
+                        })
                     })
-                })
 
-                // return true;
-            }
-        })
+                    // return true;
+                }
+            })
 
     }
 
@@ -304,49 +308,84 @@ class Subject extends React.Component {
         })
         formData.append('file', this.state.FileAssign)
         await restClient.asyncPostFile(`/assignment/${idAssignment}/submit?idSubject=${this.props.idSubject}&idTimeline=${this.state.timelineIdRequirement}`, formData)
-        .then(res => {
-            if(!res.hasError){
-                this.notifySuccess('Thành công!', 'Nộp bài thành công')
-                this.setState({
-                    isLoading: false
-                })
-                console.log('Notification', res)
+            .then(res => {
+                if (!res.hasError) {
+                    this.notifySuccess('Thành công!', 'Nộp bài thành công')
+                    this.setState({
+                        isLoading: false
+                    })
+                    console.log('Notification', res)
+                }
+            })
+    }
+
+    handleImageUpload = async () => {
+        const formData = new FormData();
+        formData.append('file', this.state.FileData)
+        // replace this with your upload preset name
+        formData.append('upload_preset', 'gmttm4bo');
+        const options = {
+            method: 'POST',
+            body: formData,
+            header: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Accept',
+                mode: 'no-cors'
             }
-        })
+        };
+
+        // replace cloudname with your Cloudinary cloud_name
+        return await fetch('https://api.Cloudinary.com/v1_1/dkepvw2rz/upload', options)
+            .then(res => res.json())
+            .then(res => {
+
+                console.log('Response', res)
+                return {
+                    name: res.original_filename,
+                    path: res.url,
+                    type: res.format
+                }
+            })
+            .catch(err => console.log(err));
     }
 
     createFileWord = async () => {
-        const formData = new FormData();
-        formData.append('file', this.state.FileData)
 
         this.setState({
             isLoading: true
         })
 
-        console.log(formData.get('file'))
-        console.log(this.state.FileData, formData)
-        await restClient.asyncPostFile(`/timeline/${this.state.timelineId}/upload?idSubject=${this.props.idSubject}`, formData)
+        const objResult = await this.handleImageUpload();
+        console.log('objResult', objResult)
+
+        if (objResult) {
+            console.log('Save on database')
+        }
+        await restClient.asyncPost(`/timeline/upload`, {
+            idSubject: this.props.idSubject,
+            idTimeline: this.state.timelineId,
+            data: objResult
+        })
             .then(res => {
-                    if (!res.hasError) {
-                        this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công document')
-                        this.setState({
-                            isLoading: false
-                        })
-                        let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === this.state.timelineId)
-    
-                        head(timelineUpdate).files.push(res.data)
-    
-    
-                        console.log(timelineUpdate)
-    
-                        this.setState({
-                            timelines: [...this.state.timelines]
-                        }, () => {
-                            console.log(this.state.timelines)
-                        })
-    
-    
-                    }                
+                this.setState({
+                    isLoading: false
+                })
+                if (!res.hasError) {
+                    this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công document')
+
+                    let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === this.state.timelineId)
+
+                    head(timelineUpdate).files.push(res.data.file)
+
+
+                    console.log(timelineUpdate)
+
+                    this.setState({
+                        timelines: [...this.state.timelines]
+                    }, () => {
+                        console.log(this.state.timelines)
+                    })
+                }
             })
     }
 
@@ -453,31 +492,31 @@ class Subject extends React.Component {
 
     notifySuccess = (message, description) => {
         notification.success({
-          message,
-          description,
-          placement: 'bottomRight'
+            message,
+            description,
+            placement: 'bottomRight'
         });
-      };
+    };
 
-      notifyWarning = (message, description) => {
+    notifyWarning = (message, description) => {
         notification.warning({
-          message,
-          description,
-          placement: 'bottomRight'
+            message,
+            description,
+            placement: 'bottomRight'
         });
-      };
+    };
 
 
-      notifyError = (message, description) => {
+    notifyError = (message, description) => {
         notification.error({
-          message,
-          description,
-          placement: 'bottomRight'
+            message,
+            description,
+            placement: 'bottomRight'
         });
-      };
+    };
 
     createTimeline = async () => {
-        if(this.state.timeLine.name.trim() == '' || this.state.timeLine.description.trim() == ''){
+        if (this.state.timeLine.name.trim() == '' || this.state.timeLine.description.trim() == '') {
             this.notifyWarning('Cảnh báo', 'Hãy nhập đầy đủ thông tin cần thiết');
             return;
         }
@@ -651,54 +690,40 @@ class Subject extends React.Component {
 
     createNotification = (type, title, message) => {
         return () => {
-          switch (type) {
-            case 'info':
-              NotificationManager.info(message);
-              break;
-            case 'success':
-              NotificationManager.success(message, title);
-              break;
-            case 'warning':
-              NotificationManager.warning(message, title, 3000);
-              break;
-            case 'error':
-              NotificationManager.error(message, title, 5000, () => {
-                alert('callback');
-              });
-              break;
-          }
+            switch (type) {
+                case 'info':
+                    NotificationManager.info(message);
+                    break;
+                case 'success':
+                    NotificationManager.success(message, title);
+                    break;
+                case 'warning':
+                    NotificationManager.warning(message, title, 3000);
+                    break;
+                case 'error':
+                    NotificationManager.error(message, title, 5000, () => {
+                        alert('callback');
+                    });
+                    break;
+            }
         };
-      };
+    };
 
+
+    onExe = (status) => {
+
+    }
 
     render() {
 
         const { t } = this.props;
 
-        
-
-        console.log('this.state.timelines', this.state.timelines)
-
         const content = (
             <div>
-                <span style={{ margin: '0 10px' }} onClick={() => this.addFilePdf()}>
-                    <i>
-                        <Tooltip title="Add file pdf">
-                            <img src={pdf} style={{ width: '50px' }} />
-                        </Tooltip>
-                    </i>
-                </span>
                 <span style={{ margin: '0 10px' }} onClick={() => this.addFileWord()}>
                     <i>
                         <Tooltip title="Add file word">
-                            <img src={word} style={{ width: '50px' }} />
-                        </Tooltip>
-                    </i>
-                </span>
-                <span style={{ margin: '0 10px' }} onClick={() => this.addFileExcel()}>
-                    <i>
-                        <Tooltip title="Add file excel">
-                            <img src={excel} style={{ width: '50px' }} />
+                            <img src={file} style={{ width: '50px' }} />
                         </Tooltip>
                     </i>
                 </span>
@@ -737,8 +762,8 @@ class Subject extends React.Component {
 
         const template = (id, name, description, assignments, exams, forums, infomation, files) => (
             <div style={{ margin: '0 10px 10px 10px', border: "2px solid #cacaca" }}>
-                <div style={{position: 'relative'}}>
-                {/* {this.state.isLoadingRequirement && <Spin style={{position: 'absolute', top: '50%', left: '50%', zIndex: 100}}/>} */}
+                <div style={{ position: 'relative' }}>
+                    {/* {this.state.isLoadingRequirement && <Spin style={{position: 'absolute', top: '50%', left: '50%', zIndex: 100}}/>} */}
                     <Row
                         style={{
                             padding: 10,
@@ -750,12 +775,14 @@ class Subject extends React.Component {
                     >
                         <Col span={6}>
                             {
-                                name.toUpperCase()
+                                // name.toUpperCase()
+                                name
                             }
                         </Col>
                         <Col span={6}>
                             {
-                                description.toUpperCase()
+                                // description.toUpperCase()
+                                description
                             }
                         </Col>
                         <Col span={12} style={{ textAlign: 'right' }}>
@@ -798,25 +825,25 @@ class Subject extends React.Component {
 
                     {
                         files != null ? (
-                            files.map(f => (
-                                <Row style={{ marginBottom: 10, cursor: 'pointer' }} key={f._id} onClick={() => this.downloadFile(id, f._id)}>
+                            files.map(f => { console.log('File', f); return (
+                                <Row style={{ marginBottom: 10 }} key={f._id} >
                                     <Col span={2} style={{
                                         textAlign: 'center',
                                         alignSelf: 'center'
                                     }}>
                                         <i>
-                                            <img src={(f.type == 'docx' || f.type == 'doc') ? word : (f.type == 'pdf' ? pdf : excel)} width={36} />
+                                            <img src={(f.type == 'docx' || f.type == 'doc') ? word : (f.type == 'pdf' ? pdf : f.type == 'webm' ? video : excel)} width={36} />
                                         </i>
                                     </Col>
                                     <Col span={20} style={{
                                         fontSize: '20px',
                                     }}>
-                                        <div style={{display: 'inline-block'}}>[{t('Files')}] {f.name}</div>
+                                        <a style={{ display: 'inline-block', cursor: 'pointer' }} href={f.path}>[{t('Files')}] {f.name}</a> <Tooltip title="View online"><a href={`/view?idSubject=${this.props.idSubject}&idTimeline=${id}&idFile=${f._id}`} target='_blank'><img width={20} src={external} /></a></Tooltip>
                                     </Col>
                                 </Row>
-                            ))
+                            )})
 
-                        ) : null
+                                ) : null
                     }
 
 
@@ -824,44 +851,44 @@ class Subject extends React.Component {
                         assignments != null ? (
                             assignments.map(assign => (
                                 !glb_sv.isTeacher ?
-                                <Row style={{ marginBottom: 10, position: 'relative', cursor: 'pointer' }} onClick={() => {
-                                     this.getRequirementAssignment(assign._id, this.props.idSubject, id);
-                                    // if(flagLoading){
-                                    //     this.setState({ visible: true })
-                                    // }
-                                }} key={assign._id}>
-                                   
-                                    <Col span={2} style={{
-                                        textAlign: 'center',
-                                        alignSelf: 'center'
-                                    }}>
-                                        <i>
-                                            <img src={assignment} width={36} />
-                                        </i>
-                                    </Col>
-                                    <Col span={20} style={{
-                                        fontSize: '20px',
-                                    }}>
-                                        <div>[{t('exercise')}] {assign.name}</div>
-                                    </Col>
-                                </Row>
-                                :
+                                    <Row style={{ marginBottom: 10, position: 'relative', cursor: 'pointer' }} onClick={() => {
+                                        this.getRequirementAssignment(assign._id, this.props.idSubject, id);
+                                        // if(flagLoading){
+                                        //     this.setState({ visible: true })
+                                        // }
+                                    }} key={assign._id}>
 
-                                <Row style={{ marginBottom: 10 }} key={assign._id}>
-                                    <Col span={2} style={{
-                                        textAlign: 'center',
-                                        alignSelf: 'center'
-                                    }}>
-                                        <i>
-                                            <img src={assignment} width={36} />
-                                        </i>
-                                    </Col>
-                                    <Col span={20} style={{
-                                        fontSize: '20px',
-                                    }}>
-                                        <a  href={`/manage/${assign._id}?idSubject=${this.props.idSubject}&idTimeline=${id}`}>[{t('exercise')}] {assign.name}</a> 
-                                    </Col>
-                                </Row>
+                                        <Col span={2} style={{
+                                            textAlign: 'center',
+                                            alignSelf: 'center'
+                                        }}>
+                                            <i>
+                                                <img src={assignment} width={36} />
+                                            </i>
+                                        </Col>
+                                        <Col span={20} style={{
+                                            fontSize: '20px',
+                                        }}>
+                                            <div>[{t('exercise')}] {assign.name}</div>
+                                        </Col>
+                                    </Row>
+                                    :
+
+                                    <Row style={{ marginBottom: 10 }} key={assign._id}>
+                                        <Col span={2} style={{
+                                            textAlign: 'center',
+                                            alignSelf: 'center'
+                                        }}>
+                                            <i>
+                                                <img src={assignment} width={36} />
+                                            </i>
+                                        </Col>
+                                        <Col span={20} style={{
+                                            fontSize: '20px',
+                                        }}>
+                                            <a href={`/manage/${assign._id}?idSubject=${this.props.idSubject}&idTimeline=${id}`}>[{t('exercise')}] {assign.name}</a>
+                                        </Col>
+                                    </Row>
                             ))
 
                         ) : null
@@ -987,41 +1014,41 @@ class Subject extends React.Component {
                 </div>
                 {
                     glb_sv.isTeacher ? <Row style={{ marginBottom: 10 }} >
-                    <Col span={2} style={{
-                        textAlign: 'center',
-                        alignSelf: 'center'
-                    }}>
-                        <i>
-                            <img src={student} width={36} />
-                        </i>
-                    </Col>
-                    <Col span={20} style={{
-                        fontSize: '20px',
-                    }}>
-                        <a href={`/students?idSubject=${this.props.idSubject}`}>Quản lý sinh viên</a>
-                    </Col>
-                </Row>
+                        <Col span={2} style={{
+                            textAlign: 'center',
+                            alignSelf: 'center'
+                        }}>
+                            <i>
+                                <img src={student} width={36} />
+                            </i>
+                        </Col>
+                        <Col span={20} style={{
+                            fontSize: '20px',
+                        }}>
+                            <a href={`/students?idSubject=${this.props.idSubject}`}>Quản lý sinh viên</a>
+                        </Col>
+                    </Row>
 
-                :
+                        :
 
-                <Row style={{ marginBottom: 10 }} >
-                    <Col span={2} style={{
-                        textAlign: 'center',
-                        alignSelf: 'center'
-                    }}>
-                        <i>
-                            <img src={points} width={36} />
-                        </i>
-                    </Col>
-                    <Col span={20} style={{
-                        fontSize: '20px',
-                    }}>
-                        <a href={`/points/${this.props.idSubject}`}>Quản lý điểm số</a>
-                    </Col>
-                </Row>
+                        <Row style={{ marginBottom: 10 }} >
+                            <Col span={2} style={{
+                                textAlign: 'center',
+                                alignSelf: 'center'
+                            }}>
+                                <i>
+                                    <img src={points} width={36} />
+                                </i>
+                            </Col>
+                            <Col span={20} style={{
+                                fontSize: '20px',
+                            }}>
+                                <a href={`/points/${this.props.idSubject}`}>Quản lý điểm số</a>
+                            </Col>
+                        </Row>
 
                 }
-                
+
                 {
                     this.state.timelines.map(({ _id, name, description, assignments, exams, forums, information, files }) => (
                         <div key={_id}>
@@ -1050,46 +1077,46 @@ class Subject extends React.Component {
                         <TabPane tab="Submission" key="1">
                             <div>
                                 <div>{t('sbmit_stat')}</div>
-                                <div style={{ margin: '10px 0'}}>
+                                <div style={{ margin: '10px 0' }}>
                                     <span style={{ fontWeight: 600 }}>Due date: </span>
                                     <span>{this.transTime(get(this.state.assigmentRequirement, 'setting')?.expireTime)}</span>
                                 </div>
-                                <div style={{ margin: '10px 0'}}>
+                                <div style={{ margin: '10px 0' }}>
                                     <span style={{ fontWeight: 600 }}>Time remaining: </span>
                                     <span>{get(this.state.assigmentRequirement, 'timingRemain')}</span>
                                 </div>
-                                <div style={{ margin: '10px 0'}}>
+                                <div style={{ margin: '10px 0' }}>
                                     <span style={{ fontWeight: 600 }}>Last modified: </span>
                                     <span>{this.transTime(head(get(this.state.assigmentRequirement, 'submission'))?.submitTime)}</span>
                                 </div>
-                                <div style={{ margin: '10px 0'}} >
+                                <div style={{ margin: '10px 0' }} >
                                     <span style={{ fontWeight: 600 }}>File submissions: </span>
-                                    <Input type="file" onChange={e => this.handleProcessFileSubmissioin(e)} style={{ width: 200, borderRadius: 20 }} />
+                                    <Input type="file" onChange={e => this.handleProcessFileSubmissioin(e)} style={{ width: 200, borderRadius: 20, overflow: 'hidden' }} />
                                 </div>
                                 {
-                                    (this.state.assigmentRequirement.submission !== null )&& <div style={{ margin: '10px 0'}}>
-                                    <div style={{
-                                        border:'1px dashed #cacaca',
-                                        padding: '5px 20px',
-                                        textAlign: 'center'
-                                    }}>
-                                        <img src={word} />
-                                        <div>{get(this.state.assigmentRequirement.submission, 'file')?.name}</div>
+                                    (this.state.assigmentRequirement.submission !== null) && <div style={{ margin: '10px 0' }}>
+                                        <div style={{
+                                            border: '1px dashed #cacaca',
+                                            padding: '5px 20px',
+                                            textAlign: 'center'
+                                        }}>
+                                            <img src={word} />
+                                            <div>{get(this.state.assigmentRequirement.submission, 'file')?.name}</div>
+                                        </div>
                                     </div>
-                                </div>
                                 }
-                                
+
 
                             </div>
                             {
-                                get(this.state.assigmentRequirement, 'isCanSubmit') && 
-                                <Row style={{marginTop: 10}}>
-                                <div>
-                                    <Button type="primary" onClick={() => this.submissionFile(get(this.state.assigmentRequirement, '_id'))} style={{borderRadius: 20}}><Spin spinning={this.state.isLoading} indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />{t('submit_assign')}</Button>
-                                </div>
-                            </Row>
+                                get(this.state.assigmentRequirement, 'isCanSubmit') &&
+                                <Row style={{ marginTop: 10 }}>
+                                    <div>
+                                        <Button type="primary" onClick={() => this.submissionFile(get(this.state.assigmentRequirement, '_id'))} style={{ borderRadius: 20 }}><Spin spinning={this.state.isLoading} indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />{t('submit_assign')}</Button>
+                                    </div>
+                                </Row>
                             }
-                           
+
                         </TabPane>
                         <TabPane tab="Requirement" key="2">
                             <div style={{ fontWeight: "700" }}>[Content requirement]</div>
@@ -1134,7 +1161,7 @@ class Subject extends React.Component {
                                     minHeight: '200px',
                                     maxHeight: 726
                                 }}>
-                                    
+
                                 <div
                                     style={{
                                         textAlign: 'center',
@@ -1150,17 +1177,25 @@ class Subject extends React.Component {
                                                 </span>
                                             }
                                             key="1"
-                                            style={{height: 'auto'}}
+                                            style={{ height: 'auto' }}
                                         >
                                             <Row>
                                                 <Col span={10}>
-                                                <span style={{fontWeight: 600}}>Sắp xếp mốc thời gian</span>
+                                                    <span style={{ fontWeight: 600 }}>Sắp xếp mốc thời gian</span>
                                                 </Col>
                                                 <Col span={10}>
-                                                <Switch defaultChecked={false} onChange={e => this.onOrderTimeLine(e)} />
+                                                    <Switch defaultChecked={false} onChange={e => this.onOrderTimeLine(e)} />
                                                 </Col>
                                             </Row>
-</TabPane>
+                                            <Row>
+                                                <Col span={10}>
+                                                    <span style={{ fontWeight: 600 }}>Nghiệp vụ thao tác</span>
+                                                </Col>
+                                                <Col span={10}>
+                                                    <Switch defaultChecked={false} onChange={e => this.onExe(e)} />
+                                                </Col>
+                                            </Row>
+                                        </TabPane>
                                         <TabPane
                                             tab={
                                                 <span>
@@ -1169,7 +1204,7 @@ class Subject extends React.Component {
                                                 </span>
                                             }
                                             key="2"
-                                            style={{height: 'auto'}}
+                                            style={{ height: 'auto' }}
                                         >
 
                                             <Row style={{
@@ -1195,7 +1230,7 @@ class Subject extends React.Component {
                                                 position: 'relative'
 
                                             }}>
-                                                {this.state.isLoading && <Spin style={{position: 'absolute', top: '50%', left: '50%', zIndex: 100}}/>}
+                                                {this.state.isLoading && <Spin style={{ position: 'absolute', top: '50%', left: '50%', zIndex: 100 }} />}
                                                 {
                                                     this.state.isOpenSetting && <div style={{
                                                         fontStyle: "italic",
@@ -1268,7 +1303,7 @@ class Subject extends React.Component {
                                                             </Col>
                                                             <Col>
                                                                 {/* <DayPickerInput value={get(this.state.quiz, 'startTime')} onDayChange={e => this.handleSelectStartTimeQuiz(e)} style={{ width: 200 }} /> */}
-                                                                <DayPickerInputCustomize value={get(this.state.quiz, 'startTime')} onDayChange={e => this.handleSelectStartTimeQuiz(e)} style={{ width: 200 }}/>
+                                                                <DayPickerInputCustomize value={get(this.state.quiz, 'startTime')} onDayChange={e => this.handleSelectStartTimeQuiz(e)} style={{ width: 200 }} />
                                                             </Col>
                                                         </Row>
                                                         <Row style={{ margin: '10px 0' }}>
@@ -1526,7 +1561,7 @@ class Subject extends React.Component {
                                                             {t('fileAttach')}
                                                         </Col>
                                                         <Col>
-                                                            <Input type="file" onChange={e => this.handleProcessFile(e)} style={{ width: 200, borderRadius: 20 }} />
+                                                            <Input type="file" onChange={e => this.handleProcessFile(e)} style={{ width: 200, borderRadius: 20 , overflow: 'hidden'}} />
                                                         </Col>
                                                     </Row>
                                                     <Row style={{ textAlign: "center" }}>
@@ -1597,7 +1632,7 @@ class Subject extends React.Component {
                                     minHeight: '200px',
                                     maxHeight: "556px"
                                 }}>
-                                
+
                                 <div>
                                     <div style={{
                                         textAlign: 'center',
@@ -1624,44 +1659,52 @@ class Subject extends React.Component {
                                     <Row style={{ justifyContent: 'center' }}>
                                         <Tabs defaultActiveKey="1" centered>
                                             <TabPane tab={<span> <AlertOutlined twoToneColor="#ff0000" />{t('dl')}</span>} key="1">
-                                            <div style={{maxHeight: '400px',
-overflowY: 'auto'}}>
-                                                {this.state.deadlines.length > 0 ? this.state.deadlines.map(dl => (
-                                                    <Row key={dl._id} style={{ marginBottom: 5, border: "2px solid #cacaca",
-                                                    padding: "10px 0", cursor: 'pointer' }} onClick={() => {
-                                                        this.getRequirementAssignment(dl._id, dl.idSubject, dl.idTimeline);
-                                                       // if(flagLoading){
-                                                       //     this.setState({ visible: true })
-                                                       // }
-                                                   }}>
-                                                        <Col span={10} style={{ textAlign: "center", alignSelf: "center" }}><i>
-                                                            <img src={fastTime} width="36px" />
-                                                        </i></Col>
-                                                        <Col span={12} >
-                                                            <div>{dl.name}</div>
-                                                            <div>
-                                                                <span style={{ fontWeight: 600 }}>Due to: </span>{this.transTime(get(dl, 'expireTime'))}
-                                                            </div>
-                                                            <div>
-                                                                <span style={{ fontWeight: 600 }}>Time remaining:</span> {moment.utc(get(dl, 'expireTime')).fromNow()}
-                                                                    </div>
-                                                        </Col>
-                                                    </Row>
-                                                )) : <Row>
-                                                        <img src={deadlineCalcular} />
-                                                        <div style={{ width: "100%", color: '#cacaca', textAlign: 'center' }}>No upcoming deadline</div>
-                                                    </Row>}
-                                                    </div>
+                                                <div style={{
+                                                    maxHeight: '400px',
+                                                    overflowY: 'auto'
+                                                }}>
+                                                    {this.state.deadlines.length > 0 ? this.state.deadlines.map(dl => (
+                                                        <Row key={dl._id} style={{
+                                                            marginBottom: 5, border: "2px solid #cacaca",
+                                                            padding: "10px 0", cursor: 'pointer'
+                                                        }} onClick={() => {
+                                                            this.getRequirementAssignment(dl._id, dl.idSubject, dl.idTimeline);
+                                                            // if(flagLoading){
+                                                            //     this.setState({ visible: true })
+                                                            // }
+                                                        }}>
+                                                            <Col span={10} style={{ textAlign: "center", alignSelf: "center" }}><i>
+                                                                <img src={fastTime} width="36px" />
+                                                            </i></Col>
+                                                            <Col span={12} >
+                                                                <div>{dl.name}</div>
+                                                                <div>
+                                                                    <span style={{ fontWeight: 600 }}>Due to: </span>{this.transTime(get(dl, 'expireTime'))}
+                                                                </div>
+                                                                <div>
+                                                                    <span style={{ fontWeight: 600 }}>Time remaining:</span> {moment.utc(get(dl, 'expireTime')).fromNow()}
+                                                                </div>
+                                                            </Col>
+                                                        </Row>
+                                                    )) : <Row>
+                                                            <img src={deadlineCalcular} />
+                                                            <div style={{ width: "100%", color: '#cacaca', textAlign: 'center' }}>No upcoming deadline</div>
+                                                        </Row>}
+                                                </div>
                                             </TabPane>
                                             <TabPane tab={
                                                 <span><CheckCircleTwoTone twoToneColor="#52c41a" />
                                                     {t('complt')}
                                                 </span>} key="2">
-                                                <div style={{maxHeight: '400px',
-overflowY: 'auto'}}>
+                                                <div style={{
+                                                    maxHeight: '400px',
+                                                    overflowY: 'auto'
+                                                }}>
                                                     {this.state.dueTo.map(dt => (
-                                                        <Row key={dt._id} style={{ marginBottom: 5, color: "#2ecc71", border: "2px solid #cacaca",
-                                                        padding: "10px 0" }}>
+                                                        <Row key={dt._id} style={{
+                                                            marginBottom: 5, color: "#2ecc71", border: "2px solid #cacaca",
+                                                            padding: "10px 0"
+                                                        }}>
                                                             <Col span={10} style={{ textAlign: "center", alignSelf: "center" }}><i>
                                                                 <img src={fastTime} width="36px" />
                                                             </i></Col>
@@ -1672,7 +1715,7 @@ overflowY: 'auto'}}>
                                                                 </div>
                                                                 <div>
                                                                     <span style={{ fontWeight: 600 }}>Time remaining:</span> {moment.utc(get(dt, 'expireTime')).fromNow()}
-                                                                        </div>
+                                                                </div>
                                                             </Col>
                                                         </Row>
                                                     ))}
@@ -1683,7 +1726,7 @@ overflowY: 'auto'}}>
                                 </div>
                             </Col>
                     }
-                
+
                 </Row>
             </>
         )
