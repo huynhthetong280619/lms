@@ -73,16 +73,16 @@ class Headers extends React.Component {
 
     responseFacebook= async (response) => {
         console.log(response);
-        // const token = response.tokenId;
-        // console.log(token);
-        // const data = {
-        //     token: token
-        // }
+        const token = response.accessToken;
+        console.log(token);
+        const data = {
+            token: token
+        }
 
-        // await restClient.asyncPost(`/user/auth/google`, data)
-        //     .then(res => {
-        //         console.log(res.data);
-        //     })
+        await restClient.asyncPost(`/user/auth/facebook`, data)
+            .then(res => {
+                console.log(res.data);
+            })
     }
 
     render() {
