@@ -14,7 +14,7 @@ class Quiz extends React.Component {
     }
 
     joinExam = async () => {
-        await restClient.asyncGet(`/exam/${this.props.idExam}/attempt?idSubject=lthdt01&idTimeline=${this.props.idTimeline}`)
+        await restClient.asyncGet(`/exam/${this.props.idExam}/attempt?idSubject=lthdt01&idTimeline=${this.props.idTimeline}`, this.props.token)
             .then(res => {
                 console.log(res)
             })

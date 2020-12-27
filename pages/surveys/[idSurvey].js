@@ -7,13 +7,13 @@ import { parseCookies } from '../../assets/helpers'
 
 const SurveyPage = ({ survey, subject, idSubject,
     idTimeline,
-    idSurvey }) => {
+    idSurvey, token }) => {
     const nameSubject = get(subject, 'name')
 
     return <IndexLayout>
         <Survey survey={survey} nameSubject={nameSubject} idSubject={idSubject}
             idTimeline={idTimeline}
-            idSurvey={idSurvey} />
+            idSurvey={idSurvey} token={token}/>
     </IndexLayout>
 }
 
@@ -31,7 +31,8 @@ SurveyPage.getInitialProps = async (ctx) => {
         subject: get(subject, 'data').subject,
         idSubject,
         idTimeline,
-        idSurvey
+        idSurvey,
+        token
     }
 }
 

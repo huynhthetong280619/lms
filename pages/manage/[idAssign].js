@@ -5,12 +5,12 @@ import { get } from 'lodash'
 import { parseCookies } from '../../assets/helpers'
 
 const DetailPage = ({ lstSubmission, idAssign, idSubject,
-    idTimeline }) => {
+    idTimeline, token }) => {
 
     return (
         <IndexLayout>
             <Manage lstSubmission={lstSubmission} idAssign={idAssign} idSubject={idSubject}
-                idTimeline={idTimeline} />
+                idTimeline={idTimeline} token={token}/>
         </IndexLayout>
     )
 }
@@ -27,7 +27,8 @@ const data = parseCookies(ctx.req);
         lstSubmission: get(lstSubmission, 'data'),
         idAssign,
         idSubject,
-        idTimeline
+        idTimeline,
+        token
     }
 
 }

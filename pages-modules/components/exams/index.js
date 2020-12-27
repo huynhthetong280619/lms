@@ -67,7 +67,7 @@ class Exams extends React.Component {
             idTimeline: this.props.idTimeline,
             data: convert
         }
-        await restClient.asyncPost(`/exam/${this.props.idExam}/submit`, data)
+        await restClient.asyncPost(`/exam/${this.props.idExam}/submit`, data, this.props.token)
         .then(res => {
             if(!res.hasError){
                 console.log('Rest client', get(res, 'data'));

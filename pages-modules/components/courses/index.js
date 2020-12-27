@@ -72,7 +72,6 @@ class Courses extends React.Component {
                     style={{
                         margin: '10px',
                         background: '#fff',
-                        borderRadius: '10px',
                         minHeight: '200px',
                     }}>
                     <div>
@@ -130,7 +129,6 @@ class Courses extends React.Component {
                             style={{
                                 margin: '10px',
                                 background: '#fff',
-                                borderRadius: '10px',
                                 minHeight: '200px',
                                 maxHeight: "768px"
                             }}>
@@ -152,7 +150,6 @@ class Courses extends React.Component {
                                 style={{
                                     margin: '10px',
                                     background: '#fff',
-                                    borderRadius: '10px',
                                     minHeight: '200px',
                                     maxHeight: "553px"
                                 }}>

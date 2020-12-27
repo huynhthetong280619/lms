@@ -5,7 +5,7 @@ import Subject from '../../../pages-modules/components/subject';
 import { get } from 'lodash';
 import { parseCookies } from '../../../assets/helpers'
 
-const SubjectCourse = ({subject, idSubject, lstTimeline, lstQuizzis, lstDeadline}) => {
+const SubjectCourse = ({subject, idSubject, lstTimeline, lstQuizzis, lstDeadline, token}) => {
 
     const lstDueTo = lstDeadline.filter(obj => obj.isSubmit === true);
     const deadline = lstDeadline.filter(obj => obj.isSubmit === false)
@@ -16,7 +16,7 @@ const SubjectCourse = ({subject, idSubject, lstTimeline, lstQuizzis, lstDeadline
     )
     return (
         <IndexLayout>
-            <Subject subject={subject} idSubject={idSubject} lstTimeline={lstTimeline} lstQuizzis={lstQuizzis} lstDeadline={deadline} lstDueTo={lstDueTo} nameSubject={nameSubject}/>
+            <Subject subject={subject} idSubject={idSubject} lstTimeline={lstTimeline} lstQuizzis={lstQuizzis} lstDeadline={deadline} lstDueTo={lstDueTo} nameSubject={nameSubject} token={token}/>
         </IndexLayout>
     )
 }
@@ -40,6 +40,7 @@ const data = parseCookies(ctx.req);
         lstTimeline: get(lstTimeline, 'data').timelines,
         lstQuizzis: get(lstQuizzis, 'data').quizBank,
         lstDeadline: get(lstDeadline, 'data').deadline,
+        token
         
     }
 }

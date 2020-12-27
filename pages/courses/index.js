@@ -6,20 +6,21 @@ import { get } from 'lodash'
 import { parseCookies } from '../../assets/helpers'
 // import { parseCookies, setCookie, destroyCookie } from 'nookies'
 
-const PageCourse = ({ listCourses = [], lstAssignment = [] }) => {
+const PageCourse = ({ listCourses = [], lstAssignment = [], token }) => {
 
-    const listDeadline = lstAssignment || [].filter(obj => obj.isSubmit === false)
-    const listDueAssginment = lstAssignment || [].filter(obj => obj.isSubmit === true)
+    const listDeadline = (lstAssignment || []).filter(obj => obj.isSubmit === false)
+    const listDueAssginment = (lstAssignment || []).filter(obj => obj.isSubmit === true)
+
+    console.log('hello', listDeadline, listDueAssginment, lstAssignment)
 
     return (
         <IndexLayout>
-            <Courses listCourses={listCourses || []} listDeadline={listDeadline} listDueAssginment={listDueAssginment} />
+            <Courses listCourses={listCourses || []} listDeadline={listDeadline} listDueAssginment={listDueAssginment} token={token}/>
         </IndexLayout>
     )
 }
 
 PageCourse.getInitialProps = async (ctx) => {
-
     const data = parseCookies(ctx.req);
     const token = data.token
 
@@ -34,7 +35,8 @@ PageCourse.getInitialProps = async (ctx) => {
     console.log('PageCourse', lstCourses, lstAssignment)
     return {
         listCourses: get(lstCourses, 'data').allSubject,
-        lstAssignment: get(lstAssignment, 'data').deadline
+        lstAssignment: get(lstAssignment, 'data').deadline,
+        token
     };
 }
 

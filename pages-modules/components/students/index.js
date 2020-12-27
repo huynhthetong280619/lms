@@ -139,7 +139,7 @@ class Student extends React.Component {
     handleDeleteStudent = async (record) => {
         await RestClient.asyncDelete(`/subject/${this.props.idSubject}/remove-student`, {
             idStudent: record.code
-        })
+        }, token)
             .then(res => {
                 console.log('delete', res)
                 if (!res.hasError) {
@@ -205,7 +205,7 @@ class Student extends React.Component {
         })
 
         console.log('data', data)
-        await RestClient.asyncPut(`/subject/${this.props.idSubject}/ratio`, data)
+        await RestClient.asyncPut(`/subject/${this.props.idSubject}/ratio`, data, this.props.token)
             .then(res => {
                 if (!res.hasError) {
                     this.state({

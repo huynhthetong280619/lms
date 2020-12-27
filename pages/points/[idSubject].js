@@ -7,11 +7,11 @@ import restClient from '../../assets/common/core/restClient'
 import {get} from 'lodash'
 import { parseCookies } from '../../assets/helpers'
 
-const PointPage = ({lstSubmissionCore, subject}) => {
+const PointPage = ({lstSubmissionCore, subject, token}) => {
   const nameSubject = get(subject, 'name')
 
         return <IndexLayout>
-          <Points lstSubmissionCore={lstSubmissionCore} nameSubject={nameSubject}/>
+          <Points lstSubmissionCore={lstSubmissionCore} nameSubject={nameSubject} token={token}/>
         </IndexLayout>
 }
 
@@ -24,7 +24,8 @@ const data = parseCookies(ctx.req);
 
   return {
     lstSubmissionCore: get(lstSubmissionCore, 'data'),
-    subject: get(subject, 'data')
+    subject: get(subject, 'data'),
+    token
   }
 }
 export default PointPage

@@ -93,7 +93,7 @@ class Discussion extends React.Component {
                 }
             }
 
-            await restClient.asyncPost(`/discussion`, data)
+            await restClient.asyncPost(`/discussion`, data, this.props.token)
                 .then(res => {
                     console.log('discussion', res)
 

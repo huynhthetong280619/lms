@@ -66,7 +66,7 @@ class Headers extends React.Component {
             code: this.state.username,
             password: this.state.password
         }
-        await restClient.asyncPost(`/user/authenticate`, data)
+        await restClient.asyncPost(`/user/authenticate`, data, null)
             .then(res => {
                 if (!res.hasError) {
                     // cookieCutter.set('token', get(res.data, 'token'))
@@ -88,7 +88,7 @@ class Headers extends React.Component {
             token: token
         }
 
-        await restClient.asyncPost(`/user/auth/google`, data)
+        await restClient.asyncPost(`/user/auth/google`, data, null)
             .then(res => {
                 console.log(res.data);
                 if (!res.hasError) {
@@ -107,7 +107,7 @@ class Headers extends React.Component {
             token: token
         }
 
-        await restClient.asyncPost(`/user/auth/facebook`, data)
+        await restClient.asyncPost(`/user/auth/facebook`, data, null)
             .then(res => {
                 console.log(res.data);
                 if (!res.hasError) {

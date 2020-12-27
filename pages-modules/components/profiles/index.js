@@ -36,7 +36,8 @@ class Profile extends React.Component {
 
     state = {
         loading: false,
-        profile: {}
+        profile: {},
+        isEdit: true
     };
 
     componentDidMount() {
@@ -73,14 +74,14 @@ class Profile extends React.Component {
             .then(res => {
                 console.log('resLink', res)
                 // localStorage.removeItem('user');
-                if(!res.hasError){
+                if (!res.hasError) {
                     localStorage.setItem('user', JSON.stringify(res.data.user));
 
                     this.setState({
                         profile: res.data.user
                     })
                 }
-               
+
             })
     }
 
@@ -156,7 +157,7 @@ class Profile extends React.Component {
                             </Upload>
                             <div>
                                 {
-                                    ((get(this.state.profile, 'facebookId') != null ) ? <><img src={facebook} width={20} /> <a onClick={() => this.unlinkSocial()}>Unlink</a></> : (<>
+                                    ((get(this.state.profile, 'facebookId') != null) ? <><img src={facebook} width={20} /> <a onClick={() => this.unlinkSocial()}>Unlink</a></> : (<>
                                         <FacebookLogin
                                             appId={FACEBOOK_CLIENT_ID}
                                             callback={this.responseFacebook}
@@ -175,36 +176,46 @@ class Profile extends React.Component {
                                 <Input placeholder="Your first name..." value={get(this.state.profile, 'firstName')} style={{
                                     borderRadius: '20px',
                                     marginBottom: '10px'
-                                }} />
+                                }} disabled={this.state.isEdit} />
                             </div>
                             <div>
                                 <Input placeholder="Your sure name..." value={get(this.state.profile, 'surName')} style={{
                                     borderRadius: '20px',
                                     marginBottom: '10px'
-                                }} />
+                                }} disabled={this.state.isEdit} />
                             </div>
                             <div>
                                 <Input placeholder="Your email..." value={get(this.state.profile, 'emailAddress')} style={{
                                     borderRadius: '20px',
                                     marginBottom: '10px'
-                                }} />
+                                }} disabled={this.state.isEdit} />
                             </div>
                             <div>
                                 <Input placeholder="Your code..." value={get(this.state.profile, 'code')} style={{
                                     borderRadius: '20px',
                                     marginBottom: '10px'
-                                }} />
+                                }} disabled={this.state.isEdit} />
                             </div>
                         </Col>
                     </Row>
                     <Row style={{ textAlign: 'center' }}>
                         <div>
-                            <Button type="primary" danger style={{
-                                borderRadius: '20px',
-                                margin: '10px 0'
-                            }}>
-                                Edit profile
-                            </Button>
+                            {
+                                this.state.isEdit ? <Button type="primary" danger style={{
+                                    borderRadius: '20px',
+                                    margin: '10px 0'
+                                }} onClick={() => this.setState({ isEdit: false })}>
+                                    Edit profile
+                                </Button>
+                                    :
+                                    <Button type="primary" primary style={{
+                                        borderRadius: '20px',
+                                        margin: '10px 0'
+                                    }} onClick={() => this.setState({ isEdit: true })}>
+                                        Save profile
+                                </Button>
+                            }
+
                         </div>
                     </Row>
                 </Col>

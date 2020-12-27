@@ -79,7 +79,7 @@ class SurveyExecute extends React.Component {
             // idTimeline: this.props.idTimeline,
             data: convert
         }
-        await restClient.asyncPost(`/survey/${this.props.idSurvey}/submit?idSubject=${this.props.idSubject}&idTimeline=${this.props.idTimeline}`, data)
+        await restClient.asyncPost(`/survey/${this.props.idSurvey}/submit?idSubject=${this.props.idSubject}&idTimeline=${this.props.idTimeline}`, data, this.props.token)
             .then(res => {
                 if (!res.hasError) {
                     console.log('Rest client', get(res, 'data'));
