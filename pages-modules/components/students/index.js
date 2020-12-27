@@ -12,7 +12,6 @@ import { withTranslation } from 'react-i18next'
 import { get, head } from 'lodash'
 import { CSVLink } from "react-csv";
 import excel from '../../../assets/images/contents/excel.png'
-
 const { TabPane } = Tabs;
 const { TextArea } = Input;
 
@@ -108,8 +107,11 @@ class Student extends React.Component {
         lstSubmissionCore: [],
         testId: null,
         lstStudentCoreTest: [],
-        lstStdnt: []
+        lstStdnt: [],
+        lstClassScore: null
+
     }
+
 
     componentDidMount() {
         console.log('componentDidmount', this.state.lstSubmissionCore)
@@ -118,7 +120,8 @@ class Student extends React.Component {
             lstSubmissionCore: this.props.lstSubmissionCore,
             lstStudentCoreTest: get(head(this.props.lstSubmissionCore), 'submissions'),
             testId: get(head(this.props.lstSubmissionCore), '_id'),
-            nameTestId: get(head(this.props.lstSubmissionCore), 'name')
+            nameTestId: get(head(this.props.lstSubmissionCore), 'name'),
+            lstClassScore: this.props.lstClassScore
         })
     }
 
@@ -178,8 +181,40 @@ class Student extends React.Component {
 
 
     onAddStudent = () => {
-        
+
     }
+
+    ratio = {
+    }
+    setRatio = (obj, ratio) => {
+        console.log(obj, ratio)
+        // this.setState({
+        //     ratio
+        // })
+        this.ratio[obj._id] = ratio / 100
+
+        console.log(this.ratio)
+    }
+
+    putTotalScore = async () => {
+        const data = Object.keys(this.ratio).map(e => {
+            return {
+                _id: e,
+                ratio: this.ratio[e]
+            }
+        })
+
+        console.log('data', data)
+        await RestClient.asyncPut(`/subject/${this.props.idSubject}/ratio`, data)
+            .then(res => {
+                if (!res.hasError) {
+                    this.state({
+                        lstClassScore: res.data
+                    })
+                }
+            })
+    }
+
     render() {
 
         const { t } = this.props;
@@ -253,24 +288,30 @@ class Student extends React.Component {
 
 
         let columnsClassScore = []
+        if (this.state.lstClassScore) {
 
-        console.log(Object.keys(this.props.lstClassScore.fields), this.props.lstClassScore.fields['c0']);
+            columnsClassScore = Object.keys(this.state.lstClassScore.fields).map((c, i) => {
+                console.log('c', this.state.lstClassScore)
+                if (i > 2 && i < Object.keys(this.state.lstClassScore.fields).length - 1) {
+                    this.ratio[this.state.lstClassScore.ratio[c]._id] = this.state.lstClassScore.ratio[c].ratio
+                }
+                return {
+                    title: i > 2 && i < Object.keys(this.state.lstClassScore.fields).length - 1 ? (<div><span>Hệ số <InputNumber
+                        defaultValue={100}
+                        min={0}
+                        max={100}
+                        formatter={value => `${value}%`}
+                        onChange={(e) => this.setRatio(this.state.lstClassScore.ratio[c], e)}
+                        parser={value => value.replace('%', '')}
+                    /></span> <div>{this.state.lstClassScore.fields[c]}</div></div>) : this.state.lstClassScore.fields[c],
+                    dataIndex: c,
+                    key: c,
+                    width: 200,
+                    render: data => data !== null ? data : <span style={{ fontStyle: 'italic', color: '#ff4000' }}>Chưa nộp bài</span>
+                }
+            })
+        }
 
-        columnsClassScore = Object.keys(this.props.lstClassScore.fields).map((c, i) => {
-            return {
-                title: i > 2 && i < Object.keys(this.props.lstClassScore.fields).length - 1 ? (<div><span>Hệ số <InputNumber
-                    defaultValue={100}
-                    min={0}
-                    max={100}
-                    formatter={value => `${value}%`}
-                    parser={value => value.replace('%', '')}
-                /></span> <div>{this.props.lstClassScore.fields[c]}</div></div>) : this.props.lstClassScore.fields[c],
-                dataIndex: c,
-                key: c,
-                width: 200,
-                render: data => data !== null ? data : <span style={{ fontStyle: 'italic', color: '#ff4000' }}>Chưa nộp bài</span>
-            }
-        })
 
         const { selectedRowKeys } = this.state;
 
@@ -565,7 +606,7 @@ class Student extends React.Component {
 
                                     </Row>
                                     <Row style={{ width: '100%' }}>
-                                        <Table rowSelection={rowSelection} columns={columns} dataSource={this.state.lstStdnt} style={{ width: '100%' }} pagination={false}/>
+                                        <Table rowSelection={rowSelection} columns={columns} dataSource={this.state.lstStdnt} style={{ width: '100%' }} pagination={false} />
                                     </Row>
                                 </div>
 
@@ -625,7 +666,14 @@ class Student extends React.Component {
                                     </div>
                                 </Row>
                                 <Row style={{ border: '2px solid #cacaca' }}>
-                                    <Table pagination={false} columns={columnsClassScore} dataSource={this.props.lstClassScore.data} style={{ width: '100%' }} scroll={{ y: 240, x: 700 }}/>
+                                    <Button style={{
+                                        margin: '5px',
+                                        background: '#ff4000',
+                                        border: 0,
+                                        color: '#fff',
+                                        borderRadius: '20px'
+                                    }} onClick={() => this.putTotalScore()}>Confirm points</Button>
+                                    <Table pagination={false} columns={columnsClassScore} dataSource={this.props.lstClassScore.data} style={{ width: '100%' }} scroll={{ y: 240, x: 700 }} />
                                 </Row>
                             </TabPane>
                         </Tabs>

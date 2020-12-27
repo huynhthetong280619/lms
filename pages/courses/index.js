@@ -26,7 +26,7 @@ PageCourse.getInitialProps = async (ctx) => {
    console.log('PageCourse', lstCourses, lstAssignment)
     return {
         listCourses: get(lstCourses, 'data').allSubject,
-        lstAssignment: get(lstAssignment, 'data')
+        lstAssignment: get(lstAssignment, 'data').deadline
     };
 }
 

@@ -21,10 +21,10 @@ QuizPage.getInitialProps = async (ctx) => {
     
     console.log('Quiz', requirement, subject)
     return {
-        requirementExam: get(requirement, 'data'),
+        requirementExam: get(requirement, 'data').exam,
         idExam,
         idTimeline,
-        subject: get(subject, 'data'),
+        subject: get(subject, 'data').subject,
         idSubject
     }
 }

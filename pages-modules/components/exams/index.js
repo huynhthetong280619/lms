@@ -63,11 +63,11 @@ class Exams extends React.Component {
         // Push up to server
         console.log(convert)
         const data = {
-            idSubject: 'lthdt01',
-            idTimeline: '5f75e682817a140f580937bc',
+            idSubject: this.props.idSubject,
+            idTimeline: this.props.idTimeline,
             data: convert
         }
-        await restClient.asyncPut(`/exam/5fc5faf66d1c0c08dca71b82/submit`, data)
+        await restClient.asyncPost(`/exam/${this.props.idExam}/submit`, data)
         .then(res => {
             if(!res.hasError){
                 console.log('Rest client', get(res, 'data'));

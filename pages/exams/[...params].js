@@ -5,13 +5,15 @@ import restClient from '../../assets/common/core/restClient'
 import Exams from '../../pages-modules/components/exams';
 import { get } from 'lodash';
 
-const ExamsPage = ({examQuestion, subject}) => {
+const ExamsPage = ({examQuestion, subject, idSubject,
+    idTimeline,
+    idExam}) => {
     
     const nameSubject = get(subject, 'name')
     console.log('examQuestion', examQuestion)
 
     return <IndexLayout>
-         <Exams examQuestion={examQuestion} subject={subject} nameSubject={nameSubject}/>
+         <Exams examQuestion={examQuestion} subject={subject} nameSubject={nameSubject} idSubject={idSubject} idTimeline={idTimeline} idExam={idExam}/>
     </IndexLayout>
 }
 
@@ -34,8 +36,11 @@ ExamsPage.getInitialProps = async (ctx) => {
     console.log('examQuestion', exams)
 
     return {
-        examQuestion: get(exams, 'data'),
-        subject: get(subject, 'data')
+        examQuestion: get(exams, 'data').quiz,
+        subject: get(subject, 'data'),
+        idSubject,
+        idTimeline,
+        idExam
     }
 }
 

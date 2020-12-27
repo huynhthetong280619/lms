@@ -29,6 +29,7 @@ class ViewOnline extends React.Component {
     }
     render() {
 
+        console.log('detailFile', this.props.detailFile)
         return (
             <Row style={{
                 width: '80%',
@@ -39,6 +40,7 @@ class ViewOnline extends React.Component {
                 paddingBottom: 50,
                 paddingTop: 50
             }}>
+                <h1 style={{width: "100%"}}>{this.props.detailFile.name}</h1>
                 <div style={{
                     fontFamily: 'sans-serif',
                     textAlign: 'center'

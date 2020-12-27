@@ -34,11 +34,12 @@ class RestClient {
 
   createHeaders() {
 
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZmQ0NzFjYjE1ODkyNjI5ODAzYjk5ZDAiLCJjb2RlIjoidGhpdmFuIiwiZW1haWxBZGRyZXNzIjoibmd1eWVudHJhbnRoaXZhbkBoY211dGUuZWR1LnZuIiwiZmlyc3ROYW1lIjoiVGhpIFbEg24iLCJzdXJOYW1lIjoiTmd1eeG7hW4gVHLhuqduIiwidXJsQXZhdGFyIjoiaHR0cDovL3NpbXBsZWljb24uY29tL3dwLWNvbnRlbnQvdXBsb2Fkcy91c2VyMS5wbmciLCJpYXQiOjE2MDg1MzUxMTMsImV4cCI6MTYwODYyMTUxM30.SftMMrBIp1Y7f8rgLvPkWxK7TqvDZk5CDIKlOsPdo-Y';
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZmQ0NzFjYjE1ODkyNjI5ODAzYjk5ZDAiLCJjb2RlIjoidGhpdmFuIiwiZW1haWxBZGRyZXNzIjoibmd1eWVudHJhbnRoaXZhbkBoY211dGUuZWR1LnZuIiwiZmlyc3ROYW1lIjoiVGhpIFbEg24iLCJzdXJOYW1lIjoiTmd1eeG7hW4gVHLhuqduIiwiaWF0IjoxNjA5MDQxODU0LCJleHAiOjE2MDkxMjgyNTR9.RkOl2B5614F9dzijNxFqlf4PE_0-1oI31F3ZCtAjOvo';
     let headers = {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Accept',
       mode: 'no-cors'
     };
 
@@ -77,7 +78,7 @@ class RestClient {
 
   async asyncDownLoad(path) {
 
-    let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiJ0aGl2YW4iLCJpYXQiOjE2MDQ4MjcyOTF9.CdHuoyPgBRtbPpX1rqqZEPvyiaCEb-R2NHo4N01TOcY'
+    let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZmQ0NjA4OTg4MjBmMDAzNThkZjVmOTMiLCJjb2RlIjoiMTcxMTAzNTQiLCJlbWFpbEFkZHJlc3MiOiIxNzExMDM1NEBzdHVkZW50LmhjbXV0ZS5lZHUudm4iLCJmaXJzdE5hbWUiOiJRdcOibiIsInN1ck5hbWUiOiJOZ3V54buFbiBBbmgiLCJ1cmxBdmF0YXIiOiJodHRwOi8vc2ltcGxlaWNvbi5jb20vd3AtY29udGVudC91cGxvYWRzL3VzZXIxLnBuZyIsImZhY2Vib29rSWQiOiIxOTcyNTIxMDQyODg5Mzg1IiwiaWF0IjoxNjA4OTU3NzE1LCJleHAiOjE2MDkwNDQxMTV9.hG4SPhL2yGDk_R_a9B_JIkXoxI-7GeC4xjFsvotAzC0'
     let headers = {
       Authorization: `Bearer ${token}`,
       // 'Content-Type': 'multipart/form-data;boundary=<calculated when request is sent>',

@@ -38,6 +38,7 @@ SubjectCourse.getInitialProps = async (ctx) => {
         lstTimeline: get(lstTimeline, 'data').timelines,
         lstQuizzis: get(lstQuizzis, 'data').quizBank,
         lstDeadline: get(lstDeadline, 'data').deadline,
+        
     }
 }
 
