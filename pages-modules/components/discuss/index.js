@@ -68,7 +68,7 @@ class Discussion extends React.Component {
     componentDidMount() {
         console.log('detailTopic', this.props.detailTopic)
         this.setState({
-            comments: this.props.lstDiscussion.reverse()
+            comments: this.props.lstDiscussion
         })
     }
 
@@ -159,7 +159,7 @@ class Discussion extends React.Component {
                                     </div>
                                     <div style={{ paddingLeft: "10px" }}>
                                         <div>{get(get(this.props.detailTopic, 'create'), 'surName') + " " + get(get(this.props.detailTopic, 'create'), 'firstName')}  • <span>{moment().from(moment.utc(get(this.props.detailTopic, 'time')))}</span></div>
-                                        <div>@{get(get(this.props.detailTopic, 'create'), '_id')}</div>
+                                        <div>@{get(get(this.props.detailTopic, 'create'), 'code')}</div>
                                     </div>
                                 </div>
                                 <div style={{ paddingLeft: "70px" }}>

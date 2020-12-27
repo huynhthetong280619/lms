@@ -9,7 +9,8 @@ import restClient from '../../../assets/common/core/restClient'
 class Quiz extends React.Component {
 
     transTime = (time) => {
-        return moment(time).format('MMM DD h:mm A')
+        console.log('transTime', time)
+        return moment(time, 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
     }
 
     joinExam = async () => {
@@ -45,7 +46,7 @@ class Quiz extends React.Component {
 
         const { requirementExam } = this.props;
 
-        console.log(requirementExam)
+        console.log('requirementExam', requirementExam)
 
         return (<>
             <Row style={{
@@ -78,11 +79,11 @@ class Quiz extends React.Component {
                                 <div><span style={{fontWeight: 700}}>Open: </span> {this.transTime(get(requirementExam, 'startTime'))}</div>
                                 <div><span style={{fontWeight: 700}}>Closed: </span> {this.transTime(get(requirementExam, 'expireTime'))}</div>
                                 <div><span style={{fontWeight: 700}}>Time remaining: </span> {get(requirementExam, 'timingRemain')}</div>
-                                <div><span style={{fontWeight: 700}}>Status: </span>{get(requirementExam, 'isAttempt')  ? <span style={{color: '#44bd32', fontWeight: 900}}>Opening</span> : <span style={{color: '#e84118', fontWeight: 900}}>Closed</span>}</div>
+                                <div><span style={{fontWeight: 700}}>Status: </span>{get(requirementExam, 'isRemain')  ? <span style={{color: '#44bd32', fontWeight: 900}}>Opening</span> : <span style={{color: '#e84118', fontWeight: 900}}>Closed</span>}</div>
                                 <div><span style={{fontWeight: 700}}>Grading method: </span>Highest grade</div>
                             </div>
                             <div>
-                                {(get(requirementExam,  'attemptAvailable') > 0 && get(requirementExam, 'isAttempt') == true) && <Button type="primary" href={`/exams/${this.props.idExam}/${this.props.idTimeline}`} style={{ borderRadius: 20 }} onClick={() => this.joinExam()}>Take quiz</Button>}
+                                {(get(requirementExam,  'attemptAvailable') > 0 && get(requirementExam, 'isAttempt') == true) && <Button type="primary" href={`/exams/${this.props.idExam}?idSubject=${this.props.idSubject}&idTimeline=${this.props.idTimeline}`} style={{ borderRadius: 20 }} onClick={() => this.joinExam()}>Take quiz</Button>}
                                 {(get(requirementExam,  'attemptAvailable') == 0) && <div style={{color: '#ff4000', fontStyle: 'italic', fontWeight: 900}}>Hết số lần cho phép làm bài quiz</div>}
                             </div>
                         </div>

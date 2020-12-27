@@ -4,6 +4,8 @@ import { GLOBAL_CONFIG } from '../../config/index'
 import urljoin from 'url-join';
 require('isomorphic-fetch')
 import glb_sv from '../../global/global.service';
+import { parseCookies, setCookie, destroyCookie } from 'nookies'
+
 
 const parseReponse = async response => {
   console.log('parseResponse', response)
@@ -23,6 +25,7 @@ const parseReponse = async response => {
 
 class RestClient {
   constructor(props) {
+    
   }
 
   setExceptionHandler(exceptionHandler) {
@@ -31,23 +34,12 @@ class RestClient {
 
   createHeaders() {
 
-    let token = null;
-    
-    console.log('glb_sv', glb_sv.isTeacher)
-    if(!glb_sv.isTeacher){
-      
-      // token student
-      token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiIxNzExMDM1NCIsImlhdCI6MTYwMTQyOTEwMX0.r4oaJSeAS70gbAXWr83p2lU0LKSwrAoW0-BE3_13Zkg';
-      
-    }else{
-      // token teacher
-
-      token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiJ0aGl2YW4iLCJpYXQiOjE2MDQ4MjcyOTF9.CdHuoyPgBRtbPpX1rqqZEPvyiaCEb-R2NHo4N01TOcY';
-    }
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZmQ0NzFjYjE1ODkyNjI5ODAzYjk5ZDAiLCJjb2RlIjoidGhpdmFuIiwiZW1haWxBZGRyZXNzIjoibmd1eWVudHJhbnRoaXZhbkBoY211dGUuZWR1LnZuIiwiZmlyc3ROYW1lIjoiVGhpIFbEg24iLCJzdXJOYW1lIjoiTmd1eeG7hW4gVHLhuqduIiwiaWF0IjoxNjA5MDQxODU0LCJleHAiOjE2MDkxMjgyNTR9.RkOl2B5614F9dzijNxFqlf4PE_0-1oI31F3ZCtAjOvo';
     let headers = {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Accept',
       mode: 'no-cors'
     };
 
@@ -61,7 +53,6 @@ class RestClient {
   }
 
   async asyncGet(path) {
-    console.log('asyncGet')
     try {
       const response = await fetch(this.getUrl(path), {
         headers: this.createHeaders(),
@@ -87,7 +78,7 @@ class RestClient {
 
   async asyncDownLoad(path) {
 
-    let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiJ0aGl2YW4iLCJpYXQiOjE2MDQ4MjcyOTF9.CdHuoyPgBRtbPpX1rqqZEPvyiaCEb-R2NHo4N01TOcY'
+    let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZmQ0NjA4OTg4MjBmMDAzNThkZjVmOTMiLCJjb2RlIjoiMTcxMTAzNTQiLCJlbWFpbEFkZHJlc3MiOiIxNzExMDM1NEBzdHVkZW50LmhjbXV0ZS5lZHUudm4iLCJmaXJzdE5hbWUiOiJRdcOibiIsInN1ck5hbWUiOiJOZ3V54buFbiBBbmgiLCJ1cmxBdmF0YXIiOiJodHRwOi8vc2ltcGxlaWNvbi5jb20vd3AtY29udGVudC91cGxvYWRzL3VzZXIxLnBuZyIsImZhY2Vib29rSWQiOiIxOTcyNTIxMDQyODg5Mzg1IiwiaWF0IjoxNjA4OTU3NzE1LCJleHAiOjE2MDkwNDQxMTV9.hG4SPhL2yGDk_R_a9B_JIkXoxI-7GeC4xjFsvotAzC0'
     let headers = {
       Authorization: `Bearer ${token}`,
       // 'Content-Type': 'multipart/form-data;boundary=<calculated when request is sent>',
@@ -146,19 +137,8 @@ class RestClient {
   }
 
   async asyncPostFile(path, data){
-    let token = null;
+    let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZmQ0NjA4OTg4MjBmMDAzNThkZjVmOTMiLCJjb2RlIjoiMTcxMTAzNTQiLCJlbWFpbEFkZHJlc3MiOiIxNzExMDM1NEBzdHVkZW50LmhjbXV0ZS5lZHUudm4iLCJpYXQiOjE2MDgzNjg0MjYsImV4cCI6MTYwODQ1NDgyNn0.eL5TFl3-std47jyQvTJctuU6DCm_NdtLi-gDaAot4y4';
     
-    console.log('glb_sv', glb_sv.isTeacher)
-    if(!glb_sv.isTeacher){
-      
-      // token student
-      token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiIxNzExMDM1NCIsImlhdCI6MTYwMTQyOTEwMX0.r4oaJSeAS70gbAXWr83p2lU0LKSwrAoW0-BE3_13Zkg';
-      
-    }else{
-      // token teacher
-
-      token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiJ0aGl2YW4iLCJpYXQiOjE2MDQ4MjcyOTF9.CdHuoyPgBRtbPpX1rqqZEPvyiaCEb-R2NHo4N01TOcY';
-    }
     let headers = {
       Authorization: `Bearer ${token}`,
       // 'Content-Type': 'multipart/form-data;boundary=<calculated when request is sent>',

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Col, Row, Popover, Menu, Modal, Input, Tooltip } from 'antd'
+import { Button, Col, Row, Popover, Menu, Modal, Input, Tooltip, Spin } from 'antd'
 
 import styles from './styles.scss'
 import './overwrite.css'
@@ -8,14 +8,29 @@ import message from '../../../assets/images/contents/chat.png'
 import notification from '../../../assets/images/contents/notification.png'
 import profile from '../../../assets/images/contents/profile.png'
 import logo from '../../../assets/logo/logo.png'
-import { UserOutlined, KeyOutlined, GoogleOutlined, FacebookOutlined, PoweroffOutlined } from '@ant-design/icons';
+import { UserOutlined, KeyOutlined, GoogleOutlined, FacebookOutlined, PoweroffOutlined, LoadingOutlined } from '@ant-design/icons';
+import restClient from '../../../assets/common/core/restClient'
+import Router from 'next/router'
+import { parseCookies, setCookie, destroyCookie } from 'nookies'
+import glb_sv from '../../../assets/global/global.service';
+import dynamic from 'next/dynamic'
+
+// const DynamicComponentWithNoSSR = dynamic(
+//     () => import('../../basic-component/dynamicNoSSR'),
+//     { ssr: false }
+// )
 
 const { SubMenu } = Menu;
 class Headers extends React.Component {
 
     state = {
         current: 'mail',
-        isVisible: false
+        isVisible: false,
+        account: {
+            code: '',
+            password: ''
+        },
+        isLogin: false
     };
 
     openLogin = () => {
@@ -36,6 +51,42 @@ class Headers extends React.Component {
         this.setState({ current: e.key });
     };
 
+    loginNormal = async () => {
+        this.setState({
+            isLogin: true
+        })
+        console.log('loginNormal', this.state.account);
+
+        // define data
+        const data = this.state.account
+        // call api authenticate
+
+        await restClient.asyncPost(`/user/authenticate`, data)
+            .then(res => res.data)
+            .then(data => {
+                console.log('data', data)
+                this.setState({
+                    isLogin: true
+                })
+
+                setCookie(null, 'token', data.token, {
+                    maxAge: 30 * 24 * 60 * 60,
+                    path: '/'
+                })
+
+                // glb_sv.token = data.token
+                // console.log(data)
+                // localStorage.setItem('token', data.token)
+
+                // console.log('localStorage', localStorage.getItem('token'))
+                console.log('normalLogin', data)
+                // Router.push('/courses')
+            })
+
+    }
+
+    
+
     render() {
         const text = (<div>
             <div>Sign in as</div>
@@ -54,14 +105,14 @@ class Headers extends React.Component {
             <Row style={{ paddingTop: 10, paddingBottom: 10 }} className="lms_ws_header--">
                 <Modal title="Login form" centered={true} visible={this.state.isVisible} onOk={this.handleOk} onCancel={this.handleCancel} footer={null}>
                     <Row style={{ margin: '10px 0' }}>
-                        <Input size="large" placeholder="Enter your email..." prefix={<UserOutlined />} style={{ borderRadius: 20 }} />
+                        <Input size="large" placeholder="Enter your code..." prefix={<UserOutlined />} style={{ borderRadius: 20 }} onChange={(e) => this.setState({ account: { ...this.state.account, code: e.target.value.trim() } })} />
                     </Row>
                     <Row style={{ margin: '10px 0' }}>
-                        <Input size="large" placeholder="Enter your password..." prefix={<KeyOutlined />} style={{ borderRadius: 20 }} />
+                        <Input size="large" placeholder="Enter your password..." prefix={<KeyOutlined />} style={{ borderRadius: 20 }} onChange={(e) => this.setState({ account: { ...this.state.account, password: e.target.value.trim() } })} />
                     </Row>
                     <Row style={{ textAlign: 'center', margin: '10px 0' }}>
                         <div>
-                            <Button type='primary' style={{ borderRadius: 20, width: 100, padding: '5px 0', fontSize: 20, lineHeight: '20px' }}>Login</Button>
+                            <Button type='primary' style={{ borderRadius: 20, width: 100, padding: '5px 0', fontSize: 20, lineHeight: '20px' }} onClick={() => this.loginNormal()} disabled={this.state.isLogin}>{this.state.isLogin && <Spin indicator={<LoadingOutlined style={{ fontSize: 24, color: '#fff', marginRight: 5 }} spin />} />}Login</Button>
                         </div>
                     </Row>
                     <Row style={{ textAlign: 'center' }}>
@@ -69,6 +120,7 @@ class Headers extends React.Component {
                             width: "100%", color: '#cacaca',
                             fontWeight: 600
                         }}>Other login</div>
+                        {/* <DynamicComponentWithNoSSR /> */}
                         <Row style={{ width: "100%" }}>
                             <Col span={12} style={{ cursor: 'pointer' }}>
                                 <div>

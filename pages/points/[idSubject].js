@@ -10,7 +10,7 @@ const PointPage = ({lstSubmissionCore, subject}) => {
   const nameSubject = get(subject, 'name')
 
         return <IndexLayout>
-           <Points lstSubmissionCore={lstSubmissionCore} nameSubject={nameSubject}/>
+          <Points lstSubmissionCore={lstSubmissionCore} nameSubject={nameSubject}/>
         </IndexLayout>
 }
 

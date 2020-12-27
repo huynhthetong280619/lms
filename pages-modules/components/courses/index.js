@@ -136,7 +136,7 @@ class Courses extends React.Component {
                                             background: '#fff',
                                             borderRadius: '10px',
                                             minHeight: '200px',
-                                            maxHeight: "768px"
+                                            maxHeight: "553px"
                                         }}>
                                         <div>
                                             <div style={{

@@ -1,7 +1,8 @@
 class GlobalService{
     constructor(){
-        this.isTeacher = false;
-        this.lang = 'vi'
+        this.isTeacher = true;
+        this.lang = 'vi',
+        this.token = null
     }
 }
 
