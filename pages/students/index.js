@@ -3,6 +3,8 @@ import IndexLayout from '../../pages-modules/layouts/layout'
 import restClient from '../../assets/common/core/restClient'
 import Student from '../../pages-modules/components/students/index'
 import {get} from 'lodash'
+import { parseCookies } from '../../assets/helpers'
+
 const StudentPage = ({ listStudent, lstSubmissionCore=[], idSubject, subject, lstClassScore }) => {
     const nameSubject = get(subject, 'name')
     return (
@@ -13,9 +15,11 @@ const StudentPage = ({ listStudent, lstSubmissionCore=[], idSubject, subject, ls
 }
 
 StudentPage.getInitialProps = async (ctx) => {
+const data = parseCookies(ctx.req);
+    const token = data.token
     const {idSubject} = ctx.query;
 
-    const [listStudent, lstSubmissionCore, subject, lstClassScore]= await Promise.all([restClient.asyncGet(`/subject/${idSubject}/students`), restClient.asyncGet(`/subject/${idSubject}/score`), restClient.asyncGet(`/subject/${idSubject}`), restClient.asyncGet(`/subject/${idSubject}/transcript`)])
+    const [listStudent, lstSubmissionCore, subject, lstClassScore]= await Promise.all([restClient.asyncGet(`/subject/${idSubject}/students`, token), restClient.asyncGet(`/subject/${idSubject}/score`, token), restClient.asyncGet(`/subject/${idSubject}`), restClient.asyncGet(`/subject/${idSubject}/transcript`, token)])
     
     console.log('getInitial', lstSubmissionCore)
     return {

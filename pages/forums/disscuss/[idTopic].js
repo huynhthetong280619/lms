@@ -3,6 +3,7 @@ import Discussion from '../../../pages-modules/components/discuss'
 import IndexLayout from '../../../pages-modules/layouts/layout'
 import restClient from '../../../assets/common/core/restClient'
 import { get } from 'lodash'
+import { parseCookies } from '../../../assets/helpers'
 
 const DiscussionPage = ({ lstDiscussion, idTopic, idSubject, idTimeline, idForum, detailTopic, subject }) => {
     console.log('lstDiscussion', lstDiscussion)
@@ -16,10 +17,13 @@ const DiscussionPage = ({ lstDiscussion, idTopic, idSubject, idTimeline, idForum
 }
 
 DiscussionPage.getInitialProps = async (ctx) => {
+const data = parseCookies(ctx.req);
+    const token = data.token
+
     const { idTopic, idSubject, idTimeline, idForum } = ctx.query
 
-    const [lstDiscussion, detailTopic, subject] = await Promise.all([restClient.asyncGet(`/discussion?idSubject=${idSubject}&idTimeline=${idTimeline}&idForum=${idForum}&idTopic=${idTopic}`),
-    restClient.asyncGet(`/topic/${idTopic}?idSubject=${idSubject}&idTimeline=${idTimeline}&idForum=${idForum}`), restClient.asyncGet(`/subject/${idSubject}`)
+    const [lstDiscussion, detailTopic, subject] = await Promise.all([restClient.asyncGet(`/discussion?idSubject=${idSubject}&idTimeline=${idTimeline}&idForum=${idForum}&idTopic=${idTopic}`, token),
+    restClient.asyncGet(`/topic/${idTopic}?idSubject=${idSubject}&idTimeline=${idTimeline}&idForum=${idForum}`, token), restClient.asyncGet(`/subject/${idSubject}`, token)
     ])
 
     console.log('DiscussionPage', subject, lstDiscussion, detailTopic)

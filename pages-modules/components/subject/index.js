@@ -28,7 +28,6 @@ import { MoreOutlined, EyeOutlined, SettingOutlined, AndroidOutlined, AlertOutli
 import moment from 'moment'
 require('isomorphic-fetch');
 import 'react-day-picker/lib/style.css';
-import glb_sv from '../../../assets/global/global.service';
 import newInfo from '../../../assets/images/contents/new.png';
 import deadline from '../../../assets/images/courses/deadline.png'
 import deadlineCalcular from '../../../assets/images/courses/deadlineCalcular.png'
@@ -134,12 +133,29 @@ class Subject extends React.Component {
             isLoading: false,
             isLoadingRequirement: true,
             isExe: false,
-            isOverDue: false
+            isOverDue: false,
+            isTeacherPriviledge: false
         }
     }
 
     async componentDidMount() {
         console.log('componentDidMount', this.props.subject, this.props.lstQuizzis, this.props.lstTimeline);
+
+        const user = JSON.parse(JSON.stringify(localStorage.getItem('user')));
+        
+        if(user?.idPrivilege == 'student'){
+            this.setState({
+                isTeacherPriviledge: false,
+                deadlines: this.props.lstDeadline,
+                dueTo: this.props.lstDueTo
+            })
+        }
+
+        if(user?.idPrivilege == 'teacher'){
+            this.setState({
+                isTeacherPriviledge: true
+            })
+        }
 
         this.setState({
             lstTimelines: this.props.lstTimeline,
@@ -160,13 +176,6 @@ class Subject extends React.Component {
 
         })
 
-
-        if (!glb_sv.isTeacher) {
-            this.setState({
-                deadlines: this.props.lstDeadline,
-                dueTo: this.props.lstDueTo
-            })
-        }
     }
 
     handleOk = e => {
@@ -1056,7 +1065,7 @@ class Subject extends React.Component {
                     {
                         assignments != null ? (
                             assignments.map(assign => (
-                                !glb_sv.isTeacher ?
+                                !this.state.isTeacherPriviledge ?
                                     <Row style={{ marginBottom: 10, position: 'relative', cursor: 'pointer' }} onClick={() => {
                                         this.getRequirementAssignment(assign._id, this.props.idSubject, id);
                                         // if(flagLoading){
@@ -1226,7 +1235,7 @@ class Subject extends React.Component {
 
                 </div>
                 {
-                    glb_sv.isTeacher ? <Row style={{ marginBottom: 10 }} >
+                    this.state.isTeacherPriviledge ? <Row style={{ marginBottom: 10 }} >
                         <Col span={2} style={{
                             textAlign: 'center',
                             alignSelf: 'center'
@@ -1385,7 +1394,7 @@ class Subject extends React.Component {
 
 
                     {
-                        glb_sv.isTeacher
+                        this.state.isTeacherPriviledge
 
                             ?
                             <Col span={8}

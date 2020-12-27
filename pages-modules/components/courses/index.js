@@ -15,7 +15,7 @@ import './overwrite.css'
 import { get, isEmpty, split, includes, omit } from 'lodash';
 import { withTranslation } from 'react-i18next'
 import moment from 'moment'
-import glb_sv from '../../../assets/global/global.service'
+
 
 const { TabPane } = Tabs;
 class Courses extends React.Component {
@@ -24,7 +24,8 @@ class Courses extends React.Component {
         this.state = {
             courses: [],
             deadlines: [],
-            dueTo: []
+            dueTo: [],
+            isTeacher: false
         }
     }
 
@@ -34,6 +35,24 @@ class Courses extends React.Component {
             deadlines: this.props.listDeadline || [],
             dueTo: this.props.listDueAssginment || []
         })
+
+        const usrJson = JSON.stringify(localStorage.getItem('user'))
+        const usrObj = JSON.parse(JSON.parse(usrJson));
+        console.log('idPrivilege', usrObj.idPrivilege)
+
+
+        if (usrObj?.idPrivilege == 'student') {
+            this.setState({
+                isTeacher: false
+            })
+        }
+
+        if (usrObj?.idPrivilege == 'teacher') {
+            this.setState({
+                isTeacher: true
+            })
+        }
+
     }
 
     generateColor = () => {
@@ -45,8 +64,8 @@ class Courses extends React.Component {
     }
 
     render() {
-        const { listCourses, listDeadline, t } = this.props;
-
+        const { t } = this.props
+        console.log(this.state.isTeacher)
         return <>
             <Row className={styles.background} style={{ justifyContent: 'center' }}>
                 <Col span={12}
@@ -55,7 +74,6 @@ class Courses extends React.Component {
                         background: '#fff',
                         borderRadius: '10px',
                         minHeight: '200px',
-                        maxHeight: "768px"
                     }}>
                     <div>
                         <div style={{
@@ -83,7 +101,7 @@ class Courses extends React.Component {
                         <Row style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
                             {
                                 this.state.courses.map(course => (
-                                        <a className="ant-col ant-col-6"
+                                    <a className="ant-col ant-col-6"
                                         href={`/subject/${course._id}`}
                                         key={course._id}
                                         style={{
@@ -91,14 +109,14 @@ class Courses extends React.Component {
                                             flexGrow: '1',
                                             cursor: 'pointer'
                                         }}>
-                                            <div style={{ height: '250px', background: `${this.generateColor()}` }}>
-                                            </div>
-                                            <div style={{
-                                                textAlign: "center",
-                                                fontWeight: "600",
-                                                marginTop: 10
-                                            }}>{course.name}</div>
-                                        </a>
+                                        <div style={{ height: '250px', background: `${this.generateColor()}` }}>
+                                        </div>
+                                        <div style={{
+                                            textAlign: "center",
+                                            fontWeight: "600",
+                                            marginTop: 10
+                                        }}>{course.name}</div>
+                                    </a>
                                 ))
                             }
                         </Row>
@@ -106,52 +124,52 @@ class Courses extends React.Component {
                 </Col>
 
                 {
-                    glb_sv.isTeacher ?
+                    this.state.isTeacher ?
 
-                    <Col span={8}
-                    style={{
-                        margin: '10px',
-                        background: '#fff',
-                        borderRadius: '10px',
-                        minHeight: '200px',
-                        maxHeight: "768px"
-                    }}>
-                    <div>
-                        <div style={{
-                            textAlign: 'center',
-                            padding: '10px 0'
-                        }}>
-                            <i>
-                                <img src={deadline} />
-                            </i>
-                            <span style={{ padding: '25px', fontSize: '2em' }}>{t('mn_subject')}</span>
-                        </div>
-                    </div>
-                </Col>
-                     :
-                    (
-                    <Col span={8}
-                                        style={{
-                                            margin: '10px',
-                                            background: '#fff',
-                                            borderRadius: '10px',
-                                            minHeight: '200px',
-                                            maxHeight: "553px"
-                                        }}>
-                                        <div>
-                                            <div style={{
-                                                textAlign: 'center',
-                                                padding: '10px 0'
-                                            }}>
-                                                <i>
-                                                    <img src={deadline} />
-                                                </i>
-                                                <span style={{ padding: '25px', fontSize: '2em' }}>{t('upcm_dl')}</span>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            {/* Empty */}
-                                            {/* <div style={{
+                        <Col span={8}
+                            style={{
+                                margin: '10px',
+                                background: '#fff',
+                                borderRadius: '10px',
+                                minHeight: '200px',
+                                maxHeight: "768px"
+                            }}>
+                            <div>
+                                <div style={{
+                                    textAlign: 'center',
+                                    padding: '10px 0'
+                                }}>
+                                    <i>
+                                        <img src={deadline} />
+                                    </i>
+                                    <span style={{ padding: '25px', fontSize: '2em' }}>{t('mn_subject')}</span>
+                                </div>
+                            </div>
+                        </Col>
+                        :
+                        (
+                            <Col span={8}
+                                style={{
+                                    margin: '10px',
+                                    background: '#fff',
+                                    borderRadius: '10px',
+                                    minHeight: '200px',
+                                    maxHeight: "553px"
+                                }}>
+                                <div>
+                                    <div style={{
+                                        textAlign: 'center',
+                                        padding: '10px 0'
+                                    }}>
+                                        <i>
+                                            <img src={deadline} />
+                                        </i>
+                                        <span style={{ padding: '25px', fontSize: '2em' }}>{t('upcm_dl')}</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    {/* Empty */}
+                                    {/* <div style={{
                                                 textAlign: 'center',
                                                 padding: '45px'
                                             }}>
@@ -160,66 +178,74 @@ class Courses extends React.Component {
                                                 </i>
                                                 <div style={{ color: '#c4c4c4', fontStyle: 'italic' }}>No upcoming deadline</div>
                                             </div> */}
-                                            {/* Deadline */}
-                                            <Row style={{ justifyContent: 'center', padding: "5px 0" }}>
-                                                <Tabs defaultActiveKey="1" centered>
-                                                    <TabPane tab={<span> <AlertOutlined twoToneColor="#ff0000" />{t('dl')}</span>} key="1">
-                                                        <div style={{maxHeight: '400px',
-overflowY: 'auto'}}>
-                                                        {this.state.deadlines.length > 0 ? this.state.deadlines.map(dl => (
-                                                            <Row key={dl._id} style={{marginBottom: 5,  border: "2px solid #cacaca",
-                                                            padding: "10px 0"}}>
-                                                                <Col span={10} style={{textAlign: "center", alignSelf: "center"}}><i>
-                                                                    <img src={fastTime} width="36px"/>
-                                                                </i></Col>
-                                                                <Col span={10} >
-                                                                    <div>{dl.name}</div>
-                                                                    <div>
-                                                                        <span style={{fontWeight: 600}}>Due to: </span>{this.transTime(get(dl, 'expireTime'))}
-                                                                    </div>
-                                                                    <div>
-                                                                        <span style={{fontWeight: 600}}>Time remaining:</span> {moment.utc(get(dl, 'expireTime')).fromNow()}
-                                                                    </div>
-                                                                </Col>
-                                                            </Row>
-                                                        )) : <Row>
-                                                                <img src={deadlineCalcular} />
-                                                                <div style={{width: "100%", color: '#cacaca', textAlign:'center'}}>No upcoming deadline</div>
-                                                            </Row>}
-                                                            </div>
-                                                    </TabPane>
-                                                    <TabPane tab={
-                                                        <span><CheckCircleTwoTone twoToneColor="#52c41a" />
-                                                            {t('complt')}
-                                                        </span>} key="2">
-                                                        <div style={{maxHeight: '400px',
-overflowY: 'auto'}}>
-                                                        {this.state.dueTo.map(dt => (
-                                                                <Row key={dt._id} style={{marginBottom: 5, color: "#2ecc71", border: "2px solid #cacaca",
-                                                                padding: "10px 0"}}>
-                                                                    <Col span={10} style={{textAlign: "center", alignSelf: "center"}}><i>
-                                                                        <img src={fastTime} width="36px"/>
-                                                                    </i></Col>
-                                                                    <Col span={10} >
-                                                                        <div>{dt.name}</div>
-                                                                        <div>
-                                                                            <span style={{fontWeight: 600}}>Due to: </span>{this.transTime(get(dt, 'expireTime'))}
-                                                                        </div>
-                                                                        <div>
-                                                                            <span style={{fontWeight: 600}}>Time remaining:</span> {moment.utc(get(dt, 'expireTime')).fromNow()}
-                                                                        </div>
-                                                                    </Col>
-                                                                </Row>
-                                                        ))}
-                                                        </div>
-                                                    </TabPane>
-                                                </Tabs>
-                                            </Row>
-                                        </div>
-                                    </Col>
-                    )
+                                    {/* Deadline */}
+                                    <Row style={{ justifyContent: 'center', padding: "5px 0" }}>
+                                        <Tabs defaultActiveKey="1" centered>
+                                            <TabPane tab={<span> <AlertOutlined twoToneColor="#ff0000" />{t('dl')}</span>} key="1">
+                                                <div style={{
+                                                    maxHeight: '400px',
+                                                    overflowY: 'auto'
+                                                }}>
+                                                    {this.state.deadlines.length > 0 ? this.state.deadlines.map(dl => (
+                                                        <Row key={dl._id} style={{
+                                                            marginBottom: 5, border: "2px solid #cacaca",
+                                                            padding: "10px 0"
+                                                        }}>
+                                                            <Col span={10} style={{ textAlign: "center", alignSelf: "center" }}><i>
+                                                                <img src={fastTime} width="36px" />
+                                                            </i></Col>
+                                                            <Col span={10} >
+                                                                <div>{dl.name}</div>
+                                                                <div>
+                                                                    <span style={{ fontWeight: 600 }}>Due to: </span>{this.transTime(get(dl, 'expireTime'))}
+                                                                </div>
+                                                                <div>
+                                                                    <span style={{ fontWeight: 600 }}>Time remaining:</span> {moment.utc(get(dl, 'expireTime')).fromNow()}
+                                                                </div>
+                                                            </Col>
+                                                        </Row>
+                                                    )) : <Row>
+                                                            <img src={deadlineCalcular} />
+                                                            <div style={{ width: "100%", color: '#cacaca', textAlign: 'center' }}>No upcoming deadline</div>
+                                                        </Row>}
+                                                </div>
+                                            </TabPane>
+                                            <TabPane tab={
+                                                <span><CheckCircleTwoTone twoToneColor="#52c41a" />
+                                                    {t('complt')}
+                                                </span>} key="2">
+                                                <div style={{
+                                                    maxHeight: '400px',
+                                                    overflowY: 'auto'
+                                                }}>
+                                                    {this.state.dueTo.map(dt => (
+                                                        <Row key={dt._id} style={{
+                                                            marginBottom: 5, color: "#2ecc71", border: "2px solid #cacaca",
+                                                            padding: "10px 0"
+                                                        }}>
+                                                            <Col span={10} style={{ textAlign: "center", alignSelf: "center" }}><i>
+                                                                <img src={fastTime} width="36px" />
+                                                            </i></Col>
+                                                            <Col span={10} >
+                                                                <div>{dt.name}</div>
+                                                                <div>
+                                                                    <span style={{ fontWeight: 600 }}>Due to: </span>{this.transTime(get(dt, 'expireTime'))}
+                                                                </div>
+                                                                <div>
+                                                                    <span style={{ fontWeight: 600 }}>Time remaining:</span> {moment.utc(get(dt, 'expireTime')).fromNow()}
+                                                                </div>
+                                                            </Col>
+                                                        </Row>
+                                                    ))}
+                                                </div>
+                                            </TabPane>
+                                        </Tabs>
+                                    </Row>
+                                </div>
+                            </Col>
+                        )
                 }
-                
+
             </Row>
         </>
     }

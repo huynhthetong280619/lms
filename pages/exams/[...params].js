@@ -4,6 +4,7 @@ import IndexLayout from '../../pages-modules/layouts/layout'
 import restClient from '../../assets/common/core/restClient'
 import Exams from '../../pages-modules/components/exams';
 import { get } from 'lodash';
+import { parseCookies } from '../../assets/helpers'
 
 const ExamsPage = ({examQuestion, subject, idSubject,
     idTimeline,
@@ -21,11 +22,14 @@ const ExamsPage = ({examQuestion, subject, idSubject,
 ExamsPage.getInitialProps = async (ctx) => {
     
     console.log('ExamsPage', ctx)
+const data = parseCookies(ctx.req);
+    const token = data.token
+
     const {params, idTimeline, idSubject} = ctx.query
     const [idExam ] = params
 
     console.log('aaaa', idExam, idTimeline)
-    const [exams, subject] = await Promise.all([restClient.asyncGet(`/exam/${idExam}/attempt?idSubject=${idSubject}&idTimeline=${idTimeline}`), restClient.asyncGet(`/subject/${idSubject}`)])
+    const [exams, subject] = await Promise.all([restClient.asyncGet(`/exam/${idExam}/attempt?idSubject=${idSubject}&idTimeline=${idTimeline}`, token), restClient.asyncGet(`/subject/${idSubject}`, token)])
     
     if(exams.hasError){
         return {

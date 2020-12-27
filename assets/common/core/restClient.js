@@ -3,8 +3,6 @@ import { get, isEmpty, split, includes, omit } from 'lodash';
 import { GLOBAL_CONFIG } from '../../config/index'
 import urljoin from 'url-join';
 require('isomorphic-fetch')
-import glb_sv from '../../global/global.service';
-import { parseCookies, setCookie, destroyCookie } from 'nookies'
 
 
 const parseReponse = async response => {
@@ -25,16 +23,13 @@ const parseReponse = async response => {
 
 class RestClient {
   constructor(props) {
-    
   }
 
   setExceptionHandler(exceptionHandler) {
     this.exceptionHandler = exceptionHandler;
   }
 
-  createHeaders() {
-
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZmQ0NzFjYjE1ODkyNjI5ODAzYjk5ZDAiLCJjb2RlIjoidGhpdmFuIiwiZW1haWxBZGRyZXNzIjoibmd1eWVudHJhbnRoaXZhbkBoY211dGUuZWR1LnZuIiwiZmlyc3ROYW1lIjoiVGhpIFbEg24iLCJzdXJOYW1lIjoiTmd1eeG7hW4gVHLhuqduIiwiaWF0IjoxNjA5MDQxODU0LCJleHAiOjE2MDkxMjgyNTR9.RkOl2B5614F9dzijNxFqlf4PE_0-1oI31F3ZCtAjOvo';
+  createHeaders(token) {
     let headers = {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
@@ -52,10 +47,10 @@ class RestClient {
     return url;
   }
 
-  async asyncGet(path) {
+  async asyncGet(path, token) {
     try {
       const response = await fetch(this.getUrl(path), {
-        headers: this.createHeaders(),
+        headers: this.createHeaders(token),
       });
 
       const data = await parseReponse(response);
@@ -90,17 +85,17 @@ class RestClient {
       await fetch(this.getUrl(path), {
         headers,
       })
-      .then(res => res.blob())
-      .then(blob => {
-        
-        console.log('blob', blob)
-        // var file = window.URL.createObjectURL(blob);
-        // window.location.assign(file)
-      }).
-      catch(err => {
-        console.log('edxxxx')
-      })
-      
+        .then(res => res.blob())
+        .then(blob => {
+
+          console.log('blob', blob)
+          // var file = window.URL.createObjectURL(blob);
+          // window.location.assign(file)
+        }).
+        catch(err => {
+          console.log('edxxxx')
+        })
+
     } catch (ex) {
       return {
         hasError: true,
@@ -109,12 +104,12 @@ class RestClient {
     }
   }
 
-  async asyncPost(path, data) {
+  async asyncPost(path, data, token) {
     console.log(path, data)
     try {
       const response = await fetch(this.getUrl(path), {
         method: 'POST',
-        headers: this.createHeaders(),
+        headers: this.createHeaders(token),
         body: JSON.stringify(data),
       });
 
@@ -136,16 +131,16 @@ class RestClient {
     }
   }
 
-  async asyncPostFile(path, data){
+  async asyncPostFile(path, data) {
     let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZmQ0NjA4OTg4MjBmMDAzNThkZjVmOTMiLCJjb2RlIjoiMTcxMTAzNTQiLCJlbWFpbEFkZHJlc3MiOiIxNzExMDM1NEBzdHVkZW50LmhjbXV0ZS5lZHUudm4iLCJpYXQiOjE2MDgzNjg0MjYsImV4cCI6MTYwODQ1NDgyNn0.eL5TFl3-std47jyQvTJctuU6DCm_NdtLi-gDaAot4y4';
-    
+
     let headers = {
       Authorization: `Bearer ${token}`,
       // 'Content-Type': 'multipart/form-data;boundary=<calculated when request is sent>',
       'Access-Control-Allow-Origin': '*',
       mode: 'no-cors'
     };
-    
+
     try {
       const response = await fetch(this.getUrl(path), {
         method: 'POST',
@@ -171,11 +166,11 @@ class RestClient {
     }
   }
 
-  async asyncPut(path, data) {
+  async asyncPut(path, data, token) {
     try {
       const response = await fetch(this.getUrl(path), {
         method: 'PUT',
-        headers: this.createHeaders(),
+        headers: this.createHeaders(token),
         body: JSON.stringify(data),
       });
 
@@ -197,10 +192,10 @@ class RestClient {
     }
   }
 
-  async asyncDelete(path, data, options) {
+  async asyncDelete(path, data, token) {
     try {
       const response = await fetch(this.getUrl(path, options), {
-        headers: this.createHeaders(),
+        headers: this.createHeaders(token),
         body: JSON.stringify(data),
         method: 'DELETE',
       });
@@ -250,7 +245,7 @@ class RestClient {
   }
 
 
-  
+
 
 }
 

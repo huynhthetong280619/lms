@@ -3,7 +3,7 @@ import IndexLayout from '../../../pages-modules/layouts/layout';
 import RestClient from '../../../assets/common/core/restClient';
 import Subject from '../../../pages-modules/components/subject';
 import { get } from 'lodash';
-import glb_sv from '../../../assets/global/global.service'
+import { parseCookies } from '../../../assets/helpers'
 
 const SubjectCourse = ({subject, idSubject, lstTimeline, lstQuizzis, lstDeadline}) => {
 
@@ -22,12 +22,14 @@ const SubjectCourse = ({subject, idSubject, lstTimeline, lstQuizzis, lstDeadline
 }
 
 SubjectCourse.getInitialProps = async (ctx) => {
+const data = parseCookies(ctx.req);
+    const token = data.token
     const {idSubject} = ctx.query;
     const [lstSubject, lstTimeline, lstQuizzis, lstDeadline] = await Promise.all([
-        RestClient.asyncGet(`/subject/${idSubject}`),
-        RestClient.asyncGet(`/timeline?idSubject=${idSubject}`),
-        RestClient.asyncGet(`/quiz?idSubject=${idSubject}`),
-        RestClient.asyncGet('/subject/deadline')
+        RestClient.asyncGet(`/subject/${idSubject}`, token),
+        RestClient.asyncGet(`/timeline?idSubject=${idSubject}`, token),
+        RestClient.asyncGet(`/quiz?idSubject=${idSubject}`, token),
+        RestClient.asyncGet('/subject/deadline', token)
     ])
 
     console.log('xya', lstSubject, lstTimeline, lstQuizzis, lstDeadline)

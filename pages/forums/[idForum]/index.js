@@ -3,6 +3,7 @@ import React from 'react'
 import restClient from '../../../assets/common/core/restClient'
 import Forum from '../../../pages-modules/components/forums'
 import IndexLayout from '../../../pages-modules/layouts/layout'
+import { parseCookies } from '../../../assets/helpers'
 
 const ForumPage = ({forum, idForum, idSubject, idTimeline, subject}) => {
     const nameSubject = get(subject, 'name')
@@ -12,10 +13,12 @@ const ForumPage = ({forum, idForum, idSubject, idTimeline, subject}) => {
 }
 
 ForumPage.getInitialProps = async (ctx) => {
+const data = parseCookies(ctx.req);
+    const token = data.token
     console.log('ForumPage', ctx);
     const {idForum, idSubject, idTimeline} = ctx.query
 
-    const [forum, subject] = await Promise.all([restClient.asyncGet(`/forum/${idForum}?idSubject=${idSubject}&idTimeline=${idTimeline}`), restClient.asyncGet(`/subject/${idSubject}`)])
+    const [forum, subject] = await Promise.all([restClient.asyncGet(`/forum/${idForum}?idSubject=${idSubject}&idTimeline=${idTimeline}`, token), restClient.asyncGet(`/subject/${idSubject}`, token)])
 
     return {
         forum: get(forum, 'data'),

@@ -14,15 +14,15 @@ class SurveyExecute extends React.Component {
 
     componentDidMount() {
 
-        if(!this.props.surveyQ.questionnaire){
-            Router.push("/courses")
+        if (!this.props.surveyQ.questionnaire) {
+            Router.push({ pathname: "/courses" })
         }
         console.log('componentDidMount', this.props.surveyQ.questionnaire)
         this.setState({
             surveys: this.props.surveyQ.questionnaire || []
         })
 
-        
+
 
         const obj = {};
 
@@ -70,7 +70,7 @@ class SurveyExecute extends React.Component {
             })
         })
 
-        
+
 
         // Push up to server
         console.log(convert)
@@ -80,13 +80,13 @@ class SurveyExecute extends React.Component {
             data: convert
         }
         await restClient.asyncPost(`/survey/${this.props.idSurvey}/submit?idSubject=${this.props.idSubject}&idTimeline=${this.props.idTimeline}`, data)
-        .then(res => {
-            if(!res.hasError){
-                console.log('Rest client', get(res, 'data'));
-                Router.push('/')
-            }
-            console.log('Rest client', res)
-        })
+            .then(res => {
+                if (!res.hasError) {
+                    console.log('Rest client', get(res, 'data'));
+                    Router.push({ pathname: '/' })
+                }
+                console.log('Rest client', res)
+            })
     }
 
     render() {
@@ -172,7 +172,7 @@ class SurveyExecute extends React.Component {
                                                         <span>Question {index}: </span>{q.question}
                                                     </div>
                                                     <div>
-                                                        <input type="text" onChange={(e) => this.onFill(e, q._id)}/>
+                                                        <input type="text" onChange={(e) => this.onFill(e, q._id)} />
                                                     </div>
                                                 </div>
                                         )
