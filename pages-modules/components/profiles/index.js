@@ -1,13 +1,18 @@
 import React from 'react'
-import { Row, Col, Tabs, Input, Button, Upload, message  } from 'antd'
-import { AlertOutlined, CheckCircleTwoTone, LoadingOutlined ,PlusOutlined } from '@ant-design/icons'
-import { withTranslation} from 'react-i18next'
+import { Row, Col, Tabs, Input, Button, Upload, message } from 'antd'
+import { AlertOutlined, CheckCircleTwoTone, LoadingOutlined, PlusOutlined } from '@ant-design/icons'
+import { withTranslation } from 'react-i18next'
 import { get } from 'lodash'
 const { TabPane } = Tabs
 
 import profile from '../../../assets/images/contents/profileN.png'
-
+import facebook from '../../../assets/images/contents/facebook.png'
 import styles from './styles.scss'
+import restClient from '../../../assets/common/core/restClient'
+import { getCookie } from '../../../assets/common/core/localStorage'
+import { FACEBOOK_CLIENT_ID } from '../../../assets/constants/const'
+import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
+
 
 function getBase64(img, callback) {
     const reader = new FileReader();
@@ -34,10 +39,16 @@ class Profile extends React.Component {
         profile: {}
     };
 
-    componentDidMount(){
+    componentDidMount() {
+
+
+        const userPrf = localStorage.getItem('user')
+
+        console.log('userPrf', userPrf)
         this.setState({
-            profile: this.props.profile
+            profile: JSON.parse(userPrf)
         })
+
     }
 
     handleChange = info => {
@@ -56,6 +67,50 @@ class Profile extends React.Component {
         }
     };
 
+    linkSocial = async (data) => {
+        const tokenCookies = getCookie('token');
+        await restClient.asyncPut(`/user/auth/facebook/link`, data, tokenCookies)
+            .then(res => {
+                console.log('resLink', res)
+                // localStorage.removeItem('user');
+                if(!res.hasError){
+                    localStorage.setItem('user', JSON.stringify(res.data.user));
+
+                    this.setState({
+                        profile: res.data.user
+                    })
+                }
+               
+            })
+    }
+
+    unlinkSocial = async () => {
+        const tokenCookies = getCookie('token');
+        await restClient.asyncPut(`/user/auth/facebook/unlink`, {
+            token: tokenCookies
+        }, tokenCookies)
+            .then(res => {
+                console.log('resLink unlink', res)
+                console.log
+                // localStorage.removeItem('user');
+                localStorage.setItem('user', JSON.stringify(res.data.user));
+
+                this.setState({
+                    profile: res.data.user
+                })
+            })
+    }
+
+    responseFacebook = async (response) => {
+        console.log('responseFacebook', response);
+        const token = response.accessToken;
+        console.log('responseFacebook', token);
+        const data = {
+            token: token
+        }
+
+        this.linkSocial(data)
+    }
     render() {
         console.log('profile', this.state.profile)
         const { loading, imageUrl } = this.state;
@@ -96,44 +151,53 @@ class Profile extends React.Component {
                                 beforeUpload={beforeUpload}
                                 onChange={this.handleChange}
                             >
-                                {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : <img src={this.state.profile.urlAvatar} alt="avatar" style={{ width: '100%' }} />}
+                                {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : <img src={get(this.state.profile, 'urlAvatar')} alt="avatar" style={{ width: '100%' }} />}
                                 {/* <img src={this.state.profile.urlAvatar} width={102} height={102}/> */}
                             </Upload>
+                            <div>
+                                {
+                                    ((get(this.state.profile, 'facebookId') != null ) ? <><img src={facebook} width={20} /> <a onClick={() => this.unlinkSocial()}>Unlink</a></> : (<>
+                                        <FacebookLogin
+                                            appId={FACEBOOK_CLIENT_ID}
+                                            callback={this.responseFacebook}
+                                            render={renderProps => (<>
+                                                <img src={facebook} width={20} /> <a onClick={renderProps.onClick}>Link</a>
+                                            </>
+                                            )}
+                                        />
+                                    </>))
+                                }
+
+                            </div>
                         </Col>
                         <Col span={16}>
                             <div>
-                                <Input placeholder="Basic usage" value={get(this.state.profile, 'firstName')} style={{
+                                <Input placeholder="Your first name..." value={get(this.state.profile, 'firstName')} style={{
                                     borderRadius: '20px',
                                     marginBottom: '10px'
-                                }}/>
+                                }} />
                             </div>
                             <div>
-                                <Input placeholder="Basic usage" value={get(this.state.profile, 'surName')} style={{
+                                <Input placeholder="Your sure name..." value={get(this.state.profile, 'surName')} style={{
                                     borderRadius: '20px',
                                     marginBottom: '10px'
-                                }}/>
+                                }} />
                             </div>
                             <div>
-                                <Input placeholder="Basic usage" style={{
+                                <Input placeholder="Your email..." value={get(this.state.profile, 'emailAddress')} style={{
                                     borderRadius: '20px',
                                     marginBottom: '10px'
-                                }}/>
+                                }} />
                             </div>
                             <div>
-                                <Input placeholder="Basic usage" style={{
+                                <Input placeholder="Your code..." value={get(this.state.profile, 'code')} style={{
                                     borderRadius: '20px',
                                     marginBottom: '10px'
-                                }}/>
-                            </div>
-                            <div>
-                                <Input placeholder="Basic usage" style={{
-                                    borderRadius: '20px',
-                                    marginBottom: '10px'
-                                }}/>
+                                }} />
                             </div>
                         </Col>
                     </Row>
-                    <Row style={{textAlign: 'center'}}>
+                    <Row style={{ textAlign: 'center' }}>
                         <div>
                             <Button type="primary" danger style={{
                                 borderRadius: '20px',

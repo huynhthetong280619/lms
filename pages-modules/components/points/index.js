@@ -3,7 +3,6 @@ import { get, head } from 'lodash'
 import { CSVLink } from "react-csv";
 import excel from '../../../assets/images/contents/excel.png'
 import {  Row,Col, Table, Select , Tag, Space  } from 'antd'
-import glb_sv from '../../../assets/global/global.service'
 import statisticsPoint from '../../../assets/images/contents/statistics-point.png'
 
 const columnsGrade = [
