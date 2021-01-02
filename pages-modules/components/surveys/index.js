@@ -10,7 +10,7 @@ import './overwrite.css'
 class Survey extends React.Component {
 
     componentDidMount() {
-        console.log('this.props.responseSurvey', this.props.responseSurvey)
+        console.log('this.props.responseSurvey', this.props.replyCurrent)
     }
     transTime = (time) => {
         return moment(time).format('MMM DD h:mm A')
@@ -84,27 +84,20 @@ class Survey extends React.Component {
                     <Tabs defaultActiveKey="1" centered style={{ width: "100%" }}>
                         <TabPane tab="Your response" key="1" >
 
-
-                        </TabPane>
-                        <TabPane tab="View all response" key="2" >
-                            {
-                                (this.props.responseSurvey.questionnaire).map((q, index) => (
+                            {!this.props.replyCurrent.success ?  <div>You not priviledge...</div> : 
+                            <div>
+                                {
+                                (this.props.replyCurrent.questionnaire).map((q, index) => (
                                     q.typeQuestion == 'choice' ?
                                         (<div style={{ marginBottom: '20px', textAlign: 'left' }} key={q._id}>
                                             <div style={{ fontWeight: 600 }}><span>Question {index}: </span>{q.question}</div>
-                                            <div >
-                                                <Radio.Group style={{ width: "100%" }}>
+                                            <div>
+                                                <Radio.Group disabled value={this.props.replyCurrent.response.answerSheet[index].answer}>
                                                     {
-                                                        q.answer.map(a => (<div style={{ display: 'flex' }}>
-                                                            <div>
-                                                                <Radio style={radioStyle} value={a._id} key={a._id}>
-                                                                    {a.content}
-                                                                </Radio>
-                                                            </div>
-                                                            <div style={{ width: '50%' }}>
-                                                                <Progress percent={a.percent.split('%')[0]} />
-                                                            </div>
-                                                        </div>
+                                                        q.answer.map(a => (
+                                                            <Radio style={radioStyle} value={a._id} key={a._id}>
+                                                                {a.content}
+                                                            </Radio>
                                                         ))
                                                     }
                                                 </Radio.Group>
@@ -116,21 +109,15 @@ class Survey extends React.Component {
                                                     <span>Question {index}: </span>{q.question}
                                                 </div>
                                                 <div>
-                                                    <Checkbox.Group style={{ width: '100%' }}>
+                                                    <Checkbox.Group style={{ width: '100%' }} disabled value={this.props.replyCurrent.response.answerSheet[index].answer}>
                                                         <Row>
                                                             <Col span={12} style={{ textAlign: 'left' }}>
                                                                 <div>
                                                                     {
-                                                                        q.answer.map(a => (<div style={{ display: 'flex' }}>
-                                                                            <div>
-                                                                                <Checkbox value={a._id} key={a._id}>
-                                                                                    {a.content}
-                                                                                </Checkbox>
+                                                                        q.answer.map(a => (
+                                                                            <div key={a._id}>
+                                                                                <Checkbox value={a._id}>{a.content}</Checkbox>
                                                                             </div>
-                                                                            <div style={{ width: '50%' }}>
-                                                                                <Progress percent={a.percent.split('%')[0]} />
-                                                                            </div>
-                                                                        </div>
                                                                         ))
                                                                     }
                                                                 </div>
@@ -148,7 +135,68 @@ class Survey extends React.Component {
                                                         <span>Question {index}: </span>{q.question}
                                                     </div>
                                                     <div>
-                                                        <input type="text" onChange={(e) => this.onFill(e, q._id)} />
+                                                        <input type="text" value={this.props.replyCurrent.response.answerSheet[index].answer} disabled/>
+                                                    </div>
+                                                </div>
+                                        )
+                                )
+                                )
+                            }
+                            </div>
+                            }
+                        </TabPane>
+                        <TabPane tab={`View all response (${this.props.responseSurvey.totalResponses})`} key="2" >
+                            {
+                                (this.props.responseSurvey.questionnaire).map((q, index) => (
+                                    q.typeQuestion == 'choice' ?
+                                        (<div style={{ marginBottom: '20px', textAlign: 'left' }} key={q._id}>
+                                            <div style={{ fontWeight: 600 }}><span>Question {index}: </span>{q.question}</div>
+                                            <div >
+                                                <Radio.Group style={{ width: "50%" }} disabled>
+                                                    {
+                                                        q.answer.map(a => (<div style={{ display: 'flex' }}>
+                                                            <div style={{ width: '50%' }}>
+                                                                <Radio style={radioStyle} value={a._id} key={a._id}>
+                                                                    {a.content}
+                                                                </Radio>
+                                                            </div>
+                                                            <div style={{ width: '50%' }}>
+                                                                <Progress percent={a.percent.split('%')[0]} />
+                                                            </div>
+                                                        </div>
+                                                        ))
+                                                    }
+                                                </Radio.Group>
+                                            </div>
+                                        </div>) :
+                                        (
+                                            q.typeQuestion == 'multiple' ? (<div style={{ marginBottom: '20px', textAlign: 'left' }} key={q._id}>
+                                                <div style={{ fontWeight: 600 }}><span>Question {index}: </span>{q.question}</div>
+                                                <div >
+                                                    <Radio.Group style={{ width: "50%" }} disabled>
+                                                        {
+                                                            q.answer.map(a => (<div style={{ display: 'flex' }}>
+                                                                <div style={{ width: '50%' }}>
+                                                                    <Radio style={radioStyle} value={a._id} key={a._id}>
+                                                                        {a.content}
+                                                                    </Radio>
+                                                                </div>
+                                                                <div style={{ width: '50%' }}>
+                                                                    <Progress percent={a.percent.split('%')[0]} />
+                                                                </div>
+                                                            </div>
+                                                            ))
+                                                        }
+                                                    </Radio.Group>
+                                                </div>
+                                            </div>)
+
+                                                : <div style={{ textAlign: 'left' }} key={q._id}>
+                                                    <div style={{ fontWeight: 600 }}>
+                                                        <span>Question {index}: </span>{q.question}
+                                                    </div>
+                                                    <div>
+                                                        <span>{q.answer[0]}</span>
                                                     </div>
                                                 </div>
                                         )
