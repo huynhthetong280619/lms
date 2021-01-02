@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import { Button, Col, Row, Popover, Menu, Modal, Input, Tooltip } from 'antd'
-
+import { Button, Col, Row, Popover, Menu, Modal, Input, Tooltip, Breadcrumb  } from 'antd'
+import { Avatar, dividerClassName } from "@fluentui/react-northstar";
 import { GoogleLogin } from 'react-google-login';
 import { GOOGLE_CLIENT_ID, FACEBOOK_CLIENT_ID } from '../../../assets/constants/const'
 import restClient from '../../../assets/common/core/restClient'
@@ -13,12 +13,21 @@ import './overwrite.css'
 import message from '../../../assets/images/contents/chat.png'
 import notification from '../../../assets/images/contents/notification.png'
 import profile from '../../../assets/images/contents/profile.png'
+import enter from '../../../assets/images/contents/enter.png'
 import logo from '../../../assets/logo/logo.png'
-import { UserOutlined, KeyOutlined, GoogleOutlined, FacebookOutlined, PoweroffOutlined } from '@ant-design/icons';
-import cookieCutter from 'cookie-cutter'
+import { UserOutlined, KeyOutlined, GoogleOutlined, FacebookOutlined, PoweroffOutlined, HomeOutlined } from '@ant-design/icons';
 import Router from 'next/router'
 import { authenticate, removeCookie } from '../../../assets/common/core/localStorage';
+import { css } from "@emotion/core";
+import ClipLoader from "react-spinners/ClipLoader";
+
 const { SubMenu } = Menu;
+
+const override = css`
+  display: block;
+  margin: 0 auto;
+  border-color: red;
+`;
 class Headers extends React.Component {
 
     state = {
@@ -27,16 +36,19 @@ class Headers extends React.Component {
         username: '',
         password: '',
         isLogin: false,
-        username: ''
+        username: '',
+        isLoading: false,
+        loginChange: 'Sign in'
     };
 
     componentDidMount() {
-        const user = JSON.parse(JSON.stringify(localStorage.getItem('user')))
+        const user = JSON.parse(JSON.parse(JSON.stringify(localStorage.getItem('user'))))
         console.log('user', user)
         if (!isEmpty(user)) {
             this.setState({
                 isLogin: true,
-                username: user.code
+                username: user.code,
+                profile: user
             })
         }
     }
@@ -60,6 +72,10 @@ class Headers extends React.Component {
     };
 
     handleLogin = async () => {
+        this.setState({
+            isLoading: true,
+            loginChange: "On Authenticate..."
+        })
         console.log(this.state.username);
         console.log(this.state.password);
         const data = {
@@ -87,7 +103,10 @@ class Headers extends React.Component {
         const data = {
             token: token
         }
-
+        this.setState({
+            isLoading: true,
+            loginChange: "On Authenticate..."
+        })
         await restClient.asyncPost(`/user/auth/google`, data, null)
             .then(res => {
                 console.log(res.data);
@@ -100,7 +119,11 @@ class Headers extends React.Component {
     }
 
     responseFacebook = async (response) => {
-        console.log('responseFacebook',response);
+        this.setState({
+            isLoading: true,
+            loginChange: "On Authenticate..."
+        })
+        console.log('responseFacebook', response);
         const token = response.accessToken;
         console.log('responseFacebook', token);
         const data = {
@@ -116,35 +139,54 @@ class Headers extends React.Component {
                     //     '/courses'
                     // )
                     authenticate(res, () => {
-                        Router.push({pathname: "/courses"});
+                        Router.push({ pathname: "/courses" });
                     })
                 }
             })
     }
 
-    logout = () => {
+    logout = (e) => {
+
         removeCookie('token');
         localStorage.removeItem('user')
-
-        Router.push({pathname: "/"})
+        Router.push({ pathname: "/" });
     }
 
     render() {
-        const text = (<div>
-            <div>Sign in as</div>
-            <div>{this.state.username}</div>
-        </div>);
 
         const content = (
-            <div className="popover-login">
-                <a href='/profiles'>Your profile</a>
-                <div onClick={() => this.logout()}>Sign out</div>
-            </div>)
+            <div>
+                <a className='menu_item setting' href="/profiles">Account settings</a>
+                <a className='menu_item sign_out'
+                    onClick={(e) => this.logout()}
+                >Sign out</a>
+            </div>
+        );
+
+        const title = (
+            <div className='account_info'>
+                <div className='account_avatar'>
+                    <Avatar image={get(this.state.profile, 'urlAvatar')} />
+                </div>
+                <div className='account_name'>{get(this.state.profile, 'surName') + ' ' + get(this.state.profile, 'firstName')}</div>
+                <div className='account_email'>{get(this.state.profile, 'emailAddress')}</div>
+            </div>
+        );
+
+        console.log('title', this.state.profile)
 
         const { current } = this.state;
 
         return (
             <Row style={{ paddingTop: 10, paddingBottom: 10 }} className="lms_ws_header--">
+                {/* <div className="sweet-loading">
+                    <ClipLoader
+                        css={override}
+                        size={150}
+                        color={"#123abc"}
+                        loading={this.state.loading}
+                    />
+                </div> */}
                 <Modal title="Login form" centered={true} visible={this.state.isVisible} onOk={this.handleOk} onCancel={this.handleCancel} footer={null}>
                     <Row style={{ margin: '10px 0' }}>
                         <Input size="large" onChange={(text) => { this.setState({ username: text.target.value }) }} placeholder="Enter your code..." prefix={<UserOutlined />} style={{ borderRadius: 20 }} />
@@ -154,14 +196,14 @@ class Headers extends React.Component {
                     </Row>
                     <Row style={{ textAlign: 'center', margin: '10px 0' }}>
                         <div>
-                            <Button type='primary' onClick={this.handleLogin} style={{ borderRadius: 20, width: 100, padding: '5px 0', fontSize: 20, lineHeight: '20px' }}>Login</Button>
+                            <button type='primary' className="btn-login" onClick={this.handleLogin} /*style={{ borderRadius: 20, width: 100, padding: '5px 0', fontSize: 20, lineHeight: '20px' }}*/ disabled={this.state.isLoading}>{this.state.loginChange}</button>
                         </div>
                     </Row>
                     <Row style={{ textAlign: 'center' }}>
                         <div style={{
                             width: "100%", color: '#cacaca',
                             fontWeight: 600
-                        }}>Other login</div>
+                        }}>__________Or sign by certificate__________</div>
                         <Row style={{ width: "100%" }}>
                             <GoogleLogin
                                 clientId={GOOGLE_CLIENT_ID}
@@ -190,7 +232,6 @@ class Headers extends React.Component {
                                     </Col>
                                 )}
                             />
-
                         </Row>
 
                     </Row>
@@ -203,45 +244,38 @@ class Headers extends React.Component {
                         </a></span>
                     </div>
                 </Col>
-                <Col span={10}>
-
+                <Col span={4}>
+                    <Breadcrumb>
+                        <Breadcrumb.Item href="">
+                            <HomeOutlined />
+                        </Breadcrumb.Item>
+                        <Breadcrumb.Item href="">
+                            <UserOutlined />
+                            <span>Application List</span>
+                        </Breadcrumb.Item>
+                        <Breadcrumb.Item>Application</Breadcrumb.Item>
+                    </Breadcrumb>
                 </Col>
-                <Col xs={8}>
+                <Col xs={10}>
                     {/* Authentication */}
                     {
                         this.state.isLogin ? <div style={{ textAlign: 'right' }}>
-                            <Popover>
-                                <span>
-                                    <i>
-                                        <img src={message} />
-                                    </i>
-                                </span>
-                            </Popover>
-                            <Popover>
-                                <span>
-                                    <i>
-                                        <img src={notification} />
-                                    </i>
-                                </span>
-                            </Popover>
-                            <Popover placement="top" title={text} content={content} trigger="click">
-                                <span>
-                                    <i>
-                                        <img src={profile} style={{ width: '32px' }} />
-                                    </i>
-                                    <span style={{
-                                        paddingLeft: '5px', fontSize: '15px',
-                                        fontWeight: '800',
-                                        color: '#fff'
-                                    }}>Profile</span>
-                                </span>
+                            <Popover placement="bottomRight" title={title} content={content} trigger="click">
+                                <button className='btn-account-info' style={{
+                                    height: '46px',
+                                    verticalAlign: 'bottom',
+                                    lineHeight: '46px',
+                                    borderRadius: '50%'
+                                }}>
+                                    <Avatar image={this.state.profile.urlAvatar} />
+                                </button>
                             </Popover>
                         </div>
                             :
                             <div className={styles.blockLogin}>
                                 <Button className={styles.btnLogin} onClick={() => this.openLogin()}>
                                     <Tooltip title="Click to login">
-                                        <PoweroffOutlined />
+                                        <img src={enter} width={20} />
                                     </Tooltip>
                                 </Button>
                             </div>

@@ -141,7 +141,7 @@ class Subject extends React.Component {
     async componentDidMount() {
         console.log('componentDidMount', this.props.subject, this.props.lstQuizzis, this.props.lstTimeline);
 
-        const user = JSON.parse(JSON.stringify(localStorage.getItem('user')));
+        const user = JSON.parse(localStorage.getItem('user'));
         
         if(user?.idPrivilege == 'student'){
             this.setState({
@@ -1219,7 +1219,6 @@ class Subject extends React.Component {
                 style={{
                     margin: '10px',
                     background: '#fff',
-                    borderRadius: '10px',
                     minHeight: '200px'
                 }}>
 
@@ -1401,7 +1400,6 @@ class Subject extends React.Component {
                                 style={{
                                     margin: '10px',
                                     background: '#fff',
-                                    borderRadius: '10px',
                                     minHeight: '200px',
                                     maxHeight: 726
                                 }}>
@@ -2036,7 +2034,6 @@ class Subject extends React.Component {
                                 style={{
                                     margin: '10px',
                                     background: '#fff',
-                                    borderRadius: '10px',
                                     minHeight: '200px',
                                     maxHeight: "556px"
                                 }}>

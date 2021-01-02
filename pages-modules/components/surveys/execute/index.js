@@ -75,17 +75,13 @@ class SurveyExecute extends React.Component {
         // Push up to server
         console.log(convert)
         const data = {
-            // idSubject: this.props.idSubject,
-            // idTimeline: this.props.idTimeline,
             data: convert
         }
         await restClient.asyncPost(`/survey/${this.props.idSurvey}/submit?idSubject=${this.props.idSubject}&idTimeline=${this.props.idTimeline}`, data, this.props.token)
             .then(res => {
                 if (!res.hasError) {
-                    console.log('Rest client', get(res, 'data'));
-                    Router.push({ pathname: '/' })
+                    Router.push({ pathname: `/subject/${this.props.idSubject}` })
                 }
-                console.log('Rest client', res)
             })
     }
 
@@ -101,7 +97,6 @@ class SurveyExecute extends React.Component {
                 width: '80%',
                 textAlign: 'center',
                 background: '#fff',
-                borderRadius: '15px',
                 minHeight: '20px'
             }}>
                 <Row style={{ width: '100%' }}>

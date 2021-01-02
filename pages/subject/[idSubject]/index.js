@@ -36,10 +36,10 @@ const data = parseCookies(ctx.req);
 
     return {
         idSubject,
-        subject: get(lstSubject, 'data').subject,
-        lstTimeline: get(lstTimeline, 'data').timelines,
-        lstQuizzis: get(lstQuizzis, 'data').quizBank,
-        lstDeadline: get(lstDeadline, 'data').deadline,
+        subject: get(get(lstSubject, 'data'), 'subject') || [],
+        lstTimeline: get(get(lstTimeline, 'data'), 'timelines') || [],
+        lstQuizzis: get(get(lstQuizzis, 'data'), 'quizBank') || [],
+        lstDeadline: get(get(lstDeadline, 'data'), 'deadline') || [],
         token
         
     }

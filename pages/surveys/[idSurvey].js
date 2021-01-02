@@ -7,13 +7,13 @@ import { parseCookies } from '../../assets/helpers'
 
 const SurveyPage = ({ survey, subject, idSubject,
     idTimeline,
-    idSurvey, token }) => {
+    idSurvey, token, responseSurvey }) => {
     const nameSubject = get(subject, 'name')
 
     return <IndexLayout>
         <Survey survey={survey} nameSubject={nameSubject} idSubject={idSubject}
             idTimeline={idTimeline}
-            idSurvey={idSurvey} token={token}/>
+            idSurvey={idSurvey} token={token} responseSurvey={responseSurvey}/>
     </IndexLayout>
 }
 
@@ -23,7 +23,7 @@ SurveyPage.getInitialProps = async (ctx) => {
     const token = data.token
     console.log('SurveyPage', ctx);
     const { idSubject, idTimeline, idSurvey } = ctx.query;
-    const [survey, subject] = await Promise.all([restClient.asyncGet(`/survey/${idSurvey}?idSubject=${idSubject}&idTimeline=${idTimeline}`, token), restClient.asyncGet(`/subject/${idSubject}`, token)])
+    const [survey, subject, responseSurvey] = await Promise.all([restClient.asyncGet(`/survey/${idSurvey}?idSubject=${idSubject}&idTimeline=${idTimeline}`, token), restClient.asyncGet(`/subject/${idSubject}`, token), restClient.asyncGet(`/survey/${idSurvey}/responses?idSubject=${idSubject}&idTimeline=${idTimeline}`, token)])
 
     console.log('SurveyPage', survey, subject)
     return {
@@ -32,6 +32,7 @@ SurveyPage.getInitialProps = async (ctx) => {
         idSubject,
         idTimeline,
         idSurvey,
+        responseSurvey: get(responseSurvey, 'data'),
         token
     }
 }

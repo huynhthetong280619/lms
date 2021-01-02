@@ -12,7 +12,10 @@ import restClient from '../../../assets/common/core/restClient'
 import { getCookie } from '../../../assets/common/core/localStorage'
 import { FACEBOOK_CLIENT_ID } from '../../../assets/constants/const'
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
-
+import deadlineCalcular from '../../../assets/images/courses/deadlineCalcular.png'
+import fastTime from '../../../assets/images/courses/fastTime.png'
+import deadline from '../../../assets/images/courses/deadline.png'
+import moment from 'moment'
 
 function getBase64(img, callback) {
     const reader = new FileReader();
@@ -37,17 +40,42 @@ class Profile extends React.Component {
     state = {
         loading: false,
         profile: {},
-        isEdit: true
+        isEdit: true,
+        infoUpdate: {
+            firstName: '',
+            surName: '',
+            urlAvatar: ''
+        },
+        fileData: null,
+        deadlines: [],
+        dueTo: []
     };
 
     componentDidMount() {
 
 
-        const userPrf = localStorage.getItem('user')
+        const usrJson = JSON.stringify(localStorage.getItem('user'))
+        const usrObj = JSON.parse(JSON.parse(usrJson));
+        console.log('idPrivilege', usrObj.idPrivilege)
 
-        console.log('userPrf', userPrf)
+
+        if (usrObj?.idPrivilege == 'student') {
+            this.setState({
+                isTeacher: false
+            })
+        }
+
+        if (usrObj?.idPrivilege == 'teacher') {
+            this.setState({
+                isTeacher: true
+            })
+        }
+
+        
         this.setState({
-            profile: JSON.parse(userPrf)
+            profile: usrObj,
+            deadlines: this.props.listDeadline || [],
+            dueTo: this.props.listDueAssginment || []
         })
 
     }
@@ -57,16 +85,58 @@ class Profile extends React.Component {
             this.setState({ loading: true });
             return;
         }
+
+        console.log('handleChange', info)
+
         if (info.file.status === 'done') {
             // Get this url from response in real world.
-            getBase64(info.file.originFileObj, imageUrl =>
-                this.setState({
+            getBase64(info.file.originFileObj, imageUrl => {
+                console.log('imageUrl', imageUrl)
+                return this.setState({
                     imageUrl,
                     loading: false,
-                }),
+                    fileData: info.file
+                })}
             );
         }
     };
+
+    updateProfile = async () => {
+
+        const objResult = await this.handleImageUpload();
+
+        console.log('objectResult', objResult)
+        this.setState({ isEdit: true })
+    }
+    handleImageUpload = async () => {
+        const formData = new FormData();
+        formData.append('file', this.state.fileData)
+        // replace this with your upload preset name
+        formData.append('upload_preset', 'gmttm4bo');
+        const options = {
+            method: 'POST',
+            body: formData,
+            header: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Accept',
+                mode: 'no-cors'
+            }
+        };
+
+        // replace cloudname with your Cloudinary cloud_name
+        return await fetch('https://api.Cloudinary.com/v1_1/dkepvw2rz/upload', options)
+            .then(res => res.json())
+            .then(res => {
+
+                console.log('Response', res)
+                return {
+                    name: res.original_filename,
+                    path: res.url,
+                    type: res.format || res.public_id.split('.')[1]
+                }
+            })
+            .catch(err => console.log(err));
+    }
 
     linkSocial = async (data) => {
         const tokenCookies = getCookie('token');
@@ -112,6 +182,11 @@ class Profile extends React.Component {
 
         this.linkSocial(data)
     }
+
+    transTime = (time) => {
+        return moment(time).format('MMM DD h:mm A')
+    }
+
     render() {
         console.log('profile', this.state.profile)
         const { loading, imageUrl } = this.state;
@@ -122,6 +197,7 @@ class Profile extends React.Component {
             </div>
         );
 
+        const {t} = this.props
         return <>
             (
             <Row className={styles.background} style={{ justifyContent: 'center' }}>
@@ -129,7 +205,6 @@ class Profile extends React.Component {
                     style={{
                         margin: '10px',
                         background: '#fff',
-                        borderRadius: '10px',
                         minHeight: '200px'
                     }}>
                     <div style={{ padding: "10px 0", textAlign: "center" }}>
@@ -151,6 +226,7 @@ class Profile extends React.Component {
                                 action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                                 beforeUpload={beforeUpload}
                                 onChange={this.handleChange}
+                                disabled={this.state.isEdit}
                             >
                                 {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : <img src={get(this.state.profile, 'urlAvatar')} alt="avatar" style={{ width: '100%' }} />}
                                 {/* <img src={this.state.profile.urlAvatar} width={102} height={102}/> */}
@@ -176,25 +252,29 @@ class Profile extends React.Component {
                                 <Input placeholder="Your first name..." value={get(this.state.profile, 'firstName')} style={{
                                     borderRadius: '20px',
                                     marginBottom: '10px'
-                                }} disabled={this.state.isEdit} />
+                                }} disabled={this.state.isEdit} onChange={e => this.setState({
+                                    infoUpdate: { ...this.state.infoUpdate, firstName: e.target.value.trim() }
+                                })} />
                             </div>
                             <div>
                                 <Input placeholder="Your sure name..." value={get(this.state.profile, 'surName')} style={{
                                     borderRadius: '20px',
                                     marginBottom: '10px'
-                                }} disabled={this.state.isEdit} />
+                                }} disabled={this.state.isEdit} onChange={e => this.setState({
+                                    infoUpdate: { ...this.state.infoUpdate, surName: e.target.value.trim() }
+                                })} />
                             </div>
                             <div>
                                 <Input placeholder="Your email..." value={get(this.state.profile, 'emailAddress')} style={{
                                     borderRadius: '20px',
                                     marginBottom: '10px'
-                                }} disabled={this.state.isEdit} />
+                                }} disabled={true} />
                             </div>
                             <div>
                                 <Input placeholder="Your code..." value={get(this.state.profile, 'code')} style={{
                                     borderRadius: '20px',
                                     marginBottom: '10px'
-                                }} disabled={this.state.isEdit} />
+                                }} disabled={true} />
                             </div>
                         </Col>
                     </Row>
@@ -211,7 +291,7 @@ class Profile extends React.Component {
                                     <Button type="primary" primary style={{
                                         borderRadius: '20px',
                                         margin: '10px 0'
-                                    }} onClick={() => this.setState({ isEdit: true })}>
+                                    }} onClick={() => this.updateProfile()}>
                                         Save profile
                                 </Button>
                             }
@@ -219,65 +299,126 @@ class Profile extends React.Component {
                         </div>
                     </Row>
                 </Col>
-                <Col span={8}
-                    style={{
-                        margin: '10px',
-                        background: '#fff',
-                        borderRadius: '10px',
-                        minHeight: '200px'
-                    }}>
-                    <div>
-                        <div style={{
-                            textAlign: 'center',
-                            padding: '10px 0'
-                        }}>
-                            <i>
-                            </i>
-                            <span style={{ padding: '25px', fontSize: '2em' }}>UPCOMING DEADLINE</span>
-                        </div>
-                    </div>
-                    <div>
-                        {/* Empty */}
-                        {/* <div style={{
-                            textAlign: 'center',
-                            padding: '45px'
-                        }}>
-                            <i>
-                                <img src={deadlineCalcular} />
-                            </i>
-                            <div style={{ color: '#c4c4c4', fontStyle: 'italic' }}>No upcoming deadline</div>
-                        </div> */}
-                        {/* Deadline */}
-                        <Row style={{ justifyContent: 'center' }}>
-                            <Tabs defaultActiveKey="1" centered>
-                                <TabPane tab={<span> <AlertOutlined twoToneColor="#ff0000" />Deadline</span>} key="1">
-                                    <Row>
-                                        <Col span={10}><i>
-                                        </i></Col>
-                                        <Col span={14}>
-                                            <div>Ngôn ngữ lập trình tiên tiến</div>
-                                            <div><span>Due to:</span>20/10/2020</div>
-                                            <div>Time remaining: 2 hours</div>
-                                        </Col>
-                                    </Row>
-                                </TabPane>
-                                <TabPane tab={<span> <CheckCircleTwoTone twoToneColor="#52c41a" />
+                {
+                    this.state.isTeacher ?
 
-                    Complete</span>} key="2">
-                                    <Row>
-                                        <Col span={10}><i>
-                                        </i></Col>
-                                        <Col span={14}>
-                                            <div>Ngôn ngữ lập trình tiên tiến</div>
-                                            <div><span>Due to:</span>20/10/2020</div>
-                                            <div>Time remaining: 2 hours</div>
-                                        </Col>
+                        <Col span={8}
+                            style={{
+                                margin: '10px',
+                                background: '#fff',
+                                minHeight: '200px',
+                                maxHeight: "768px"
+                            }}>
+                            <div>
+                                <div style={{
+                                    textAlign: 'center',
+                                    padding: '10px 0'
+                                }}>
+                                    <i>
+                                        <img src={deadline} />
+                                    </i>
+                                    <span style={{ padding: '25px', fontSize: '2em' }}>{t('mn_subject')}</span>
+                                </div>
+                            </div>
+                        </Col>
+                        :
+                        (
+                            <Col span={8}
+                                style={{
+                                    margin: '10px',
+                                    background: '#fff',
+                                    minHeight: '200px',
+                                    maxHeight: "553px"
+                                }}>
+                                <div>
+                                    <div style={{
+                                        textAlign: 'center',
+                                        padding: '10px 0'
+                                    }}>
+                                        <i>
+                                            <img src={deadline} />
+                                        </i>
+                                        <span style={{ padding: '25px', fontSize: '2em' }}>{t('upcm_dl')}</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    {/* Empty */}
+                                    {/* <div style={{
+                                                textAlign: 'center',
+                                                padding: '45px'
+                                            }}>
+                                                <i>
+                                                    <img src={deadlineCalcular} />
+                                                </i>
+                                                <div style={{ color: '#c4c4c4', fontStyle: 'italic' }}>No upcoming deadline</div>
+                                            </div> */}
+                                    {/* Deadline */}
+                                    <Row style={{ justifyContent: 'center', padding: "5px 0" }}>
+                                        <Tabs defaultActiveKey="1" centered>
+                                            <TabPane tab={<span> <AlertOutlined twoToneColor="#ff0000" />{t('dl')}</span>} key="1">
+                                                <div style={{
+                                                    maxHeight: '400px',
+                                                    overflowY: 'auto'
+                                                }}>
+                                                    {this.state.deadlines.length > 0 ? this.state.deadlines.map(dl => (
+                                                        <Row key={dl._id} style={{
+                                                            marginBottom: 5, border: "2px solid #cacaca",
+                                                            padding: "10px 0"
+                                                        }}>
+                                                            <Col span={10} style={{ textAlign: "center", alignSelf: "center" }}><i>
+                                                                <img src={fastTime} width="36px" />
+                                                            </i></Col>
+                                                            <Col span={10} >
+                                                                <div>{dl.name}</div>
+                                                                <div>
+                                                                    <span style={{ fontWeight: 600 }}>Due to: </span>{this.transTime(get(dl, 'expireTime'))}
+                                                                </div>
+                                                                <div>
+                                                                    <span style={{ fontWeight: 600 }}>Time remaining:</span> {moment.utc(get(dl, 'expireTime')).fromNow()}
+                                                                </div>
+                                                            </Col>
+                                                        </Row>
+                                                    )) : <Row>
+                                                            <img src={deadlineCalcular} />
+                                                            <div style={{ width: "100%", color: '#cacaca', textAlign: 'center' }}>No upcoming deadline</div>
+                                                        </Row>}
+                                                </div>
+                                            </TabPane>
+                                            <TabPane tab={
+                                                <span><CheckCircleTwoTone twoToneColor="#52c41a" />
+                                                    {t('complt')}
+                                                </span>} key="2">
+                                                <div style={{
+                                                    maxHeight: '400px',
+                                                    overflowY: 'auto'
+                                                }}>
+                                                    {this.state.dueTo.map(dt => (
+                                                        <Row key={dt._id} style={{
+                                                            marginBottom: 5, color: "#2ecc71", border: "2px solid #cacaca",
+                                                            padding: "10px 0"
+                                                        }}>
+                                                            <Col span={10} style={{ textAlign: "center", alignSelf: "center" }}><i>
+                                                                <img src={fastTime} width="36px" />
+                                                            </i></Col>
+                                                            <Col span={10} >
+                                                                <div>{dt.name}</div>
+                                                                <div>
+                                                                    <span style={{ fontWeight: 600 }}>Due to: </span>{this.transTime(get(dt, 'expireTime'))}
+                                                                </div>
+                                                                <div>
+                                                                    <span style={{ fontWeight: 600 }}>Time remaining:</span> {moment.utc(get(dt, 'expireTime')).fromNow()}
+                                                                </div>
+                                                            </Col>
+                                                        </Row>
+                                                    ))}
+                                                </div>
+                                            </TabPane>
+                                        </Tabs>
                                     </Row>
-                                </TabPane>
-                            </Tabs>
-                        </Row>
-                    </div>
-                </Col>
+                                </div>
+                            </Col>
+                        )
+                }
             </Row>
         )
         </>

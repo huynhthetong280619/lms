@@ -53,7 +53,6 @@ class Quiz extends React.Component {
                 width: '80%',
                 textAlign: 'center',
                 background: '#fff',
-                borderRadius: '15px',
                 minHeight: '20px'
             }}>
                 <Row style={{ width: '100%' }}>

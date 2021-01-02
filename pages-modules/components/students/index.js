@@ -1,6 +1,6 @@
 import React from 'react'
 import { InboxOutlined } from '@ant-design/icons'
-import { Checkbox, Row, Table, Tag, Space, Col, Popover, Modal, Tabs, Input, DatePicker, Upload, message, Button, Select, InputNumber } from 'antd'
+import { Drawer, Checkbox, Row, Table, Tag, Space, Col, Popover, Modal, Tabs, Input, DatePicker, Upload, message, Button, Select, InputNumber } from 'antd'
 
 import options from '../../../assets/images/contents/option.png'
 import add from '../../../assets/images/contents/add.png'
@@ -14,13 +14,14 @@ import { CSVLink } from "react-csv";
 import excel from '../../../assets/images/contents/excel.png'
 const { TabPane } = Tabs;
 const { TextArea } = Input;
-
+import { ToastContainer, toast } from 'react-toastify';
 import './overwrite.css'
 import RestClient from '../../../assets/common/core/restClient'
-
+import restClient from '../../../assets/common/core/restClient'
+import 'react-toastify/dist/ReactToastify.css';
 
 const { Dragger } = Upload;
-
+const { Option } = Select;
 const props = {
     name: 'file',
     multiple: true,
@@ -108,7 +109,9 @@ class Student extends React.Component {
         testId: null,
         lstStudentCoreTest: [],
         lstStdnt: [],
-        lstClassScore: null
+        lstClassScore: null,
+        visibleDrawer: false,
+        codeStudent: ''
 
     }
 
@@ -123,6 +126,22 @@ class Student extends React.Component {
             nameTestId: get(head(this.props.lstSubmissionCore), 'name'),
             lstClassScore: this.props.lstClassScore
         })
+    }
+
+    onChangeSelectCodeStudent = (value) => {
+        console.log(`selected ${value}`);
+    }
+
+    onBlur = () => {
+        console.log('blur');
+    }
+
+    onFocus = () => {
+        console.log('focus');
+    }
+
+    onSearch = (val) => {
+        console.log('search:', val);
     }
 
     handleSelectTest = (e) => {
@@ -215,6 +234,34 @@ class Student extends React.Component {
             })
     }
 
+    onClose = () => {
+        this.setState({
+            visibleDrawer: false
+        })
+    }
+
+    showDrawer = () => {
+        this.setState({
+            visibleDrawer: true
+        })
+    }
+
+    addStudentToClass = async () => {
+
+        if (!this.state.codeStudent) {
+            console.log('log warning')
+            toast.warning('Please fill into code student...');
+            return;
+        }
+
+        await restClient.asyncGet(`/subject/${this.props.idSubject}/add-student`, { idStudent: this.state.codeStudent })
+            .then(res => {
+                if (!res.hasError) {
+                    toast.success(`Add student with code ${this.state.codeStudent} has added into class`);
+                }
+            })
+    }
+
     render() {
 
         const { t } = this.props;
@@ -222,7 +269,7 @@ class Student extends React.Component {
         console.log('render', this.props.listStudent)
         const content = (
             <div>
-                <div style={{ padding: '10px 0' }} onClick={() => this.setState({ visibleAddStudent: true })}><i><img src={add} width="30px" /><span style={{ paddingLeft: '10px' }}>Thêm sinh viên</span></i></div>
+                <div style={{ padding: '10px 0' }} onClick={() => this.setState({ visibleAddStudent: true })}><i><img src={add} width="30px" /><span style={{ paddingLeft: '10px', cursor: 'pointer' }} onClick={() => this.showDrawer()}>Thêm sinh viên</span></i></div>
                 <div style={{ padding: '10px 0' }} onClick={() => this.setState({ visibleNotification: true })}><i><img src={notificationBelt} width="30px" /><span style={{ paddingLeft: '10px' }}>Thông báo</span></i></div>
                 <div style={{ padding: '10px 0' }} onClick={() => this.setState({ visibleAssignment: true })}><i><img src={assignment} width="30px" /><span style={{ paddingLeft: '10px' }}>Bài tập</span></i></div>
                 <div style={{ padding: '10px 0' }} onClick={() => this.setState({ visibleSurvey: true })}><i><img src={survey} width="30px" /><span style={{ paddingLeft: '10px' }}>Khảo sát</span></i></div>
@@ -344,8 +391,8 @@ class Student extends React.Component {
             }
         })
         return (
-            <>
-                <Modal
+            <div class="lms-ws-student-page">
+                <Modal  
                     title="ADD STUDENTS"
                     centered
                     visible={this.state.visibleAddStudent}
@@ -560,9 +607,9 @@ class Student extends React.Component {
                     width: '80%',
                     textAlign: 'center',
                     background: '#fff',
-                    borderRadius: '15px',
                     minHeight: '20px'
                 }}>
+                    <ToastContainer />
                     <Row style={{ width: '100%' }}>
                         <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject}</Col>
                         <Col span={4} style={{ padding: '25px 0' }}>
@@ -584,7 +631,14 @@ class Student extends React.Component {
           </Button>
                                     </Row>
                                     <Row style={{ marginBottom: 10 }}>
-                                        <div style={{ width: "100%", textAlign: 'left' }}><span>Xuất file excel</span>
+                                        <div style={{ width: "100%", textAlign: 'left' }}>
+                                        <div style={{
+                                            display: 'inline',
+                                            padding: '5px 10px',
+                                            border: '1px solid #cacaca',
+                                            borderRadius: '20px',
+                                        }}>
+                                            <span>Xuất file excel</span>
                                             <CSVLink
                                                 filename={"Danh Sách lớp.csv"}
                                                 data={this.state.lstStdnt}
@@ -601,7 +655,8 @@ class Student extends React.Component {
                                                     <img src={excel} width={20} />
                                                 </span>
                                             </CSVLink>
-                                            <span onClick={() => this.onAddStudent()}>Thêm sinh viên</span>
+                                            </div>
+                                            <Button type="primary" style={{ marginLeft: 10 }} onClick={() => this.showDrawer()}>Thêm sinh viên</Button>
                                         </div>
 
                                     </Row>
@@ -620,23 +675,31 @@ class Student extends React.Component {
                                     </Select>
                                 </Row>
                                 <Row style={{ marginBottom: 10 }}>
-                                    <div style={{ width: "100%", textAlign: 'left' }}><span>Xuất file excel</span>
-                                        <CSVLink
-                                            filename={this.state.nameTestId + ".csv"}
-                                            data={this.state.lstStudentCoreTest}
-                                            headers={headersCSV}
-                                            target="_blank"
-                                            style={{ color: "inherit", marginLeft: 5 }}
-                                        >
-                                            <span
-                                                id="Tooltip_history_csv"
-                                                className="left5"
-                                                placement="top"
-                                                style={{ padding: 0, marginTop: 3 }}
+                                    <div style={{ width: "100%", textAlign: 'left' }}>
+                                        <div style={{
+                                            display: 'inline',
+                                            padding: '5px 10px',
+                                            border: '1px solid #cacaca',
+                                            borderRadius: '20px',
+                                        }}>
+                                            <span>Xuất file excel</span>
+                                            <CSVLink
+                                                filename={this.state.nameTestId + ".csv"}
+                                                data={this.state.lstStudentCoreTest}
+                                                headers={headersCSV}
+                                                target="_blank"
+                                                style={{ color: "inherit", marginLeft: 5 }}
                                             >
-                                                <img src={excel} width={20} />
-                                            </span>
-                                        </CSVLink>
+                                                <span
+                                                    id="Tooltip_history_csv"
+                                                    className="left5"
+                                                    placement="top"
+                                                    style={{ padding: 0, marginTop: 3 }}
+                                                >
+                                                    <img src={excel} width={20} />
+                                                </span>
+                                            </CSVLink>
+                                        </div>
                                     </div>
 
                                 </Row>
@@ -646,7 +709,14 @@ class Student extends React.Component {
                             </TabPane>
                             <TabPane tab="Bảng điểm" key="3">
                                 <Row style={{ marginBottom: 10 }}>
-                                    <div style={{ width: "100%", textAlign: 'left' }}><span>Xuất file excel</span>
+                                    <div style={{ width: "100%", textAlign: 'left' }}>
+                                    <div style={{
+                                            display: 'inline',
+                                            padding: '5px 10px',
+                                            border: '1px solid #cacaca',
+                                            borderRadius: '20px',
+                                        }}>
+                                        <span>Xuất file excel</span>
                                         <CSVLink
                                             filename={"Bảng điểm lớp học.csv"}
                                             data={this.props.lstClassScore.data}
@@ -663,6 +733,7 @@ class Student extends React.Component {
                                                 <img src={excel} width={20} />
                                             </span>
                                         </CSVLink>
+                                        </div>
                                     </div>
                                 </Row>
                                 <Row style={{ border: '2px solid #cacaca' }}>
@@ -676,10 +747,46 @@ class Student extends React.Component {
                                     <Table pagination={false} columns={columnsClassScore} dataSource={this.props.lstClassScore.data} style={{ width: '100%' }} scroll={{ y: 240, x: 700 }} />
                                 </Row>
                             </TabPane>
+                            <TabPane tab="Khảo sát" key="4">
+                                <Row style={{ marginBottom: 10 }}>
+
+                                </Row>
+                            </TabPane>
                         </Tabs>
                     </Row>
+               
                 </Row>
-            </>
+                <Drawer
+                    title="Thêm sinh viên"
+                    placement="right"
+                    closable={false}
+                    onClose={() => this.onClose()}
+                    visible={this.state.visibleDrawer}
+                >
+                    <label>Mã số sinh viên</label>
+                    {/* <Select
+                        showSearch
+                        style={{ width: 200 }}
+                        placeholder="Select a person"
+                        optionFilterProp="children"
+                        onChange={e => this.onChangeSelectCodeStudent(e)}
+                        onFocus={this.onFocus}
+                        onBlur={this.onBlur}
+                        onSearch={this.onSearch}
+                        filterOption={(input, option) =>
+                            option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                        }
+                    >
+                        <Option value="jack">Jack</Option>
+                        <Option value="lucy">Lucy</Option>
+                        <Option value="tom">Tom</Option>
+                    </Select> */}
+                    <Input type="text" onChange={(e) => this.setState({ codeStudent: e.target.value.trim() })} placeholder="Student code..." style={{
+                        marginBottom: 10
+                    }} />
+                    <Button onClick={() => this.addStudentToClass()}> Thêm sinh viên </Button>
+                </Drawer>
+            </div>
         )
     }
 }

@@ -10,3 +10,114 @@
 font-size: 25px;
 }
 
+
+.ant-popover-title:hover {
+    background-color: rgba(169, 170, 233, 0.356);
+    cursor: pointer;
+}
+
+.account_info {
+    height: auto;
+    display: block;
+    line-height: normal;
+    text-align: center;
+    color: #3F3F44;
+    padding: 10px 10px 10px;
+}
+
+.account_info .account_avatar {
+    padding: 0px 10px 20px;
+}
+
+.account_info .account_avatar img {
+    width: 48px;
+    height: 48px;
+    box-shadow: none;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.account_info .account_name {
+    color: #3F3F44;
+    line-height: normal;
+    text-align: center;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.account_info .account_email {
+    font-size: 13px;
+    display: block;
+    color: #96A3B6;
+    width: 100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.ant-popover-inner-content {
+    padding: 0%;
+}
+
+.ant-popover-inner-content .menu_item {
+    position: relative;
+    display: block;
+    height: 40px;
+    text-decoration: none;
+    font-size: 14px;
+    line-height: 40px;
+    color: #79589F;
+    padding: 0 46px;
+    background-size: 21px 23px;
+    background-repeat: no-repeat;
+    background-position: 15px 48%;
+}
+
+.ant-popover-inner-content a {
+    border-bottom: 1px solid #EEF1F6;
+}
+
+.ant-popover-inner-content a:hover {
+    background-color: rgba(169, 170, 233, 0.356);
+    cursor: pointer;
+}
+
+.ant-popover-inner-content a.menu_item.setting {
+    background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjEiIGhlaWdodD0iMjMiIHZpZXdCb3g9IjAgMCAyMSAyMyIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48dGl0bGU%2Bc2V0dGluZ3M8L3RpdGxlPjxkZWZzPjxsaW5lYXJHcmFkaWVudCB4MT0iMCUiIHkxPSIwJSIgeTI9IjEwMCUiIGlkPSJhIj48c3RvcCBzdG9wLWNvbG9yPSIjQUM4RUNFIiBvZmZzZXQ9IjAlIi8%2BPHN0b3Agc3RvcC1jb2xvcj0iIzc5NTg5RiIgb2Zmc2V0PSIxMDAlIi8%2BPC9saW5lYXJHcmFkaWVudD48L2RlZnM%2BPHBhdGggZD0iTTE1IDEzSDB2MmgxNWMuMDA1LjU2Mi40NTUgMSAxLjAxIDFoMS45OGMuNTY3IDAgMS4wMS0uNDUyIDEuMDEtMS4wMXYtMS45OGMwLS41NjctLjQ1Mi0xLjAxLTEuMDEtMS4wMWgtMS45OGMtLjU2MyAwLTEuMDA1LjQ0Ny0xLjAxIDF6TTQgN2gxNXYySDRjLS4wMDUuNTUzLS40NDcgMS0xLjAxIDFIMS4wMUMuNDUxIDEwIDAgOS41NTcgMCA4Ljk5VjcuMDFDMCA2LjQ1MS40NDMgNiAxLjAxIDZoMS45OGMuNTU1IDAgMS4wMDUuNDM4IDEuMDEgMXptMTEtNkgwdjJoMTVjLjAwNS41NjIuNDU1IDEgMS4wMSAxaDEuOThDMTguNTU4IDQgMTkgMy41NDggMTkgMi45OVYxLjAxQzE5IC40NDIgMTguNTQ4IDAgMTcuOTkgMGgtMS45OGMtLjU2MyAwLTEuMDA1LjQ0Ny0xLjAxIDF6bTEgLjI0NWMwLS4xMzUuMTA4LS4yNDUuMjQ1LS4yNDVoMS41MWMuMTM1IDAgLjI0NS4xMDguMjQ1LjI0NXYxLjUxYS4yNDQuMjQ0IDAgMCAxLS4yNDUuMjQ1aC0xLjUxQS4yNDQuMjQ0IDAgMCAxIDE2IDIuNzU1di0xLjUxem0tMTUgNkMxIDcuMTEgMS4xMDggNyAxLjI0NSA3aDEuNTFDMi44OSA3IDMgNy4xMDggMyA3LjI0NXYxLjUxQS4yNDQuMjQ0IDAgMCAxIDIuNzU1IDloLTEuNTFBLjI0NC4yNDQgMCAwIDEgMSA4Ljc1NXYtMS41MXptMTUgNmMwLS4xMzUuMTA4LS4yNDUuMjQ1LS4yNDVoMS41MWMuMTM1IDAgLjI0NS4xMDguMjQ1LjI0NXYxLjUxYS4yNDQuMjQ0IDAgMCAxLS4yNDUuMjQ1aC0xLjUxYS4yNDQuMjQ0IDAgMCAxLS4yNDUtLjI0NXYtMS41MXoiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEgMykiIGZpbGw9InVybCgjYSkiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjwvc3ZnPg%3D%3D);
+}
+
+.ant-popover-inner-content a.menu_item.sign_out {
+    background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjEiIGhlaWdodD0iMjMiIHZpZXdCb3g9IjAgMCAyMSAyMyIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48dGl0bGU%2Bc2lnbm91dDwvdGl0bGU%2BPGRlZnM%2BPGxpbmVhckdyYWRpZW50IHgxPSIwJSIgeTE9IjAlIiB5Mj0iMTAwJSIgaWQ9ImEiPjxzdG9wIHN0b3AtY29sb3I9IiNBQzhFQ0UiIG9mZnNldD0iMCUiLz48c3RvcCBzdG9wLWNvbG9yPSIjNzk1ODlGIiBvZmZzZXQ9IjEwMCUiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cGF0aCBkPSJNMTQuODU3IDRIMHYyaDE0Ljg1N0wxMiA4LjVsMS41IDEuNSA1LTUtNS01TDEyIDEuNSAxNC44NTcgNHoiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEgNikiIGZpbGw9InVybCgjYSkiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjwvc3ZnPg%3D%3D);
+}
+
+.ui-avatar img{
+    width: 30px;
+    height: 30px;
+}
+
+button.btn-account-info{
+    outline: none;
+}
+
+button.btn-account-info.ant-popover-open {
+    border: 0;
+    outline: 0;
+    width: 46px;
+}
+
+button.btn-login{
+    border: 1px solid #cacaca;
+    border-radius: 20px;
+    width: 210px;
+    padding: 5px 0px;
+    font-size: 20px;
+    line-height: 20px;
+    cursor: pointer;
+    padding: 8px 0;
+    /* display: block; */
+}
+
+button.btn-login:hover{
+    background: #3498db;
+    color: #fff;
+}
