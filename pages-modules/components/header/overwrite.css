@@ -1,15 +1,13 @@
-.popover-login > div:hover{
+.popover-login>div:hover {
     color: #000;
     font-weight: 700;
     cursor: pointer;
 }
 
-
-#rcDialogTitle0{
+#rcDialogTitle0 {
     text-align: center;
-font-size: 25px;
+    font-size: 25px;
 }
-
 
 .ant-popover-title:hover {
     background-color: rgba(169, 170, 233, 0.356);
@@ -90,12 +88,12 @@ font-size: 25px;
     background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjEiIGhlaWdodD0iMjMiIHZpZXdCb3g9IjAgMCAyMSAyMyIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48dGl0bGU%2Bc2lnbm91dDwvdGl0bGU%2BPGRlZnM%2BPGxpbmVhckdyYWRpZW50IHgxPSIwJSIgeTE9IjAlIiB5Mj0iMTAwJSIgaWQ9ImEiPjxzdG9wIHN0b3AtY29sb3I9IiNBQzhFQ0UiIG9mZnNldD0iMCUiLz48c3RvcCBzdG9wLWNvbG9yPSIjNzk1ODlGIiBvZmZzZXQ9IjEwMCUiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cGF0aCBkPSJNMTQuODU3IDRIMHYyaDE0Ljg1N0wxMiA4LjVsMS41IDEuNSA1LTUtNS01TDEyIDEuNSAxNC44NTcgNHoiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEgNikiIGZpbGw9InVybCgjYSkiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjwvc3ZnPg%3D%3D);
 }
 
-.ui-avatar img{
+.ui-avatar img {
     width: 30px;
     height: 30px;
 }
 
-button.btn-account-info{
+button.btn-account-info {
     outline: none;
 }
 
@@ -105,8 +103,7 @@ button.btn-account-info.ant-popover-open {
     width: 46px;
 }
 
-button.btn-login{
-    border: 1px solid #cacaca;
+button.btn-login {
     border-radius: 20px;
     width: 210px;
     padding: 5px 0px;
@@ -117,7 +114,10 @@ button.btn-login{
     /* display: block; */
 }
 
-button.btn-login:hover{
-    background: #3498db;
-    color: #fff;
+.ant-btn-round.ant-btn-lg {
+    font-size: 20px;
+}
+
+.ant-form-item-control-input {
+    margin: 0;
 }
