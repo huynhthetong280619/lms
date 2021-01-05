@@ -121,3 +121,7 @@ button.btn-login {
 .ant-form-item-control-input {
     margin: 0;
 }
+
+div.ant-row.ant-form-item {
+    margin: 10px 10px;
+}
