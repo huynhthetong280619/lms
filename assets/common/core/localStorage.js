@@ -40,6 +40,12 @@ export const removeLocalStorage = (key) => {
     }
 };
 
+export const getLocalStorage = (key) => {
+    if (window !== "undefined") {
+        return localStorage.getItem(key);
+    }
+};
+
 // Auth enticate user by passing data to cookie and local storage during signin
 export const authenticate = (response, next) => {
     console.log("AUTHENTICATE HELPER ON SIGNIN RESPONSE", response);
