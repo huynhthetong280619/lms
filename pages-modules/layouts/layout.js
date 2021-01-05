@@ -14,7 +14,7 @@ import { I18nextProvider } from "react-i18next";
 import Head from 'next/head'
 
 const IndexLayout = ({ children }) => {
-
+    
     return (
         <I18nextProvider i18n={i18n}>
             <Layout className={styles.mainLayout}>
@@ -27,7 +27,7 @@ const IndexLayout = ({ children }) => {
                 <Header className={styles.header}>
                     <Headers />
                 </Header>
-                <Content className={styles.content}>{children}</Content>
+                <Content className={styles.content} >{children}</Content>
                 <Footer className={styles.footer}>
                     <Footers />
                 </Footer>

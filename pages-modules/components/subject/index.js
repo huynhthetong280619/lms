@@ -142,8 +142,8 @@ class Subject extends React.Component {
         console.log('componentDidMount', this.props.subject, this.props.lstQuizzis, this.props.lstTimeline);
 
         const user = JSON.parse(localStorage.getItem('user'));
-        
-        if(user?.idPrivilege == 'student'){
+
+        if (user?.idPrivilege == 'student') {
             this.setState({
                 isTeacherPriviledge: false,
                 deadlines: this.props.lstDeadline,
@@ -151,7 +151,7 @@ class Subject extends React.Component {
             })
         }
 
-        if(user?.idPrivilege == 'teacher'){
+        if (user?.idPrivilege == 'teacher') {
             this.setState({
                 isTeacherPriviledge: true
             })
@@ -361,7 +361,7 @@ class Subject extends React.Component {
             isLoading: true
         })
         // formData.append('file', this.state.FileAssign)
-        await restClient.asyncPost(`/assignment/${idAssignment}/submit`, {idSubject: this.props.idSubject, idTimeline: this.state.timelineIdRequirement, file: objResult}, this.props.token)
+        await restClient.asyncPost(`/assignment/${idAssignment}/submit`, { idSubject: this.props.idSubject, idTimeline: this.state.timelineIdRequirement, file: objResult }, this.props.token)
             .then(res => {
                 if (!res.hasError) {
                     this.notifySuccess('Thành công!', 'Nộp bài thành công')
@@ -834,20 +834,33 @@ class Subject extends React.Component {
         console.log('Edit', id)
     }
 
-    lock = async (url) => {
+    lock = async (url, timelineId, Id) => {
+        console.log('token', this.props.token)
 
-        await restClient.asyncPut(url, this.props.token)
-            .then(res => {
-                console.log('Lock', res)
+        let timelineUpdate = this.state.timelines.filter(({ _id }) => _id == timelineId)
 
-            })
+        let assignment = timelineUpdate.assignments.forEach((item, index) => {
+            if (item._id == Id) {
+
+            }
+        })
+        console.log('timelineUpdate', timelineUpdate)
+        // await restClient.asyncPut(url, this.props.token)
+        //     .then(res => {
+        //         console.log('Lock', res)
+        //         if (!res.hasError) {
+
+        //         }
+        //     })
     }
 
     unlock = async (url) => {
-
+        console.log('token', this.props.token)
         await restClient.asyncPut(url, this.props.token)
             .then(res => {
-                console.log('Lock', res)
+                if (!res.hasError) {
+
+                }
             })
 
     }
@@ -913,7 +926,7 @@ class Subject extends React.Component {
                     <ul>
                         <li style={{ textDecoration: 'none' }}>
                             {
-                                isDeleted ? <a onClick={() => this.unlock(`/assignment/${Id}/hide?idSubject=${this.props.idSubject}&idTimeline=${timelineId}`)}>Unlock</a> : <a onClick={() => this.lock(`/assignment/${Id}/hide?idSubject=${this.props.idSubject}&idTimeline=${timelineId}`)}>Lock</a>
+                                isDeleted ? <a onClick={() => this.unlock(`/assignment/${Id}/hide?idSubject=${this.props.idSubject}&idTimeline=${timelineId}`, timelineId, Id)}>Unlock</a> : <a onClick={() => this.lock(`/assignment/${Id}/hide?idSubject=${this.props.idSubject}&idTimeline=${timelineId}`, timelineId, Id)}>Lock</a>
                             }
                         </li>
                         <li style={{ textDecoration: 'none' }}>
@@ -929,7 +942,7 @@ class Subject extends React.Component {
                     <ul>
                         <li style={{ textDecoration: 'none' }}>
                             {
-                                isDeleted ? <a onClick={() => this.unlock(`/survey/${Id}/hide?idSubject=${this.props.idSubject}&idTimeline=${timelineId}`)}>Unlock</a> : <a onClick={() => this.lock(`/survey/${Id}//hide?idSubject=${this.props.idSubject}&idTimeline=${timelineId}`)}>Lock</a>
+                                isDeleted ? <a onClick={() => this.unlock(`/survey/${Id}/hide?idSubject=${this.props.idSubject}&idTimeline=${timelineId}`, timelineId, Id)}>Unlock</a> : <a onClick={() => this.lock(`/survey/${Id}/hide?idSubject=${this.props.idSubject}&idTimeline=${timelineId}`, timelineId, Id)}>Lock</a>
                             }
                         </li>
                         <li style={{ textDecoration: 'none' }}>
@@ -1321,7 +1334,7 @@ class Subject extends React.Component {
                                             padding: '5px 20px',
                                             textAlign: 'center'
                                         }}>
-                                            <img src={get(this.state.assigmentRequirement.submission, 'file')?.type.includes('doc') ? word: get(this.state.assigmentRequirement.submission, 'file')?.type == 'rar' ? rar : file} />
+                                            <img src={get(this.state.assigmentRequirement.submission, 'file')?.type.includes('doc') ? word : get(this.state.assigmentRequirement.submission, 'file')?.type == 'rar' ? rar : file} />
                                             <div>{get(this.state.assigmentRequirement.submission, 'file')?.name}</div>
                                         </div>
                                     </div>
@@ -2050,84 +2063,9 @@ class Subject extends React.Component {
                                     </div>
                                 </div>
                                 <div>
-                                    {/* Empty */}
-                                    {/* <div style={{
-                                                textAlign: 'center',
-                                                padding: '45px'
-                                            }}>
-                                                <i>
-                                                    <img src={deadlineCalcular} />
-                                                </i>
-                                                <div style={{ color: '#c4c4c4', fontStyle: 'italic' }}>No upcoming deadline</div>
-                                            </div> */}
-                                    {/* Deadline */}
-                                    <Row style={{ justifyContent: 'center' }}>
-                                        <Tabs defaultActiveKey="1" centered>
-                                            <TabPane tab={<span> <AlertOutlined twoToneColor="#ff0000" />{t('dl')}</span>} key="1">
-                                                <div style={{
-                                                    maxHeight: '400px',
-                                                    overflowY: 'auto'
-                                                }}>
-                                                    {this.state.deadlines.length > 0 ? this.state.deadlines.map(dl => (
-                                                        <Row key={dl._id} style={{
-                                                            marginBottom: 5, border: "2px solid #cacaca",
-                                                            padding: "10px 0", cursor: 'pointer'
-                                                        }} onClick={() => {
-                                                            this.getRequirementAssignment(dl._id, dl.idSubject, dl.idTimeline);
-                                                            // if(flagLoading){
-                                                            //     this.setState({ visible: true })
-                                                            // }
-                                                        }}>
-                                                            <Col span={10} style={{ textAlign: "center", alignSelf: "center" }}><i>
-                                                                <img src={fastTime} width="36px" />
-                                                            </i></Col>
-                                                            <Col span={12} >
-                                                                <div>{dl.name}</div>
-                                                                <div>
-                                                                    <span style={{ fontWeight: 600 }}>Due to: </span>{this.transTime(get(dl, 'expireTime'))}
-                                                                </div>
-                                                                <div>
-                                                                    <span style={{ fontWeight: 600 }}>Time remaining:</span> {moment.utc(get(dl, 'expireTime')).fromNow()}
-                                                                </div>
-                                                            </Col>
-                                                        </Row>
-                                                    )) : <Row>
-                                                            <img src={deadlineCalcular} />
-                                                            <div style={{ width: "100%", color: '#cacaca', textAlign: 'center' }}>No upcoming deadline</div>
-                                                        </Row>}
-                                                </div>
-                                            </TabPane>
-                                            <TabPane tab={
-                                                <span><CheckCircleTwoTone twoToneColor="#52c41a" />
-                                                    {t('complt')}
-                                                </span>} key="2">
-                                                <div style={{
-                                                    maxHeight: '400px',
-                                                    overflowY: 'auto'
-                                                }}>
-                                                    {this.state.dueTo.map(dt => (
-                                                        <Row key={dt._id} style={{
-                                                            marginBottom: 5, color: "#2ecc71", border: "2px solid #cacaca",
-                                                            padding: "10px 0"
-                                                        }}>
-                                                            <Col span={10} style={{ textAlign: "center", alignSelf: "center" }}><i>
-                                                                <img src={fastTime} width="36px" />
-                                                            </i></Col>
-                                                            <Col span={10} >
-                                                                <div>{dt.name}</div>
-                                                                <div>
-                                                                    <span style={{ fontWeight: 600 }}>Due to: </span>{this.transTime(get(dt, 'expireTime'))}
-                                                                </div>
-                                                                <div>
-                                                                    <span style={{ fontWeight: 600 }}>Time remaining:</span> {moment.utc(get(dt, 'expireTime')).fromNow()}
-                                                                </div>
-                                                            </Col>
-                                                        </Row>
-                                                    ))}
-                                                </div>
-                                            </TabPane>
-                                        </Tabs>
-                                    </Row>
+
+                                    <Deadline deadlines={this.state.deadlines} dueTo={this.state.dueTo} />
+
                                 </div>
                             </Col>
                     }

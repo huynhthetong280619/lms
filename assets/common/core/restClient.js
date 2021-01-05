@@ -166,12 +166,11 @@ class RestClient {
     }
   }
 
-  async asyncPut(path, data, token) {
+  async asyncPut(path,  token, data) {
     try {
       const response = await fetch(this.getUrl(path), {
         method: 'PUT',
-        headers: this.createHeaders(token),
-        body: JSON.stringify(data),
+        headers: this.createHeaders(token)
       });
 
       const resData = await parseReponse(response);

@@ -30,6 +30,7 @@ class Courses extends React.Component {
     }
 
     componentDidMount() {
+        console.log('isLoadingGlobal, setIsLoadingGlobal', this.props.isLoadingGlobal, this.props.setIsLoadingGlobal)
         this.setState({
             courses: this.props.listCourses || [],
             deadlines: this.props.listDeadline || [],

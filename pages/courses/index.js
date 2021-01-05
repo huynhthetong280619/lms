@@ -6,7 +6,7 @@ import { get } from 'lodash'
 import { parseCookies } from '../../assets/helpers'
 // import { parseCookies, setCookie, destroyCookie } from 'nookies'
 
-const PageCourse = ({ listCourses = [], lstAssignment = [], token }) => {
+const PageCourse = ({ listCourses = [], lstAssignment = [], token, isLoadingGlobal, setIsLoadingGlobal }) => {
 
     const listDeadline = (lstAssignment || []).filter(obj => obj.isSubmit === false)
     const listDueAssginment = (lstAssignment || []).filter(obj => obj.isSubmit === true)
@@ -15,7 +15,7 @@ const PageCourse = ({ listCourses = [], lstAssignment = [], token }) => {
 
     return (
         <IndexLayout>
-            <Courses listCourses={listCourses || []} listDeadline={listDeadline} listDueAssginment={listDueAssginment} token={token}/>
+            <Courses listCourses={listCourses || []} listDeadline={listDeadline} listDueAssginment={listDueAssginment} token={token} isLoadingGlobal={isLoadingGlobal} setIsLoadingGlobal={setIsLoadingGlobal}/>
         </IndexLayout>
     )
 }

@@ -61,7 +61,7 @@ class Survey extends React.Component {
                                     <div style={{ fontSize: '2em' }}>{get(survey, 'name')}</div>
                                     <div>
                                         <div><span style={{ fontWeight: 700 }}>Closed: </span> {this.transTime(get(survey, 'expireTime'))}</div>
-                                        <div><span style={{ fontWeight: 700 }}>Time remaining: </span> {moment(get(survey, 'timeRemain')).fromNow()}</div>
+                                        <div><span style={{ fontWeight: 700 }}>Time remaining: </span> {moment(Number(get(survey, 'timeRemain'))/1000).fromNow()}</div>
                                         <div><span style={{ fontWeight: 700 }}>Status: </span>{get(survey, 'isRemain') ? <span style={{ color: '#44bd32', fontWeight: 900 }}>Opening</span> : <span style={{ color: '#e84118', fontWeight: 900 }}>Closed</span>}</div>
                                     </div>
                                     <div>

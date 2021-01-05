@@ -19,7 +19,7 @@ import { UserOutlined, KeyOutlined, GoogleOutlined, FacebookOutlined, PoweroffOu
 import Router from 'next/router'
 import { authenticate, removeCookie } from '../../../assets/common/core/localStorage';
 import { css } from "@emotion/core";
-import ClipLoader from "react-spinners/ClipLoader";
+import FadeLoader from "react-spinners/FadeLoader";
 
 const { SubMenu } = Menu;
 
@@ -38,7 +38,8 @@ class Headers extends React.Component {
         isLogin: false,
         username: '',
         isLoading: false,
-        loginChange: 'Sign in'
+        loginChange: 'Sign in',
+        isLoadingPage: false
     };
 
     componentDidMount() {
@@ -74,7 +75,8 @@ class Headers extends React.Component {
     handleLogin = async () => {
         this.setState({
             isLoading: true,
-            loginChange: "On Authenticate..."
+            loginChange: "On Authenticate...",
+            isLoadingPage: true
         })
         console.log(this.state.username);
         console.log(this.state.password);
@@ -147,6 +149,8 @@ class Headers extends React.Component {
 
     logout = (e) => {
 
+        this.setState({isLoadingPage: true})
+
         removeCookie('token');
         localStorage.removeItem('user')
         Router.push({ pathname: "/" });
@@ -179,14 +183,19 @@ class Headers extends React.Component {
 
         return (
             <Row style={{ paddingTop: 10, paddingBottom: 10 }} className="lms_ws_header--">
-                {/* <div className="sweet-loading">
-                    <ClipLoader
+                <div className="sweet-loading" style={{
+                        position: 'absolute',
+                        zIndex: 1000,
+                        top: '50%',
+                        left: '50%',
+                }}>
+                    <FadeLoader
                         css={override}
                         size={150}
                         color={"#123abc"}
-                        loading={this.state.loading}
+                        loading={this.state.isLoadingPage}
                     />
-                </div> */}
+                </div>
                 <Modal title="Login form" centered={true} visible={this.state.isVisible} onOk={this.handleOk} onCancel={this.handleCancel} footer={null}>
                     <Row style={{ margin: '10px 0' }}>
                         <Input size="large" onChange={(text) => { this.setState({ username: text.target.value }) }} placeholder="Enter your code..." prefix={<UserOutlined />} style={{ borderRadius: 20 }} />
@@ -245,7 +254,7 @@ class Headers extends React.Component {
                     </div>
                 </Col>
                 <Col span={4}>
-                    <Breadcrumb>
+                    {/* <Breadcrumb>
                         <Breadcrumb.Item href="">
                             <HomeOutlined />
                         </Breadcrumb.Item>
@@ -254,7 +263,7 @@ class Headers extends React.Component {
                             <span>Application List</span>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>Application</Breadcrumb.Item>
-                    </Breadcrumb>
+                    </Breadcrumb> */}
                 </Col>
                 <Col xs={10}>
                     {/* Authentication */}
