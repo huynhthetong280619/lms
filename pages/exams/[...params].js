@@ -8,13 +8,13 @@ import { parseCookies } from '../../assets/helpers'
 
 const ExamsPage = ({examQuestion, subject, idSubject,
     idTimeline,
-    idExam}) => {
+    idExam, token}) => {
     
     const nameSubject = get(subject, 'name')
     console.log('examQuestion', examQuestion)
 
     return <IndexLayout>
-         <Exams examQuestion={examQuestion} subject={subject} nameSubject={nameSubject} idSubject={idSubject} idTimeline={idTimeline} idExam={idExam}/>
+         <Exams examQuestion={examQuestion} subject={subject} nameSubject={nameSubject} idSubject={idSubject} idTimeline={idTimeline} idExam={idExam} token={token}/>
     </IndexLayout>
 }
 
@@ -44,7 +44,8 @@ const data = parseCookies(ctx.req);
         subject: get(subject, 'data'),
         idSubject,
         idTimeline,
-        idExam
+        idExam,
+        token
     }
 }
 

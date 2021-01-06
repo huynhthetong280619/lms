@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
-import { Button, Col, Row, Popover, Menu, Modal, Input, Tooltip } from 'antd'
-
+import { Button, Col, Row, Popover, Menu, Modal, Input, Tooltip, Breadcrumb } from 'antd'
+import { Form, Divider, message } from 'antd'
+import { Avatar, dividerClassName } from "@fluentui/react-northstar";
 import { GoogleLogin } from 'react-google-login';
 import { GOOGLE_CLIENT_ID, FACEBOOK_CLIENT_ID } from '../../../assets/constants/const'
 import restClient from '../../../assets/common/core/restClient'
@@ -10,34 +11,47 @@ import { get, isEmpty } from 'lodash'
 import styles from './styles.scss'
 import './overwrite.css'
 
-import message from '../../../assets/images/contents/chat.png'
+//import message from '../../../assets/images/contents/chat.png'
 import notification from '../../../assets/images/contents/notification.png'
 import profile from '../../../assets/images/contents/profile.png'
+import enter from '../../../assets/images/contents/enter.png'
 import logo from '../../../assets/logo/logo.png'
-import { UserOutlined, KeyOutlined, GoogleOutlined, FacebookOutlined, PoweroffOutlined } from '@ant-design/icons';
-import cookieCutter from 'cookie-cutter'
+import { UserOutlined, KeyOutlined, GoogleOutlined, FacebookOutlined, PoweroffOutlined, HomeOutlined } from '@ant-design/icons';
 import Router from 'next/router'
-import { authenticate, removeCookie } from '../../../assets/common/core/localStorage';
+import { authenticate, removeCookie, isAuth } from '../../../assets/common/core/localStorage';
+import { css } from "@emotion/core";
+import ClipLoader from "react-spinners/ClipLoader";
+
+
 const { SubMenu } = Menu;
+
+const override = css`
+  display: block;
+  margin: 0 auto;
+  border-color: red;
+`;
 class Headers extends React.Component {
 
     state = {
         current: 'mail',
         isVisible: false,
-        username: '',
-        password: '',
         isLogin: false,
-        username: ''
+        username: '',
+        isLoading: false,
+        loginChange: 'Sign in'
     };
 
     componentDidMount() {
-        const user = JSON.parse(JSON.stringify(localStorage.getItem('user')))
-        console.log('user', user)
-        if (!isEmpty(user)) {
-            this.setState({
-                isLogin: true,
-                username: user.code
-            })
+        if (isAuth) {
+            const user = JSON.parse((localStorage.getItem('user')));
+            console.log('user', user)
+            if (!isEmpty(user)) {
+                this.setState({
+                    isLogin: true,
+                    username: user.code,
+                    profile: user
+                })
+            }
         }
     }
 
@@ -59,14 +73,18 @@ class Headers extends React.Component {
         this.setState({ current: e.key });
     };
 
-    handleLogin = async () => {
-        console.log(this.state.username);
-        console.log(this.state.password);
+    handleLogin = async (values) => {
+        this.setState({
+            isLoading: true,
+            loginChange: "On Authenticate..."
+        })
+        console.log(values.username);
+        console.log(values.password);
         const data = {
-            code: this.state.username,
-            password: this.state.password
+            code: values.username,
+            password: values.password
         }
-        await restClient.asyncPost(`/user/authenticate`, data)
+        await restClient.asyncPost(`/user/authenticate`, data, null)
             .then(res => {
                 if (!res.hasError) {
                     // cookieCutter.set('token', get(res.data, 'token'))
@@ -76,6 +94,9 @@ class Headers extends React.Component {
                     authenticate(res, () => {
                         Router.push("/courses");
                     })
+                } else {
+                    this.setState({ isLoading: false, loginChange: 'Sign in' });
+                    message.error(res.data.message);
                 }
             })
 
@@ -87,8 +108,11 @@ class Headers extends React.Component {
         const data = {
             token: token
         }
-
-        await restClient.asyncPost(`/user/auth/google`, data)
+        this.setState({
+            isLoading: true,
+            loginChange: "On Authenticate..."
+        })
+        await restClient.asyncPost(`/user/auth/google`, data, null)
             .then(res => {
                 console.log(res.data);
                 if (!res.hasError) {
@@ -96,18 +120,26 @@ class Headers extends React.Component {
                         Router.push("/courses");
                     })
                 }
+                else {
+                    this.setState({ isLoading: false, loginChange: 'Sign in' });
+                    message.error(res.data.message);
+                }
             })
     }
 
     responseFacebook = async (response) => {
-        console.log('responseFacebook',response);
+        this.setState({
+            isLoading: true,
+            loginChange: "On Authenticate..."
+        })
+        console.log('responseFacebook', response);
         const token = response.accessToken;
         console.log('responseFacebook', token);
         const data = {
             token: token
         }
 
-        await restClient.asyncPost(`/user/auth/facebook`, data)
+        await restClient.asyncPost(`/user/auth/facebook`, data, null)
             .then(res => {
                 console.log(res.data);
                 if (!res.hasError) {
@@ -116,52 +148,107 @@ class Headers extends React.Component {
                     //     '/courses'
                     // )
                     authenticate(res, () => {
-                        Router.push({pathname: "/courses"});
+                        Router.push({ pathname: "/courses" });
                     })
+                }
+                else {
+                    this.setState({ isLoading: false, loginChange: 'Sign in' });
+                    message.error(res.data.message);
                 }
             })
     }
 
-    logout = () => {
+    logout = (e) => {
+        this.setState({ isLogin: false });
         removeCookie('token');
         localStorage.removeItem('user')
-
-        Router.push({pathname: "/"})
+        Router.push({ pathname: "/" });
     }
 
     render() {
-        const text = (<div>
-            <div>Sign in as</div>
-            <div>{this.state.username}</div>
-        </div>);
 
         const content = (
-            <div className="popover-login">
-                <a href='/profiles'>Your profile</a>
-                <div onClick={() => this.logout()}>Sign out</div>
-            </div>)
+            <div>
+                <a className='menu_item setting' href="/profiles">Account settings</a>
+                <a className='menu_item sign_out'
+                    onClick={(e) => this.logout()}
+                >Sign out</a>
+            </div>
+        );
+
+        const title = (
+            <div className='account_info'>
+                <div className='account_avatar'>
+                    <Avatar image={get(this.state.profile, 'urlAvatar')} />
+                </div>
+                <div className='account_name'>{get(this.state.profile, 'surName') + ' ' + get(this.state.profile, 'firstName')}</div>
+                <div className='account_email'>{get(this.state.profile, 'emailAddress')}</div>
+            </div>
+        );
+
+        console.log('title', this.state.profile)
 
         const { current } = this.state;
 
         return (
             <Row style={{ paddingTop: 10, paddingBottom: 10 }} className="lms_ws_header--">
+                {/* <div className="sweet-loading">
+                    <ClipLoader
+                        css={override}
+                        size={150}
+                        color={"#123abc"}
+                        loading={this.state.loading}
+                    />
+                </div> */}
                 <Modal title="Login form" centered={true} visible={this.state.isVisible} onOk={this.handleOk} onCancel={this.handleCancel} footer={null}>
-                    <Row style={{ margin: '10px 0' }}>
-                        <Input size="large" onChange={(text) => { this.setState({ username: text.target.value }) }} placeholder="Enter your code..." prefix={<UserOutlined />} style={{ borderRadius: 20 }} />
-                    </Row>
-                    <Row style={{ margin: '10px 0' }}>
-                        <Input size="large" onChange={(text) => { this.setState({ password: text.target.value }) }} placeholder="Enter your password..." prefix={<KeyOutlined />} style={{ borderRadius: 20 }} />
-                    </Row>
-                    <Row style={{ textAlign: 'center', margin: '10px 0' }}>
-                        <div>
-                            <Button type='primary' onClick={this.handleLogin} style={{ borderRadius: 20, width: 100, padding: '5px 0', fontSize: 20, lineHeight: '20px' }}>Login</Button>
-                        </div>
-                    </Row>
+                    <Form
+                        onFinish={this.handleLogin}
+                    >
+                        <Form.Item
+                            name="username"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Please input your Username!',
+                                },
+                            ]}
+                        >
+                            <Input
+                                style={{ borderRadius: 20, }}
+                                size='large'
+                                prefix={<UserOutlined className="site-form-item-icon" />}
+                                placeholder="Enter your code..." />
+                        </Form.Item>
+                        <Form.Item
+                            name="password"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Please input your Password!',
+                                },
+                            ]}
+                        >
+                            <Input.Password
+                                prefix={<KeyOutlined className="site-form-item-icon" />}
+                                style={{ borderRadius: 20, }} size='large'
+                                placeholder="Enter your password..."
+                            />
+                        </Form.Item>
+
+                        <Form.Item
+                            style={{ textAlign: 'center' }}
+                        >
+                            <Button className="btn-login" type="primary" size='large' shape="round" htmlType="submit"
+                                loading={this.state.isLoading}>
+                                {this.state.loginChange}</Button>
+                        </Form.Item>
+                    </Form>
+
                     <Row style={{ textAlign: 'center' }}>
-                        <div style={{
+                        <Divider style={{
                             width: "100%", color: '#cacaca',
                             fontWeight: 600
-                        }}>Other login</div>
+                        }}> Or sign by certificate</Divider>
                         <Row style={{ width: "100%" }}>
                             <GoogleLogin
                                 clientId={GOOGLE_CLIENT_ID}
@@ -190,7 +277,6 @@ class Headers extends React.Component {
                                     </Col>
                                 )}
                             />
-
                         </Row>
 
                     </Row>
@@ -203,45 +289,38 @@ class Headers extends React.Component {
                         </a></span>
                     </div>
                 </Col>
-                <Col span={10}>
-
+                <Col span={4}>
+                    <Breadcrumb>
+                        <Breadcrumb.Item href="">
+                            <HomeOutlined />
+                        </Breadcrumb.Item>
+                        <Breadcrumb.Item href="">
+                            <UserOutlined />
+                            <span>Application List</span>
+                        </Breadcrumb.Item>
+                        <Breadcrumb.Item>Application</Breadcrumb.Item>
+                    </Breadcrumb>
                 </Col>
-                <Col xs={8}>
+                <Col xs={10}>
                     {/* Authentication */}
                     {
                         this.state.isLogin ? <div style={{ textAlign: 'right' }}>
-                            <Popover>
-                                <span>
-                                    <i>
-                                        <img src={message} />
-                                    </i>
-                                </span>
-                            </Popover>
-                            <Popover>
-                                <span>
-                                    <i>
-                                        <img src={notification} />
-                                    </i>
-                                </span>
-                            </Popover>
-                            <Popover placement="top" title={text} content={content} trigger="click">
-                                <span>
-                                    <i>
-                                        <img src={profile} style={{ width: '32px' }} />
-                                    </i>
-                                    <span style={{
-                                        paddingLeft: '5px', fontSize: '15px',
-                                        fontWeight: '800',
-                                        color: '#fff'
-                                    }}>Profile</span>
-                                </span>
+                            <Popover placement="bottomRight" title={title} content={content} trigger="click">
+                                <button className='btn-account-info' style={{
+                                    height: '46px',
+                                    verticalAlign: 'bottom',
+                                    lineHeight: '46px',
+                                    borderRadius: '50%'
+                                }}>
+                                    <Avatar image={this.state.profile.urlAvatar} />
+                                </button>
                             </Popover>
                         </div>
                             :
                             <div className={styles.blockLogin}>
                                 <Button className={styles.btnLogin} onClick={() => this.openLogin()}>
                                     <Tooltip title="Click to login">
-                                        <PoweroffOutlined />
+                                        <img src={enter} width={20} />
                                     </Tooltip>
                                 </Button>
                             </div>

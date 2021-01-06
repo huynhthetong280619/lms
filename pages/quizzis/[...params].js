@@ -7,10 +7,10 @@ import {get} from 'lodash'
 import { parseCookies } from '../../assets/helpers'
 
 
-const QuizPage = ({requirementExam, idExam,idTimeline, subject, idSubject }) => {
+const QuizPage = ({requirementExam, idExam,idTimeline, subject, idSubject, token }) => {
     const nameSubject = get(subject, 'name')
     return <IndexLayout>
-       <Quiz requirementExam={requirementExam} idExam={idExam} idTimeline={idTimeline} nameSubject={nameSubject} idSubject={idSubject}/>
+       <Quiz requirementExam={requirementExam} idExam={idExam} idTimeline={idTimeline} nameSubject={nameSubject} idSubject={idSubject} token={token}/>
     </IndexLayout>
 }
 
@@ -28,7 +28,8 @@ const data = parseCookies(ctx.req);
         idExam,
         idTimeline,
         subject: get(subject, 'data').subject,
-        idSubject
+        idSubject,
+        token
     }
 }
 

@@ -6,12 +6,12 @@ import { get } from 'lodash'
 import { parseCookies } from '../../assets/helpers'
 
 const SurveyExePage = ({ surveyQ, subject, idSubject,
-    idTimeline, idSurvey }) => {
+    idTimeline, idSurvey, token }) => {
     const nameSubject = get(subject, 'name');
 
     return <IndexLayout>
         <SurveyExecute surveyQ={surveyQ} nameSubject={nameSubject} idSubject={idSubject}
-            idTimeline={idTimeline} idSurvey={idSurvey} />
+            idTimeline={idTimeline} idSurvey={idSurvey} token={token}/>
     </IndexLayout>
 }
 
@@ -31,7 +31,8 @@ SurveyExePage.getInitialProps = async (ctx) => {
         subject: get(subject, 'data').subject,
         idSubject,
         idTimeline,
-        idSurvey
+        idSurvey,
+        token
     }
 }
 

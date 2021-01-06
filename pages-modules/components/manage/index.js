@@ -27,7 +27,7 @@ class Manage extends React.Component {
             grade: this.state.grade
         }
 
-        await restClient.asyncPost(`/assignment/${this.props.idAssign}/grade/${idSubmission}`, data)
+        await restClient.asyncPost(`/assignment/${this.props.idAssign}/grade/${idSubmission}`, data, this.props.token)
             .then(res => {
                 console.log('enterGradeVerif', res)
             })
@@ -78,7 +78,6 @@ class Manage extends React.Component {
                 width: '80%',
                 textAlign: 'center',
                 background: '#fff',
-                borderRadius: '15px',
                 minHeight: '20px'
             }}>
 

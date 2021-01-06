@@ -5,11 +5,11 @@ import Student from '../../pages-modules/components/students/index'
 import {get} from 'lodash'
 import { parseCookies } from '../../assets/helpers'
 
-const StudentPage = ({ listStudent, lstSubmissionCore=[], idSubject, subject, lstClassScore }) => {
+const StudentPage = ({ listStudent, lstSubmissionCore=[], idSubject, subject, lstClassScore, token }) => {
     const nameSubject = get(subject, 'name')
     return (
         <IndexLayout>
-            <Student listStudent={listStudent} lstSubmissionCore={lstSubmissionCore || []} idSubject={idSubject} nameSubject={nameSubject} lstClassScore={lstClassScore}/>
+            <Student listStudent={listStudent} lstSubmissionCore={lstSubmissionCore || []} idSubject={idSubject} nameSubject={nameSubject} lstClassScore={lstClassScore} token={token}/>
         </IndexLayout>
     )
 }
@@ -27,7 +27,8 @@ const data = parseCookies(ctx.req);
         lstSubmissionCore: get(lstSubmissionCore, 'data'),
         idSubject,
         subject,
-        lstClassScore: get(lstClassScore, 'data')
+        lstClassScore: get(lstClassScore, 'data'),
+        token
     }
 }
 

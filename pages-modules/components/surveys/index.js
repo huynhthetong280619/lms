@@ -1,14 +1,16 @@
 import React from 'react'
-import { Row, Col, Button } from 'antd'
 
 import surveyImg from '../../../assets/images/contents/survey.png'
 import { get } from 'lodash'
 import moment from 'moment'
+import { Drawer, Row, Checkbox, Radio, Progress, Col, Popover, Modal, Tabs, Input, DatePicker, Upload, message, Button, Select, InputNumber } from 'antd'
+const { TabPane } = Tabs;
+import './overwrite.css'
 
 class Survey extends React.Component {
 
     componentDidMount() {
-
+        console.log('this.props.responseSurvey', this.props.replyCurrent)
     }
     transTime = (time) => {
         return moment(time).format('MMM DD h:mm A')
@@ -16,13 +18,17 @@ class Survey extends React.Component {
 
     render() {
         const { survey } = this.props
+        const radioStyle = {
+            display: 'block',
+            height: '30px',
+            lineHeight: '30px'
+        };
         console.log('Survey', survey)
-        return <>
+        return <div className="lms-ws-survey-page">
             <Row style={{
                 width: '80%',
                 textAlign: 'center',
                 background: '#fff',
-                borderRadius: '15px',
                 minHeight: '20px'
             }}>
                 <Row style={{ width: '100%' }}>
@@ -67,8 +73,142 @@ class Survey extends React.Component {
                         </div>
                     </div>
                 </div>
+
+                <Row style={{
+                    width: '81%',
+                    marginBottom: '30px',
+                    border: '2px solid #cacaca',
+                    borderRadius: '20px',
+                    padding: '5px 10px',
+                }}>
+                    <Tabs defaultActiveKey="1" centered style={{ width: "100%" }}>
+                        <TabPane tab="Your response" key="1" >
+
+                            {!this.props.replyCurrent.success ?  <div>You not priviledge...</div> : 
+                            <div>
+                                {
+                                (this.props.replyCurrent.questionnaire).map((q, index) => (
+                                    q.typeQuestion == 'choice' ?
+                                        (<div style={{ marginBottom: '20px', textAlign: 'left' }} key={q._id}>
+                                            <div style={{ fontWeight: 600 }}><span>Question {index}: </span>{q.question}</div>
+                                            <div>
+                                                <Radio.Group disabled value={this.props.replyCurrent.response.answerSheet[index].answer}>
+                                                    {
+                                                        q.answer.map(a => (
+                                                            <Radio style={radioStyle} value={a._id} key={a._id}>
+                                                                {a.content}
+                                                            </Radio>
+                                                        ))
+                                                    }
+                                                </Radio.Group>
+                                            </div>
+                                        </div>) :
+                                        (
+                                            q.typeQuestion == 'multiple' ? (<div style={{ textAlign: 'left' }} key={q._id}>
+                                                <div style={{ fontWeight: 600 }}>
+                                                    <span>Question {index}: </span>{q.question}
+                                                </div>
+                                                <div>
+                                                    <Checkbox.Group style={{ width: '100%' }} disabled value={this.props.replyCurrent.response.answerSheet[index].answer}>
+                                                        <Row>
+                                                            <Col span={12} style={{ textAlign: 'left' }}>
+                                                                <div>
+                                                                    {
+                                                                        q.answer.map(a => (
+                                                                            <div key={a._id}>
+                                                                                <Checkbox value={a._id}>{a.content}</Checkbox>
+                                                                            </div>
+                                                                        ))
+                                                                    }
+                                                                </div>
+                                                            </Col>
+                                                            <Col span={12}>
+                                                            </Col>
+                                                        </Row>
+                                                    </Checkbox.Group>
+                                                </div>
+                                            </div>
+                                            )
+
+                                                : <div style={{ textAlign: 'left' }} key={q._id}>
+                                                    <div style={{ fontWeight: 600 }}>
+                                                        <span>Question {index}: </span>{q.question}
+                                                    </div>
+                                                    <div>
+                                                        <input type="text" value={this.props.replyCurrent.response.answerSheet[index].answer} disabled/>
+                                                    </div>
+                                                </div>
+                                        )
+                                )
+                                )
+                            }
+                            </div>
+                            }
+                        </TabPane>
+                        <TabPane tab={`View all response (${this.props.responseSurvey.totalResponses})`} key="2" >
+                            {
+                                (this.props.responseSurvey.questionnaire).map((q, index) => (
+                                    q.typeQuestion == 'choice' ?
+                                        (<div style={{ marginBottom: '20px', textAlign: 'left' }} key={q._id}>
+                                            <div style={{ fontWeight: 600 }}><span>Question {index}: </span>{q.question}</div>
+                                            <div >
+                                                <Radio.Group style={{ width: "50%" }} disabled>
+                                                    {
+                                                        q.answer.map(a => (<div style={{ display: 'flex' }}>
+                                                            <div style={{ width: '50%' }}>
+                                                                <Radio style={radioStyle} value={a._id} key={a._id}>
+                                                                    {a.content}
+                                                                </Radio>
+                                                            </div>
+                                                            <div style={{ width: '50%' }}>
+                                                                <Progress percent={a.percent.split('%')[0]} />
+                                                            </div>
+                                                        </div>
+                                                        ))
+                                                    }
+                                                </Radio.Group>
+                                            </div>
+                                        </div>) :
+                                        (
+                                            q.typeQuestion == 'multiple' ? (<div style={{ marginBottom: '20px', textAlign: 'left' }} key={q._id}>
+                                                <div style={{ fontWeight: 600 }}><span>Question {index}: </span>{q.question}</div>
+                                                <div >
+                                                    <Radio.Group style={{ width: "50%" }} disabled>
+                                                        {
+                                                            q.answer.map(a => (<div style={{ display: 'flex' }}>
+                                                                <div style={{ width: '50%' }}>
+                                                                    <Radio style={radioStyle} value={a._id} key={a._id}>
+                                                                        {a.content}
+                                                                    </Radio>
+                                                                </div>
+                                                                <div style={{ width: '50%' }}>
+                                                                    <Progress percent={a.percent.split('%')[0]} />
+                                                                </div>
+                                                            </div>
+                                                            ))
+                                                        }
+                                                    </Radio.Group>
+                                                </div>
+                                            </div>)
+
+                                                : <div style={{ textAlign: 'left' }} key={q._id}>
+                                                    <div style={{ fontWeight: 600 }}>
+                                                        <span>Question {index}: </span>{q.question}
+                                                    </div>
+                                                    <div>
+                                                        <span>{q.answer[0]}</span>
+                                                    </div>
+                                                </div>
+                                        )
+                                )
+                                )
+                            }
+                        </TabPane>
+                    </Tabs>
+                </Row>
             </Row>
-        </>
+
+        </div>
     }
 }
 

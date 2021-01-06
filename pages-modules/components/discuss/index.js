@@ -68,7 +68,8 @@ class Discussion extends React.Component {
     componentDidMount() {
         console.log('detailTopic', this.props.detailTopic)
         this.setState({
-            comments: this.props.lstDiscussion
+            comments: this.props.lstDiscussion,
+            profile: JSON.parse(localStorage.getItem('user'))
         })
     }
 
@@ -93,7 +94,7 @@ class Discussion extends React.Component {
                 }
             }
 
-            await restClient.asyncPost(`/discussion`, data)
+            await restClient.asyncPost(`/discussion`, data, this.props.token)
                 .then(res => {
                     console.log('discussion', res)
 
@@ -128,7 +129,6 @@ class Discussion extends React.Component {
                     width: '80%',
                     textAlign: 'center',
                     background: '#fff',
-                    borderRadius: '15px',
                     minHeight: '20px'
                 }}>
                     <Row style={{ width: '100%' }}>
@@ -170,7 +170,7 @@ class Discussion extends React.Component {
                             <Comment
                                 avatar={
                                     <Avatar
-                                        src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+                                        src={profile.urlAvatar}
                                         alt="Han Solo"
                                     />
                                 }

@@ -1,20 +1,37 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Row, Col, Tabs, Input, Button, Upload, message } from 'antd'
-import { AlertOutlined, CheckCircleTwoTone, LoadingOutlined, PlusOutlined } from '@ant-design/icons'
+import { Form, Divider, Tag } from 'antd'
+import {
+    FacebookOutlined,
+    DisconnectOutlined
+} from '@ant-design/icons'
 import { withTranslation } from 'react-i18next'
-import { get } from 'lodash'
-const { TabPane } = Tabs
 
-import profile from '../../../assets/images/contents/profileN.png'
-import facebook from '../../../assets/images/contents/facebook.png'
-import styles from './styles.scss'
+import profileImg from '../../../assets/images/contents/profileN.png'
+
 import restClient from '../../../assets/common/core/restClient'
 import { getCookie } from '../../../assets/common/core/localStorage'
 import { FACEBOOK_CLIENT_ID } from '../../../assets/constants/const'
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
 
+import 'antd/dist/antd.css';
+import './overwrite.css';
+import { LocalDiningSharp } from '@material-ui/icons'
+
+const fileTypes = [
+    "image/jpeg",
+    "image/png"
+];
+
+const SectionDescription = ({ title, content }) => (
+    <div>
+        <p className="section-description-title">{title}:</p>
+        <p className="section-description-content">{content}</p>
+    </div>
+);
 
 function getBase64(img, callback) {
+    console.log(img);
     const reader = new FileReader();
     reader.addEventListener('load', () => callback(reader.result));
     reader.readAsDataURL(img);
@@ -32,76 +49,165 @@ function beforeUpload(file) {
     return isJpgOrPng && isLt2M;
 }
 
-class Profile extends React.Component {
+const Profile = ({ token }) => {
 
-    state = {
+    const [state, setState] = useState({
         loading: false,
-        profile: {}
-    };
+        fileData: null,
+        connectFacebook: false,
+        disconnectFacebook: false,
+        submitProfile: false,
+        submitPassword: false,
+    });
+    const [formProfile] = Form.useForm();
+    const [formPassword] = Form.useForm();
+    const [, forceUpdate] = useState(); // To disable submit button at the beginning.
 
-    componentDidMount() {
+    const [profile, setProfile] = useState({});
 
+    useEffect(() => {
+        forceUpdate({});
+        const usrObj = JSON.parse(localStorage.getItem('user'))
 
-        const userPrf = localStorage.getItem('user')
+        setState({...state,
+            imageUrl: usrObj.urlAvatar,
+        });
+        setProfile(usrObj);
 
-        console.log('userPrf', userPrf)
-        this.setState({
-            profile: JSON.parse(userPrf)
-        })
+        formProfile.setFieldsValue({
+            emailAddress: usrObj.emailAddress,
+            surName: usrObj.surName,
+            firstName: usrObj.firstName,
+            code: usrObj.code
+        });
 
+    }, []);
+
+    const { loading, imageUrl, connectFacebook, disconnectFacebook,
+        submitPassword, submitProfile } = state;
+
+    const updateProfile = async (values) => {
+        console.log('profile', values);
+        console.log('image', imageUrl);
+        setState({...state, submitProfile: true });
+        const tokenCookies = getCookie('token');
+        await restClient.asyncPut(`/user/`, {
+            surName: values.surName,
+            firstName: values.firstName,
+            urlAvatar: imageUrl,
+        }, tokenCookies)
+            .then(res => {
+                setState({...state, submitProfile: false });
+                console.log('resLink', res)
+                // localStorage.removeItem('user');
+                if (!res.hasError) {
+                    localStorage.setItem('user', JSON.stringify(res.data.user));
+                    setProfile(res.data.user);
+                    message.success(res.data.message);
+                } else {
+                    message.error(res.data.message);
+                }
+            })
     }
 
-    handleChange = info => {
-        if (info.file.status === 'uploading') {
-            this.setState({ loading: true });
-            return;
-        }
-        if (info.file.status === 'done') {
-            // Get this url from response in real world.
-            getBase64(info.file.originFileObj, imageUrl =>
-                this.setState({
-                    imageUrl,
-                    loading: false,
-                }),
-            );
-        }
-    };
+    const updatePassword = async (values) => {
+        console.log('password', values);
+        setState({...state, submitPassword: true });
+        const tokenCookies = getCookie('token');
+        await restClient.asyncPut(`/user/password`, {
+            password: values.current,
+            newPassword: values.new
+        }, tokenCookies)
+            .then(res => {
+                setState({...state, submitPassword: false });
+                console.log('resLink', res)
+                // localStorage.removeItem('user');
+                if (!res.hasError) {
+                    formPassword.resetFields();
+                    message.success(res.data.message);
+                } else {
+                    message.error(res.data.message);
+                }
+            })
+    }
 
-    linkSocial = async (data) => {
+
+    const handleImageUpload = (info, onSuccess) => {
+        setState({...state,
+            loading: true,
+        });
+        const formData = new FormData();
+        getBase64(info.file, (async (data) => {
+            formData.append('file', data)
+            // replace this with your upload preset name
+            formData.append('upload_preset', 'gmttm4bo');
+            const options = {
+                method: 'POST',
+                body: formData,
+                header: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Headers': 'Accept',
+                    mode: 'no-cors'
+                }
+            };
+
+            // replace cloudname with your Cloudinary cloud_name
+            await fetch('https://api.Cloudinary.com/v1_1/dkepvw2rz/upload', options)
+                .then(res => res.json())
+                .then(res => {
+                    console.log('url', res.url);
+                    setState({...state,
+                        imageUrl: res.url,
+                        loading: false
+                    });
+                })
+                .catch(err => {
+                    console.log(err)
+                    setState({...state,
+                        loading: false
+                    });
+                });
+        }));
+    }
+
+    const linkSocial = async (data) => {
+        setState({...state, connectFacebook: true });
         const tokenCookies = getCookie('token');
         await restClient.asyncPut(`/user/auth/facebook/link`, data, tokenCookies)
             .then(res => {
                 console.log('resLink', res)
+                setState({...state, connectFacebook: false });
                 // localStorage.removeItem('user');
-                if(!res.hasError){
+                if (!res.hasError) {
                     localStorage.setItem('user', JSON.stringify(res.data.user));
-
-                    this.setState({
-                        profile: res.data.user
-                    })
+                    setProfile(res.data.user);
+                    message.success(res.data.message);
+                } else {
+                    message.error(res.data.message);
                 }
-               
             })
     }
 
-    unlinkSocial = async () => {
+    const unlinkSocial = async () => {
+        setState({...state, disconnectFacebook: true });
         const tokenCookies = getCookie('token');
         await restClient.asyncPut(`/user/auth/facebook/unlink`, {
             token: tokenCookies
         }, tokenCookies)
             .then(res => {
+                setState({...state, disconnectFacebook: false });
                 console.log('resLink unlink', res)
-                console.log
-                // localStorage.removeItem('user');
-                localStorage.setItem('user', JSON.stringify(res.data.user));
-
-                this.setState({
-                    profile: res.data.user
-                })
+                if (!res.hasError) {
+                    localStorage.setItem('user', JSON.stringify(res.data.user));
+                    setProfile(res.data.user);
+                    message.success(res.data.message);
+                } else {
+                    message.error(res.data.message);
+                }
             })
     }
 
-    responseFacebook = async (response) => {
+    const responseFacebook = async (response) => {
         console.log('responseFacebook', response);
         const token = response.accessToken;
         console.log('responseFacebook', token);
@@ -109,168 +215,221 @@ class Profile extends React.Component {
             token: token
         }
 
-        this.linkSocial(data)
+        linkSocial(data)
     }
-    render() {
-        console.log('profile', this.state.profile)
-        const { loading, imageUrl } = this.state;
-        const uploadButton = (
-            <div>
-                {loading ? <LoadingOutlined /> : <PlusOutlined />}
-                <div style={{ marginTop: 8 }}>Upload</div>
+
+    return (
+        <Row style={{
+            margin: '10px 20px 10px 20px',
+            background: '#fff',
+            minHeight: '200px',
+            paddingBottom: '30px'
+        }}>
+            <div style={{ padding: "10px 0", textAlign: "center" }}>
+                <i>
+                    <img src={profileImg} width="60px" />
+                </i>
+                <span style={{
+                    fontWeight: "700",
+                    marginLeft: "10px"
+                }}>YOUR DETAIL PROFILE</span>
             </div>
-        );
-
-        return <>
-            (
-            <Row className={styles.background} style={{ justifyContent: 'center' }}>
-                <Col span={12}
-                    style={{
-                        margin: '10px',
-                        background: '#fff',
-                        borderRadius: '10px',
-                        minHeight: '200px'
-                    }}>
-                    <div style={{ padding: "10px 0", textAlign: "center" }}>
-                        <i>
-                            <img src={profile} width="60px" />
-                        </i>
-                        <span style={{
-                            fontWeight: "700",
-                            marginLeft: "10px"
-                        }}>YOUR DETAIL PROFILE</span>
-                    </div>
-                    <Row>
-                        <Col span={4}>
-                            <Upload
-                                name="avatar"
-                                listType="picture-card"
-                                className="avatar-uploader"
-                                showUploadList={false}
-                                action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                                beforeUpload={beforeUpload}
-                                onChange={this.handleChange}
-                            >
-                                {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : <img src={get(this.state.profile, 'urlAvatar')} alt="avatar" style={{ width: '100%' }} />}
-                                {/* <img src={this.state.profile.urlAvatar} width={102} height={102}/> */}
-                            </Upload>
-                            <div>
-                                {
-                                    ((get(this.state.profile, 'facebookId') != null ) ? <><img src={facebook} width={20} /> <a onClick={() => this.unlinkSocial()}>Unlink</a></> : (<>
-                                        <FacebookLogin
-                                            appId={FACEBOOK_CLIENT_ID}
-                                            callback={this.responseFacebook}
-                                            render={renderProps => (<>
-                                                <img src={facebook} width={20} /> <a onClick={renderProps.onClick}>Link</a>
-                                            </>
-                                            )}
-                                        />
-                                    </>))
-                                }
-
-                            </div>
-                        </Col>
-                        <Col span={16}>
-                            <div>
-                                <Input placeholder="Your first name..." value={get(this.state.profile, 'firstName')} style={{
-                                    borderRadius: '20px',
-                                    marginBottom: '10px'
-                                }} />
-                            </div>
-                            <div>
-                                <Input placeholder="Your sure name..." value={get(this.state.profile, 'surName')} style={{
-                                    borderRadius: '20px',
-                                    marginBottom: '10px'
-                                }} />
-                            </div>
-                            <div>
-                                <Input placeholder="Your email..." value={get(this.state.profile, 'emailAddress')} style={{
-                                    borderRadius: '20px',
-                                    marginBottom: '10px'
-                                }} />
-                            </div>
-                            <div>
-                                <Input placeholder="Your code..." value={get(this.state.profile, 'code')} style={{
-                                    borderRadius: '20px',
-                                    marginBottom: '10px'
-                                }} />
-                            </div>
-                        </Col>
-                    </Row>
-                    <Row style={{ textAlign: 'center' }}>
-                        <div>
-                            <Button type="primary" danger style={{
-                                borderRadius: '20px',
-                                margin: '10px 0'
-                            }}>
-                                Edit profile
-                            </Button>
-                        </div>
-                    </Row>
+            <Divider />
+            <Row>
+                <Col span={8}>
+                    <SectionDescription title="Profile" content="Your email address is your identity on LMS and is used to log in." />
                 </Col>
-                <Col span={8}
-                    style={{
-                        margin: '10px',
-                        background: '#fff',
-                        borderRadius: '10px',
-                        minHeight: '200px'
-                    }}>
-                    <div>
-                        <div style={{
-                            textAlign: 'center',
-                            padding: '10px 0'
-                        }}>
-                            <i>
-                            </i>
-                            <span style={{ padding: '25px', fontSize: '2em' }}>UPCOMING DEADLINE</span>
-                        </div>
-                    </div>
-                    <div>
-                        {/* Empty */}
-                        {/* <div style={{
-                            textAlign: 'center',
-                            padding: '45px'
-                        }}>
-                            <i>
-                                <img src={deadlineCalcular} />
-                            </i>
-                            <div style={{ color: '#c4c4c4', fontStyle: 'italic' }}>No upcoming deadline</div>
-                        </div> */}
-                        {/* Deadline */}
-                        <Row style={{ justifyContent: 'center' }}>
-                            <Tabs defaultActiveKey="1" centered>
-                                <TabPane tab={<span> <AlertOutlined twoToneColor="#ff0000" />Deadline</span>} key="1">
-                                    <Row>
-                                        <Col span={10}><i>
-                                        </i></Col>
-                                        <Col span={14}>
-                                            <div>Ngôn ngữ lập trình tiên tiến</div>
-                                            <div><span>Due to:</span>20/10/2020</div>
-                                            <div>Time remaining: 2 hours</div>
-                                        </Col>
-                                    </Row>
-                                </TabPane>
-                                <TabPane tab={<span> <CheckCircleTwoTone twoToneColor="#52c41a" />
+                <Col span={2}>
+                    <Upload
+                        name="avatar"
+                        listType="picture-card"
+                        className="avatar-uploader"
+                        showUploadList={false}
+                        beforeUpload={beforeUpload}
+                        customRequest={handleImageUpload}
+                        accept={fileTypes}
+                        loading={loading}
+                    >
 
-                    Complete</span>} key="2">
-                                    <Row>
-                                        <Col span={10}><i>
-                                        </i></Col>
-                                        <Col span={14}>
-                                            <div>Ngôn ngữ lập trình tiên tiến</div>
-                                            <div><span>Due to:</span>20/10/2020</div>
-                                            <div>Time remaining: 2 hours</div>
-                                        </Col>
-                                    </Row>
-                                </TabPane>
-                            </Tabs>
-                        </Row>
-                    </div>
+                        <img src={imageUrl ? imageUrl : profile.urlAvatar} alt="avatar" style={{ width: '100%' }} />
+
+                    </Upload>
+                </Col>
+                <Col span={8}>
+                    <Form
+                        id="form-profile"
+                        name="form-profile"
+                        form={formProfile}
+                        layout="vertical"
+                        className="form-profile"
+                        requiredMark='optional'
+                        onFinish={updateProfile}
+                    >
+                        <Form.Item
+                            label="Code"
+                            name={"code"}>
+                            <Input readOnly disabled />
+                        </Form.Item>
+                        <Form.Item
+                            label="Email"
+                            name={"emailAddress"}>
+                            <Input readOnly disabled />
+                        </Form.Item>
+                        <Form.Item
+                            label="Surname"
+                            name={"surName"}
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Please input your Surname!',
+                                }
+                            ]}>
+                            <Input placeholder="Your surname..." />
+                        </Form.Item>
+                        <Form.Item
+                            label="First name"
+                            name={"firstName"}
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Please input your First name!',
+                                }
+                            ]}>
+                            <Input placeholder="Your first name..." />
+                        </Form.Item>
+                        <Form.Item
+                            style={{ textAlign: 'center' }}>
+                            <Button style={{ marginTop: 8 }}
+                                type="primary"
+                                htmlType="submit"
+                                form="form-profile"
+                                size='large'
+                                loading={submitProfile}
+                            >Save</Button>
+
+                        </Form.Item>
+                    </Form>
+
+                    <Divider>Social Network</Divider>
+                    {!profile.facebookId ? (<FacebookLogin
+                        appId={`${FACEBOOK_CLIENT_ID}`}
+                        autoLoad={false}
+                        callback={responseFacebook}
+                        render={(renderProps) => (
+                            <Button
+                                style={{ color: '#131394' }}
+                                loading={connectFacebook}
+                                onClick={renderProps.onClick}
+                                icon={<FacebookOutlined />}
+                            >
+                                Connect to Facebook
+                            </Button>
+                        )}
+                    />) : (<Row>
+                        <Tag icon={<FacebookOutlined />} color="#3b5999">Facebook</Tag>
+                        <Tag color="purple">ID: {profile.facebookId}</Tag>
+                        <Button
+                            size={"small"}
+                            style={{ marginLeft: 8 }}
+                            type={"primary"}
+                            danger
+                            icon={<DisconnectOutlined />}
+                            loading={disconnectFacebook}
+                            onClick={unlinkSocial}
+                        >
+                            Unlink Facebook
+                        </Button>
+                    </Row>)}
                 </Col>
             </Row>
-        )
-        </>
-    }
+
+            <Divider />
+            <Row>
+                <Col span={8}>
+                    <SectionDescription title="Password" content="Changing your password will also required your current password" />
+                </Col>
+                <Col span={2} />
+                <Col span={10}>
+                    <Form
+                        onFinish={updatePassword}
+                        name="password"
+                        id='form-password'
+                        form={formPassword}
+                        layout="vertical"
+                        className="form-password"
+                        requiredMark={"optional"}
+                    >
+                        <Form.Item
+                            label="Current password"
+                            name="current"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Please input your current password!',
+                                }
+                            ]}
+                            hasFeedback>
+                            <Input.Password placeholder="enter your current password" />
+                        </Form.Item>
+                        <Divider />
+                        <Form.Item
+                            label="New password"
+                            name="new"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Please input your new password!',
+                                },
+                                {
+                                    min: 8,
+                                    message: 'Password must be 8 or more characters.'
+                                }
+                            ]}
+                            hasFeedback
+                        >
+                            <Input.Password
+                                placeholder="enter a new password" />
+                        </Form.Item>
+                        <Form.Item
+                            name="confirm"
+                            dependencies={['new']}
+                            hasFeedback
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Please confirm your password!',
+                                },
+                                ({ getFieldValue }) => ({
+                                    validator(rule, value) {
+                                        if (!value || getFieldValue('new') === value) {
+                                            return Promise.resolve();
+                                        }
+
+                                        return Promise.reject('The two passwords that you entered do not match!');
+                                    },
+                                }),
+                            ]}
+                            label="Confirm New Password">
+                            <Input.Password placeholder="enter the password again" />
+                        </Form.Item>
+                        <Form.Item shouldUpdate={true}>
+                            {() => (
+                                <Button style={{ marginTop: 8 }}
+                                    loading={submitPassword}
+                                    htmlType="submit"
+                                    form='form-password'
+                                    disabled={
+                                        !formPassword.isFieldsTouched(true) ||
+                                        formPassword.getFieldsError().filter(({ errors }) => errors.length).length
+                                    }
+                                >Update password</Button>
+                            )}
+                        </Form.Item>
+                    </Form>
+                </Col>
+            </Row>
+        </Row>
+    )
 }
 
 export default withTranslation('translations')(Profile)

@@ -5,13 +5,13 @@ import restClient from '../../../assets/common/core/restClient'
 import { get } from 'lodash'
 import { parseCookies } from '../../../assets/helpers'
 
-const DiscussionPage = ({ lstDiscussion, idTopic, idSubject, idTimeline, idForum, detailTopic, subject }) => {
+const DiscussionPage = ({ lstDiscussion, idTopic, idSubject, idTimeline, idForum, detailTopic, subject, token }) => {
     console.log('lstDiscussion', lstDiscussion)
     const nameSubject = get(subject, 'name')
 
     console.log('Discussion', nameSubject)
     return <IndexLayout>
-        <Discussion lstDiscussion={lstDiscussion} idTopic={idTopic} idSubject={idSubject} idTimeline={idTimeline} idForum={idForum} detailTopic={detailTopic} nameSubject={nameSubject} />
+        <Discussion lstDiscussion={lstDiscussion} idTopic={idTopic} idSubject={idSubject} idTimeline={idTimeline} idForum={idForum} detailTopic={detailTopic} nameSubject={nameSubject} token={token}/>
     </IndexLayout>
 
 }
@@ -34,7 +34,8 @@ const data = parseCookies(ctx.req);
         idTimeline,
         idForum,
         detailTopic: get(detailTopic, 'data').topic,
-        subject: get(subject, 'data').subject
+        subject: get(subject, 'data').subject,
+        token
     }
 }
 

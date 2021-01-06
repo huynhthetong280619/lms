@@ -141,7 +141,7 @@ class Subject extends React.Component {
     async componentDidMount() {
         console.log('componentDidMount', this.props.subject, this.props.lstQuizzis, this.props.lstTimeline);
 
-        const user = JSON.parse(JSON.stringify(localStorage.getItem('user')));
+        const user = JSON.parse(localStorage.getItem('user'));
         
         if(user?.idPrivilege == 'student'){
             this.setState({
@@ -217,7 +217,7 @@ class Subject extends React.Component {
     }
 
     updateTimelines = async () => {
-        await restClient.asyncPost(`/subject/${this.props.idSubject}/index`, this.state.updateTimelines)
+        await restClient.asyncPost(`/subject/${this.props.idSubject}/index`, this.state.updateTimelines, this.props.token)
             .then(res => {
                 if (!res.hasError) {
                     this.notifySuccess('Thành công!', get(res, 'data').message);
@@ -249,7 +249,7 @@ class Subject extends React.Component {
         this.setState({
             isLoadingRequirement: true
         })
-        await restClient.asyncGet(`/assignment/${id}?idSubject=${idSubject}&idTimeline=${idTimeline}`)
+        await restClient.asyncGet(`/assignment/${id}?idSubject=${idSubject}&idTimeline=${idTimeline}`, this.props.token)
             .then(res => {
                 if (!res.hasError) {
                     // this.setState({
@@ -361,7 +361,7 @@ class Subject extends React.Component {
             isLoading: true
         })
         // formData.append('file', this.state.FileAssign)
-        await restClient.asyncPost(`/assignment/${idAssignment}/submit`, {idSubject: this.props.idSubject, idTimeline: this.state.timelineIdRequirement, file: objResult})
+        await restClient.asyncPost(`/assignment/${idAssignment}/submit`, {idSubject: this.props.idSubject, idTimeline: this.state.timelineIdRequirement, file: objResult}, this.props.token)
             .then(res => {
                 if (!res.hasError) {
                     this.notifySuccess('Thành công!', 'Nộp bài thành công')
@@ -419,7 +419,7 @@ class Subject extends React.Component {
             idSubject: this.props.idSubject,
             idTimeline: this.state.timelineId,
             data: objResult
-        })
+        }, this.props.token)
             .then(res => {
                 this.setState({
                     isLoading: false
@@ -454,7 +454,7 @@ class Subject extends React.Component {
             isLoading: true
         })
         console.log('data', data)
-        await restClient.asyncPost('/exam', data)
+        await restClient.asyncPost('/exam', data, this.props.token)
             .then(res => {
                 console.log('createQuiz', res)
                 if (!res.hasError) {
@@ -537,7 +537,7 @@ class Subject extends React.Component {
         this.setState({
             isLoading: true
         })
-        await restClient.asyncPost('/assignment', data)
+        await restClient.asyncPost('/assignment', data, this.props.token)
             .then(res => {
                 console.log(res)
                 if (!res.hasError) {
@@ -616,7 +616,7 @@ class Subject extends React.Component {
             data: this.state.timeLine
         }
 
-        await restClient.asyncPost('/timeline', data)
+        await restClient.asyncPost('/timeline', data, this.props.token)
             .then(res => {
                 console.log('Timeline', res)
                 if (!res.hasError) {
@@ -763,7 +763,7 @@ class Subject extends React.Component {
             idTimeline: this.state.timelineId,
             data: this.state.information
         }
-        await restClient.asyncPost('/information', data)
+        await restClient.asyncPost('/information', data, this.props.token)
             .then(res => {
                 if (!res.hasError) {
                     console.log('information', res)
@@ -796,7 +796,7 @@ class Subject extends React.Component {
 
 
     downloadFile = async (idTimeline, idFile) => {
-        await restClient.asyncDownLoad(`/timeline/${idTimeline}/download/${idFile}?idSubject=${this.props.idSubject}`)
+        await restClient.asyncDownLoad(`/timeline/${idTimeline}/download/${idFile}?idSubject=${this.props.idSubject}`, this.props.token)
             .then(res => {
                 console.log(res)
             })
@@ -836,7 +836,7 @@ class Subject extends React.Component {
 
     lock = async (url) => {
 
-        await restClient.asyncPut(url)
+        await restClient.asyncPut(url, this.props.token)
             .then(res => {
                 console.log('Lock', res)
 
@@ -845,7 +845,7 @@ class Subject extends React.Component {
 
     unlock = async (url) => {
 
-        await restClient.asyncPut(url)
+        await restClient.asyncPut(url, this.props.token)
             .then(res => {
                 console.log('Lock', res)
             })
@@ -1219,7 +1219,6 @@ class Subject extends React.Component {
                 style={{
                     margin: '10px',
                     background: '#fff',
-                    borderRadius: '10px',
                     minHeight: '200px'
                 }}>
 
@@ -1401,7 +1400,6 @@ class Subject extends React.Component {
                                 style={{
                                     margin: '10px',
                                     background: '#fff',
-                                    borderRadius: '10px',
                                     minHeight: '200px',
                                     maxHeight: 726
                                 }}>
@@ -2036,7 +2034,6 @@ class Subject extends React.Component {
                                 style={{
                                     margin: '10px',
                                     background: '#fff',
-                                    borderRadius: '10px',
                                     minHeight: '200px',
                                     maxHeight: "556px"
                                 }}>

@@ -14,7 +14,7 @@ class Quiz extends React.Component {
     }
 
     joinExam = async () => {
-        await restClient.asyncGet(`/exam/${this.props.idExam}/attempt?idSubject=lthdt01&idTimeline=${this.props.idTimeline}`)
+        await restClient.asyncGet(`/exam/${this.props.idExam}/attempt?idSubject=lthdt01&idTimeline=${this.props.idTimeline}`, this.props.token)
             .then(res => {
                 console.log(res)
             })
@@ -53,7 +53,6 @@ class Quiz extends React.Component {
                 width: '80%',
                 textAlign: 'center',
                 background: '#fff',
-                borderRadius: '15px',
                 minHeight: '20px'
             }}>
                 <Row style={{ width: '100%' }}>
