@@ -1,33 +1,32 @@
 {
-    "presets": ["@babel/preset-react", "@babel/preset-env", ["next/babel", { "preset-env": { "targets": { "node": true } } }]],
-    "plugins": [
-      "emotion",
-      ["inline-react-svg"],
-      [
-        "import",
-        {
-          "libraryName": "antd",
-          "style": "css"
-        }
-      ],
-      [
-        "@babel/plugin-proposal-decorators",
-        {
-          "legacy": true
-        }
-      ],
-      [
-        "styled-components",
-        {
-          "ssr": true
-        }
-      ],
-      [
-        "inline-import-data-uri",
-        {
-          "extensions": [".html", ".png", ".svg"]
-        }
-      ]
+  "presets": ["@babel/preset-react", "@babel/preset-env", ["next/babel", { "preset-env": { "targets": { "node": true } } }]],
+  "plugins": [
+    "emotion",
+    ["inline-react-svg"],
+    [
+      "import",
+      {
+        "libraryName": "antd",
+        "style": "css"
+      }
+    ],
+    [
+      "@babel/plugin-proposal-decorators",
+      {
+        "legacy": true
+      }
+    ],
+    [
+      "styled-components",
+      {
+        "ssr": true
+      }
+    ],
+    [
+      "inline-import-data-uri",
+      {
+        "extensions": [".html", ".png", ".svg"]
+      }
     ]
-  }
-  
+  ]
+}

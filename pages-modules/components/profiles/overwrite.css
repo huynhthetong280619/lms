@@ -1,0 +1,37 @@
+.ant-row {
+    margin: 0 10px;
+    width: 100%;
+}
+
+.ant-row.ant-form-item>div.ant-col {
+    width: 100%;
+    margin: 0;
+}
+
+p.section-description-title {
+    font-size: 15px;
+    color: #79589f;
+}
+
+p.section-description-content {
+    font-size: 13px;
+    margin-top: 10px;
+    color: #475366;
+    line-height: 1.5;
+}
+
+.ant-form.form-profile>div {
+    margin: 0;
+    margin-bottom: 8px;
+}
+
+.ant-form-item-label>label {
+    font-size: 13px;
+    color: #676f7b;
+    font-weight: 700;
+}
+
+.ant-form.form-password>div.ant-row {
+    margin: 0;
+    margin-bottom: 8px;
+}

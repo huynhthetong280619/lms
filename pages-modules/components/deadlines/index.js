@@ -21,7 +21,8 @@ class Deadline extends React.Component {
                     <TabPane tab={<span> <AlertOutlined twoToneColor="#ff0000" />{t('dl')}</span>} key="1">
                         <div style={{
                             maxHeight: '400px',
-                            overflowY: 'auto'
+                            overflowY: 'auto',
+                            overflowX: 'hidden'
                         }}>
                             {deadlines.length > 0 ? deadlines.map(dl => (
                                 <Row key={dl._id} style={{
@@ -53,7 +54,8 @@ class Deadline extends React.Component {
                         </span>} key="2">
                         <div style={{
                             maxHeight: '400px',
-                            overflowY: 'auto'
+                            overflowY: 'auto',
+                            overflowX: 'hidden'
                         }}>
                             {dueTo.map(dt => (
                                 <Row key={dt._id} style={{

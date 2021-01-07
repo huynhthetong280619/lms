@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import { Button, Col, Row, Popover, Menu, Modal, Input, Tooltip, Breadcrumb  } from 'antd'
+import { Button, Col, Row, Popover, Menu, Modal, Input, Tooltip } from 'antd'
+import { Form, Divider, message } from 'antd'
 import { Avatar, dividerClassName } from "@fluentui/react-northstar";
 import { GoogleLogin } from 'react-google-login';
 import { GOOGLE_CLIENT_ID, FACEBOOK_CLIENT_ID } from '../../../assets/constants/const'
@@ -10,14 +11,14 @@ import { get, isEmpty } from 'lodash'
 import styles from './styles.scss'
 import './overwrite.css'
 
-import message from '../../../assets/images/contents/chat.png'
+//import message from '../../../assets/images/contents/chat.png'
 import notification from '../../../assets/images/contents/notification.png'
 import profile from '../../../assets/images/contents/profile.png'
 import enter from '../../../assets/images/contents/enter.png'
 import logo from '../../../assets/logo/logo.png'
 import { UserOutlined, KeyOutlined, GoogleOutlined, FacebookOutlined, PoweroffOutlined, HomeOutlined } from '@ant-design/icons';
 import Router from 'next/router'
-import { authenticate, removeCookie } from '../../../assets/common/core/localStorage';
+import { authenticate, removeCookie, isAuth } from '../../../assets/common/core/localStorage';
 import { css } from "@emotion/core";
 import FadeLoader from "react-spinners/FadeLoader";
 
@@ -33,8 +34,6 @@ class Headers extends React.Component {
     state = {
         current: 'mail',
         isVisible: false,
-        username: '',
-        password: '',
         isLogin: false,
         username: '',
         isLoading: false,
@@ -43,14 +42,16 @@ class Headers extends React.Component {
     };
 
     componentDidMount() {
-        const user = JSON.parse(JSON.parse(JSON.stringify(localStorage.getItem('user'))))
-        console.log('user', user)
-        if (!isEmpty(user)) {
-            this.setState({
-                isLogin: true,
-                username: user.code,
-                profile: user
-            })
+        if (isAuth) {
+            const user = JSON.parse((localStorage.getItem('user')));
+            console.log('user', user)
+            if (!isEmpty(user)) {
+                this.setState({
+                    isLogin: true,
+                    username: user.code,
+                    profile: user
+                })
+            }
         }
     }
 
@@ -72,17 +73,17 @@ class Headers extends React.Component {
         this.setState({ current: e.key });
     };
 
-    handleLogin = async () => {
+    handleLogin = async (values) => {
         this.setState({
             isLoading: true,
             loginChange: "On Authenticate...",
             isLoadingPage: true
         })
-        console.log(this.state.username);
-        console.log(this.state.password);
+        console.log(values.username);
+        console.log(values.password);
         const data = {
-            code: this.state.username,
-            password: this.state.password
+            code: values.username,
+            password: values.password
         }
         await restClient.asyncPost(`/user/authenticate`, data, null)
             .then(res => {
@@ -94,6 +95,9 @@ class Headers extends React.Component {
                     authenticate(res, () => {
                         Router.push("/courses");
                     })
+                } else {
+                    this.setState({ isLoading: false, loginChange: 'Sign in' });
+                    message.error(res.data.message);
                 }
             })
 
@@ -116,6 +120,10 @@ class Headers extends React.Component {
                     authenticate(res, () => {
                         Router.push("/courses");
                     })
+                }
+                else {
+                    this.setState({ isLoading: false, loginChange: 'Sign in' });
+                    message.error(res.data.message);
                 }
             })
     }
@@ -144,12 +152,15 @@ class Headers extends React.Component {
                         Router.push({ pathname: "/courses" });
                     })
                 }
+                else {
+                    this.setState({ isLoading: false, loginChange: 'Sign in' });
+                    message.error(res.data.message);
+                }
             })
     }
 
     logout = (e) => {
-
-        this.setState({isLoadingPage: true})
+        this.setState({isLoadingPage: true, isLogin: false})
 
         removeCookie('token');
         localStorage.removeItem('user')
@@ -197,22 +208,54 @@ class Headers extends React.Component {
                     />
                 </div>
                 <Modal title="Login form" centered={true} visible={this.state.isVisible} onOk={this.handleOk} onCancel={this.handleCancel} footer={null}>
-                    <Row style={{ margin: '10px 0' }}>
-                        <Input size="large" onChange={(text) => { this.setState({ username: text.target.value }) }} placeholder="Enter your code..." prefix={<UserOutlined />} style={{ borderRadius: 20 }} />
-                    </Row>
-                    <Row style={{ margin: '10px 0' }}>
-                        <Input size="large" onChange={(text) => { this.setState({ password: text.target.value }) }} placeholder="Enter your password..." prefix={<KeyOutlined />} style={{ borderRadius: 20 }} />
-                    </Row>
-                    <Row style={{ textAlign: 'center', margin: '10px 0' }}>
-                        <div>
-                            <button type='primary' className="btn-login" onClick={this.handleLogin} /*style={{ borderRadius: 20, width: 100, padding: '5px 0', fontSize: 20, lineHeight: '20px' }}*/ disabled={this.state.isLoading}>{this.state.loginChange}</button>
-                        </div>
-                    </Row>
+                    <Form
+                        onFinish={this.handleLogin}
+                    >
+                        <Form.Item
+                            name="username"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Please input your Username!',
+                                },
+                            ]}
+                        >
+                            <Input
+                                style={{ borderRadius: 20, }}
+                                size='large'
+                                prefix={<UserOutlined className="site-form-item-icon" />}
+                                placeholder="Enter your code..." />
+                        </Form.Item>
+                        <Form.Item
+                            name="password"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Please input your Password!',
+                                },
+                            ]}
+                        >
+                            <Input.Password
+                                prefix={<KeyOutlined className="site-form-item-icon" />}
+                                style={{ borderRadius: 20, }} size='large'
+                                placeholder="Enter your password..."
+                            />
+                        </Form.Item>
+
+                        <Form.Item
+                            style={{ textAlign: 'center' }}
+                        >
+                            <Button className="btn-login" type="primary" size='large' shape="round" htmlType="submit"
+                                loading={this.state.isLoading}>
+                                {this.state.loginChange}</Button>
+                        </Form.Item>
+                    </Form>
+
                     <Row style={{ textAlign: 'center' }}>
-                        <div style={{
+                        <Divider style={{
                             width: "100%", color: '#cacaca',
                             fontWeight: 600
-                        }}>__________Or sign by certificate__________</div>
+                        }}> Or sign by certificate</Divider>
                         <Row style={{ width: "100%" }}>
                             <GoogleLogin
                                 clientId={GOOGLE_CLIENT_ID}
@@ -254,16 +297,7 @@ class Headers extends React.Component {
                     </div>
                 </Col>
                 <Col span={4}>
-                    {/* <Breadcrumb>
-                        <Breadcrumb.Item href="">
-                            <HomeOutlined />
-                        </Breadcrumb.Item>
-                        <Breadcrumb.Item href="">
-                            <UserOutlined />
-                            <span>Application List</span>
-                        </Breadcrumb.Item>
-                        <Breadcrumb.Item>Application</Breadcrumb.Item>
-                    </Breadcrumb> */}
+                    
                 </Col>
                 <Col xs={10}>
                     {/* Authentication */}

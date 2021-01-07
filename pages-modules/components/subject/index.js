@@ -36,6 +36,7 @@ import opts from '../../../assets/images/contents/opts.png'
 import rar from '../../../assets/images/contents/rar.png'
 import DayPickerInputCustomize from '../../basic-component/time-picker';
 import { NotificationContainer, NotificationManager } from 'react-notifications';
+import Deadline  from '../../components/deadlines'
 
 const { Option } = Select;
 const { TextArea } = Input;
