@@ -1,22 +1,22 @@
 import React from 'react';
-import { Row, Col, Button, Radio, Input, Checkbox } from 'antd'
+import { Row, Col, Button, Radio, Checkbox, notification } from 'antd'
 
 import survey from '../../../assets/images/contents/surveylogo.png'
 import { get } from 'lodash'
 import './overwrite.css'
 import Countdown from "react-countdown";
 import restClient from '../../../assets/common/core/restClient';
-import { Redirect } from 'react-router'
 import Router from 'next/router'
 
 class Exams extends React.Component {
 
     state = {
         answer: {},
+        loading: false,
     };
 
     componentDidMount() {
-        
+
         const obj = {};
 
         if (this.props.examQuestion != null) {
@@ -28,7 +28,7 @@ class Exams extends React.Component {
 
         this.setState({
             answer: obj,
-            callBackRepsonse: false
+            callBackResponse: false
         })
 
     }
@@ -48,6 +48,7 @@ class Exams extends React.Component {
     }
 
     submitExam = async () => {
+        this.setState({ loading: true });
         const questionId = Object.keys(this.state.answer)
 
         let convert = []
@@ -58,7 +59,7 @@ class Exams extends React.Component {
             })
         })
 
-        
+
 
         // Push up to server
         console.log(convert)
@@ -68,13 +69,22 @@ class Exams extends React.Component {
             data: convert
         }
         await restClient.asyncPost(`/exam/${this.props.idExam}/submit`, data, this.props.token)
-        .then(res => {
-            if(!res.hasError){
-                console.log('Rest client', get(res, 'data'));
-                Router.push('/')
-            }
-            console.log(res)
-        })
+            .then(res => {
+                if (!res.hasError) {
+                    notification.success({
+                        message: res.data.message,
+                        placement: 'topRight'
+                    });
+                    console.log('Rest client', get(res, 'data'));
+                    Router.push(`/quizzis/${this.props.idExam}?idSubject=${this.props.idSubject}&idTimeline=${this.props.idTimeline}`)
+                } else {
+                    this.setState({ loading: false });
+                    notification.error({
+                        message: res.data.message,
+                        placement: 'topRight'
+                    });
+                }
+            })
     }
 
 
@@ -91,28 +101,28 @@ class Exams extends React.Component {
 
         const renderer = ({ hours, minutes, seconds, completed }) => {
             if (completed) {
-              // Render a completed state
-              return <div>Hello</div>;
+                // Render a completed state
+                return <div>Hello</div>;
             } else {
-              // Render a countdown
-              return <span>{hours} hours {minutes} minutes {seconds} seconds</span>;
+                // Render a countdown
+                return <span>{hours} hours {minutes} minutes {seconds} seconds</span>;
             }
-          };
+        };
 
         return <>
-            
+
             <Row id="lms-ws-exam-component" style={{
                 width: '80%',
                 textAlign: 'center',
                 background: '#fff',
                 minHeight: '20px'
             }}>
-                
+
                 <Row style={{ width: '100%' }}>
                     <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject}</Col>
                 </Row>
                 <Row>
-                    <Countdown date={Date.now() + get(examQuestion, 'timeToDo')} renderer={renderer}/>
+                    <Countdown date={Date.now() + get(examQuestion, 'timeToDo')} renderer={renderer} />
                 </Row>
                 <div style={{ width: '90%' }}>
                     <div style={{ textAlign: 'left', width: '100%', padding: '10px 0' }}>
@@ -134,21 +144,21 @@ class Exams extends React.Component {
                                 (get(examQuestion, 'questions') || []).map((q, index) => (
                                     q.typeQuestion === "multiple" ?
                                         (
-                                            <div className="ant-row" style={{marginBottom: 10}}>
+                                            <div className="ant-row" style={{ marginBottom: 10 }}>
                                                 <Col span={10} style={{ textAlign: 'left' }}>
-                                                    <div style={{fontWeight: 600}}><span>Question {index}: </span>{q.question}</div>
+                                                    <div style={{ fontWeight: 600 }}><span>Question {index}: </span>{q.question}</div>
                                                     <div>
                                                         <Checkbox.Group style={{ width: '100%' }} onChange={e => this.onChangeMultipleChoice(e, q._id)}>
                                                             <Row>
                                                                 <Col span={12} style={{ textAlign: 'left' }}>
                                                                     <div>
-                                                                    {
-                                                                        q.answers.map(a => (
-                                                                            <div>
-                                                                                <Checkbox value={a._id}>{a.answer}</Checkbox>
+                                                                        {
+                                                                            q.answers.map(a => (
+                                                                                <div>
+                                                                                    <Checkbox value={a._id}>{a.answer}</Checkbox>
                                                                                 </div>
-                                                                        ))
-                                                                    }
+                                                                            ))
+                                                                        }
                                                                     </div>
                                                                 </Col>
                                                                 <Col span={12}>
@@ -162,9 +172,9 @@ class Exams extends React.Component {
                                             </div>
                                         )
                                         :
-                                        (<div className="ant-row" style={{marginBottom: 10}}>
+                                        (<div className="ant-row" style={{ marginBottom: 10 }}>
                                             <Col span={10} style={{ textAlign: 'left' }}>
-                                                <div style={{fontWeight: 600}}><span>Question {index}: </span>{q.question}</div>
+                                                <div style={{ fontWeight: 600 }}><span>Question {index}: </span>{q.question}</div>
                                                 <div>
                                                     <Radio.Group onChange={e => this.onChoice(e, q._id)} value={get(this.state.answer, q._id)}>
                                                         {
@@ -184,7 +194,7 @@ class Exams extends React.Component {
                             }
                         </div>
                         <div style={{ marginBottom: 10 }}>
-                            <Button type="primary" style={{ borderRadius: 20 }} onClick={() => this.submitExam()}>Submit</Button>
+                            <Button type="primary" style={{ borderRadius: 20 }} loading={this.state.loading} onClick={() => this.submitExam()}>Submit</Button>
                         </div>
                     </div>
                 </div>

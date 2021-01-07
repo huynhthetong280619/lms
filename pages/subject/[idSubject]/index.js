@@ -5,10 +5,11 @@ import Subject from '../../../pages-modules/components/subject';
 import { get } from 'lodash';
 import { parseCookies } from '../../../assets/helpers'
 
-const SubjectCourse = ({subject, idSubject, lstTimeline, lstQuizzis, lstDeadline, token}) => {
+const SubjectCourse = ({ subject, idSubject, lstTimeline, lstQuizzes, lstDeadline, lstSurveys, token }) => {
 
     const lstDueTo = lstDeadline.filter(obj => obj.isSubmit === true);
-    const deadline = lstDeadline.filter(obj => obj.isSubmit === false)
+    const deadline = lstDeadline.filter(obj => obj.isSubmit === false);
+    console.log(lstDeadline);
     const nameSubject = get(subject, 'name');
 
     console.log(
@@ -16,32 +17,34 @@ const SubjectCourse = ({subject, idSubject, lstTimeline, lstQuizzis, lstDeadline
     )
     return (
         <IndexLayout>
-            <Subject subject={subject} idSubject={idSubject} lstTimeline={lstTimeline} lstQuizzis={lstQuizzis} lstDeadline={deadline} lstDueTo={lstDueTo} nameSubject={nameSubject} token={token}/>
+            <Subject subject={subject} idSubject={idSubject} lstTimeline={lstTimeline} lstQuizzes={lstQuizzes} lstDeadline={deadline} lstDueTo={lstDueTo} nameSubject={nameSubject} lstSurveys={lstSurveys} token={token} />
         </IndexLayout>
     )
 }
 
 SubjectCourse.getInitialProps = async (ctx) => {
-const data = parseCookies(ctx.req);
+    const data = parseCookies(ctx.req);
     const token = data.token
-    const {idSubject} = ctx.query;
-    const [lstSubject, lstTimeline, lstQuizzis, lstDeadline] = await Promise.all([
+    const { idSubject } = ctx.query;
+    const [lstSubject, lstTimeline, lstQuizzes, lstDeadline, lstSurveys] = await Promise.all([
         RestClient.asyncGet(`/subject/${idSubject}`, token),
         RestClient.asyncGet(`/timeline?idSubject=${idSubject}`, token),
         RestClient.asyncGet(`/quiz?idSubject=${idSubject}`, token),
-        RestClient.asyncGet('/subject/deadline', token)
+        RestClient.asyncGet(`/subject/${idSubject}/deadline`, token),
+        RestClient.asyncGet(`/questionnaire?idSubject=${idSubject}`, token),
     ])
 
-    console.log('xya', lstSubject, lstTimeline, lstQuizzis, lstDeadline)
-
+    //console.log('xya', lstSubject, lstTimeline, lstQuizzes, lstDeadline,lstSurveys)
+    console.log('lstSurveys', lstSurveys);
     return {
         idSubject,
         subject: get(get(lstSubject, 'data'), 'subject') || [],
         lstTimeline: get(get(lstTimeline, 'data'), 'timelines') || [],
-        lstQuizzis: get(get(lstQuizzis, 'data'), 'quizBank') || [],
+        lstQuizzes: get(get(lstQuizzes, 'data'), 'quizBank') || [],
         lstDeadline: get(get(lstDeadline, 'data'), 'deadline') || [],
+        lstSurveys: get(get(lstSurveys, 'data'), 'surveyBank') || [],
         token
-        
+
     }
 }
 

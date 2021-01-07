@@ -69,7 +69,8 @@ const Profile = ({ token }) => {
         forceUpdate({});
         const usrObj = JSON.parse(localStorage.getItem('user'))
 
-        setState({...state,
+        setState({
+            ...state,
             imageUrl: usrObj.urlAvatar,
         });
         setProfile(usrObj);
@@ -89,7 +90,7 @@ const Profile = ({ token }) => {
     const updateProfile = async (values) => {
         console.log('profile', values);
         console.log('image', imageUrl);
-        setState({...state, submitProfile: true });
+        setState({ ...state, submitProfile: true });
         const tokenCookies = getCookie('token');
         await restClient.asyncPut(`/user/`, {
             surName: values.surName,
@@ -97,7 +98,7 @@ const Profile = ({ token }) => {
             urlAvatar: imageUrl,
         }, tokenCookies)
             .then(res => {
-                setState({...state, submitProfile: false });
+                setState({ ...state, submitProfile: false });
                 console.log('resLink', res)
                 // localStorage.removeItem('user');
                 if (!res.hasError) {
@@ -112,14 +113,14 @@ const Profile = ({ token }) => {
 
     const updatePassword = async (values) => {
         console.log('password', values);
-        setState({...state, submitPassword: true });
+        setState({ ...state, submitPassword: true });
         const tokenCookies = getCookie('token');
         await restClient.asyncPut(`/user/password`, {
             password: values.current,
             newPassword: values.new
         }, tokenCookies)
             .then(res => {
-                setState({...state, submitPassword: false });
+                setState({ ...state, submitPassword: false });
                 console.log('resLink', res)
                 // localStorage.removeItem('user');
                 if (!res.hasError) {
@@ -133,7 +134,8 @@ const Profile = ({ token }) => {
 
 
     const handleImageUpload = (info, onSuccess) => {
-        setState({...state,
+        setState({
+            ...state,
             loading: true,
         });
         const formData = new FormData();
@@ -156,14 +158,16 @@ const Profile = ({ token }) => {
                 .then(res => res.json())
                 .then(res => {
                     console.log('url', res.url);
-                    setState({...state,
+                    setState({
+                        ...state,
                         imageUrl: res.url,
                         loading: false
                     });
                 })
                 .catch(err => {
                     console.log(err)
-                    setState({...state,
+                    setState({
+                        ...state,
                         loading: false
                     });
                 });
@@ -171,12 +175,12 @@ const Profile = ({ token }) => {
     }
 
     const linkSocial = async (data) => {
-        setState({...state, connectFacebook: true });
+        setState({ ...state, connectFacebook: true });
         const tokenCookies = getCookie('token');
         await restClient.asyncPut(`/user/auth/facebook/link`, data, tokenCookies)
             .then(res => {
                 console.log('resLink', res)
-                setState({...state, connectFacebook: false });
+                setState({ ...state, connectFacebook: false });
                 // localStorage.removeItem('user');
                 if (!res.hasError) {
                     localStorage.setItem('user', JSON.stringify(res.data.user));
@@ -189,13 +193,13 @@ const Profile = ({ token }) => {
     }
 
     const unlinkSocial = async () => {
-        setState({...state, disconnectFacebook: true });
+        setState({ ...state, disconnectFacebook: true });
         const tokenCookies = getCookie('token');
         await restClient.asyncPut(`/user/auth/facebook/unlink`, {
             token: tokenCookies
         }, tokenCookies)
             .then(res => {
-                setState({...state, disconnectFacebook: false });
+                setState({ ...state, disconnectFacebook: false });
                 console.log('resLink unlink', res)
                 if (!res.hasError) {
                     localStorage.setItem('user', JSON.stringify(res.data.user));

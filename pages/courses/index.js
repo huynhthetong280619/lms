@@ -9,13 +9,13 @@ import { parseCookies } from '../../assets/helpers'
 const PageCourse = ({ listCourses = [], lstAssignment = [], token, isLoadingGlobal, setIsLoadingGlobal }) => {
 
     const listDeadline = (lstAssignment || []).filter(obj => obj.isSubmit === false)
-    const listDueAssginment = (lstAssignment || []).filter(obj => obj.isSubmit === true)
+    const listDueAssignment = (lstAssignment || []).filter(obj => obj.isSubmit === true)
 
-    console.log('hello', listDeadline, listDueAssginment, lstAssignment)
+    console.log('hello', listDeadline, listDueAssignment, lstAssignment)
 
     return (
         <IndexLayout>
-            <Courses listCourses={listCourses || []} listDeadline={listDeadline} listDueAssginment={listDueAssginment} token={token} isLoadingGlobal={isLoadingGlobal} setIsLoadingGlobal={setIsLoadingGlobal}/>
+            <Courses listCourses={listCourses || []} listDeadline={listDeadline} listDueAssignment={listDueAssignment} token={token} isLoadingGlobal={isLoadingGlobal} setIsLoadingGlobal={setIsLoadingGlobal} />
         </IndexLayout>
     )
 }
