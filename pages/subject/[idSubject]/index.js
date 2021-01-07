@@ -32,14 +32,13 @@ const data = parseCookies(ctx.req);
         RestClient.asyncGet('/subject/deadline', token)
     ])
 
-    console.log('xya', lstSubject, lstTimeline, lstQuizzis, lstDeadline)
 
     return {
         idSubject,
-        subject: get(get(lstSubject, 'data'), 'subject') || [],
-        lstTimeline: get(get(lstTimeline, 'data'), 'timelines') || [],
-        lstQuizzis: get(get(lstQuizzis, 'data'), 'quizBank') || [],
-        lstDeadline: get(get(lstDeadline, 'data'), 'deadline') || [],
+        subject: get(lstSubject, 'data').subject || [],
+        lstTimeline: get(lstTimeline, 'data').timelines || [],
+        lstQuizzis: get(lstQuizzis, 'data').quizBank || [],
+        lstDeadline: get(lstDeadline, 'data').deadline || [],
         token
         
     }
