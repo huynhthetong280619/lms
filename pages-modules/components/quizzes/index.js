@@ -6,6 +6,8 @@ import { get } from 'lodash'
 import moment from 'moment'
 import restClient from '../../../assets/common/core/restClient'
 
+import './overwrite.css'
+
 class Quiz extends React.Component {
     constructor(props) {
         super(props);
