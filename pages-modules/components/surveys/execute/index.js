@@ -13,13 +13,14 @@ class SurveyExecute extends React.Component {
     }
 
     componentDidMount() {
+        console.log('this.props.surveyQ.questionnaire', this.props.surveyQ.questionnaire)
 
         if (!this.props.surveyQ.questionnaire) {
             Router.push({ pathname: "/courses" })
         }
         console.log('componentDidMount', this.props.surveyQ.questionnaire)
         this.setState({
-            surveys: this.props.surveyQ.questionnaire || []
+            surveys: this.props.surveyQ.questionnaire.questions || []
         })
 
 
@@ -27,7 +28,7 @@ class SurveyExecute extends React.Component {
         const obj = {};
 
         if (this.props.surveyQ.questionnaire != null) {
-            this.props.surveyQ.questionnaire.map(q => {
+            this.props.surveyQ.questionnaire.questions.map(q => {
                 obj[q._id] = null
             })
         }
