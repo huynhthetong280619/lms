@@ -34,7 +34,7 @@ const CommentList = ({ comments }) => (
 
             datetime={
                 <Tooltip title={moment.utc(get(props, 'time')).format('YYYY-MM-DD HH:mm:ss')}>
-                    <span>{moment().from(moment.utc(get(props, 'time')))}</span>
+                    <span>{moment.utc(get(props, 'time')).fromNow()}</span>
                 </Tooltip>
             }
         />}
@@ -62,6 +62,7 @@ class Discussion extends React.Component {
         comments: [],
         submitting: false,
         value: '',
+        profile: {}
     };
 
 
@@ -103,7 +104,7 @@ class Discussion extends React.Component {
                             submitting: false,
                             value: '',
                             comments: [
-                                get(res, 'data'),
+                                get(res, 'data').discussion,
                                 ...this.state.comments,
                             ],
                         });
@@ -158,7 +159,7 @@ class Discussion extends React.Component {
                                         <Avatar size={64} icon={<img src={get(get(this.props.detailTopic, 'create'), 'urlAvatar')} />} />
                                     </div>
                                     <div style={{ paddingLeft: "10px" }}>
-                                        <div>{get(get(this.props.detailTopic, 'create'), 'surName') + " " + get(get(this.props.detailTopic, 'create'), 'firstName')}  • <span>{moment().from(moment.utc(get(this.props.detailTopic, 'time')))}</span></div>
+                                        <div>{get(get(this.props.detailTopic, 'create'), 'surName') + " " + get(get(this.props.detailTopic, 'create'), 'firstName')}  • <span>{moment.utc(get(this.props.detailTopic, 'time')).fromNow()}</span></div>
                                         <div>@{get(get(this.props.detailTopic, 'create'), 'code')}</div>
                                     </div>
                                 </div>
@@ -170,7 +171,7 @@ class Discussion extends React.Component {
                             <Comment
                                 avatar={
                                     <Avatar
-                                        src={profile.urlAvatar}
+                                        src={this.state.profile.urlAvatar}
                                         alt="Han Solo"
                                     />
                                 }

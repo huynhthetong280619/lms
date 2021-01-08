@@ -120,7 +120,7 @@ class AddSurvey extends React.Component {
 
             <Row style={{ textAlign: 'center', paddingTop: "20px" }}>
                 <div>
-                    <Button type="primary" onClick={this.handleSubmit} style={{ borderRadius: 20 }}>{t('submit')}</Button>
+                    <Button type="primary" loading={this.props.isLoading} onClick={this.handleSubmit} style={{ borderRadius: 20 }}>{t('submit')}</Button>
                 </div>
             </Row>
         </>

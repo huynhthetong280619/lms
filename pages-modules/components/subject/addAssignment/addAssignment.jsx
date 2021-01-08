@@ -68,7 +68,7 @@ class AddAssignment extends React.Component {
     }
 
     handleAttachmentUpload = async () => {
-        this.props.onUploadFileAssignment();
+        this.props.onUploadFile();
         const formData = new FormData();
         formData.append('file', this.state.fileData)
         // replace this with your upload preset name
@@ -258,7 +258,7 @@ class AddAssignment extends React.Component {
             </Row>
             <Row style={{ textAlign: 'center', paddingTop: "20px" }}>
                 <div>
-                    <Button type="primary" onClick={this.handleSubmit} style={{ borderRadius: 20 }}>{t('submit')}</Button>
+                    <Button type="primary" loading={this.props.isLoading} onClick={this.handleSubmit} style={{ borderRadius: 20 }}>{t('submit')}</Button>
                 </div>
             </Row>
         </>

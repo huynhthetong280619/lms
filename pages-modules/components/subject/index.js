@@ -1,5 +1,5 @@
 import React from 'react'
-import { Row, Col, Popover, Modal, Tooltip, Tabs, Input, Timeline, Select, Button, notification, Spin } from 'antd'
+import { Row, Col, Popover, Tooltip, Tabs, Input, Timeline, Select, notification, Spin } from 'antd'
 import { Switch } from 'antd';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
@@ -23,24 +23,24 @@ import student from '../../../assets/images/contents/student.png'
 import external from '../../../assets/images/contents/external.png'
 import { withTranslation } from 'react-i18next';
 import restClient from '../../../assets/common/core/restClient';
-import { MoreOutlined, SettingOutlined, AndroidOutlined, LoadingOutlined } from '@ant-design/icons'
+import { MoreOutlined, SettingOutlined, AndroidOutlined } from '@ant-design/icons'
 import moment from 'moment'
 require('isomorphic-fetch');
 import 'react-day-picker/lib/style.css';
 import newInfo from '../../../assets/images/contents/new.png';
 import deadline from '../../../assets/images/courses/deadline.png'
 import opts from '../../../assets/images/contents/opts.png'
-import rar from '../../../assets/images/contents/rar.png'
 import { NotificationManager } from 'react-notifications';
 import Deadline from '../../components/deadlines'
 
 import AddQuiz from './addQuiz/addQuiz.jsx';
 import AddSurvey from './addSurvey/addSurvey.jsx';
-
 import AddAssignment from './addAssignment/addAssignment.jsx';
+import AddInformation from './addInformation/addInformation.jsx';
+import AddTimeline from './addTimeline/addTimeline.jsx'
+import AddFile from './addFile/addFile.jsx'
+import AssignmentModal from './assignmentModal/assignmentModal.jsx';
 
-const { Option } = Select;
-const { TextArea } = Input;
 const { TabPane } = Tabs;
 
 class Subject extends React.Component {
@@ -57,34 +57,23 @@ class Subject extends React.Component {
             lstTimelines: [],
             lstQuizzes: [],
             lstSurveys: [],
-            timeLine: {
-                name: '',
-                description: ''
-            },
-            information: {
-                name: '',
-                content: ''
-            },
-            timelineId: null,
             FileData: null,
             isAddInformation: false,
             isAddFilePdf: false,
-            isAddFileWord: false,
+            isAddFile: false,
             isAddFileExcel: false,
             isAddTimeline: false,
             isAddAssignment: false,
             isAddQuiz: false,
             isAddSurvey: false,
-            selectedDay: (new Date()),
             isOpenSetting: true,
             deadlines: [],
             dueTo: [],
-            timelineIdRequirement: null,
+            idTimelineRequired: null,
             orderTl: false,
             isLoading: false,
-            isLoadingRequirement: true,
+            isSubmitAssignment: false,
             isExe: false,
-            isOverDue: false,
             isTeacherPrivilege: false
         }
     }
@@ -110,7 +99,6 @@ class Subject extends React.Component {
 
         this.setState({
             lstTimelines: this.props.lstTimeline,
-            timelineId: get(head(this.props.lstTimeline), '_id'),
         })
 
 
@@ -136,9 +124,8 @@ class Subject extends React.Component {
 
     };
 
-    handleCancel = e => {
-        console.log(e);
-        this.setState({ visible: false })
+    handleCancelModal = () => {
+        this.setState({ visible: false, assignmentRequirement: {} })
     };
 
     handleOnDragEnd = async (result) => {
@@ -197,31 +184,15 @@ class Subject extends React.Component {
         return moment(time).format('MMM DD h:mm A')
     }
 
-    getRequirementAssignment = async (id, idSubject, idTimeline) => {
-        console.log('getRequirementAssignment', idTimeline);
+    getRequirementAssignment = ({ assignment, idTimeline }) => {
         this.setState({
-            isLoadingRequirement: true
-        })
-        await restClient.asyncGet(`/assignment/${id}?idSubject=${idSubject}&idTimeline=${idTimeline}`, this.props.token)
-            .then(res => {
-                if (!res.hasError) {
-                    // this.setState({
-                    //     isLoadingRequirement: false
-                    // })
-                    console.log('getRequirementAssignment', res);
-
-                    this.setState({
-                        assignmentRequirement: get(res, 'data').assignment,
-                        timelineIdRequirement: idTimeline
-                    }, () => {
-                        this.setState({
-                            visible: true
-                        })
-                    })
-
-                    // return true;
-                }
+            assignmentRequirement: assignment,
+            idTimelineRequired: idTimeline
+        }, () => {
+            this.setState({
+                visible: true
             })
+        })
 
     }
 
@@ -237,91 +208,56 @@ class Subject extends React.Component {
 
     }
 
-    handleProcessFile = (e) => {
-        this.setState({
-            FileData: e.target.files[0]
-        })
-
-    }
-
     handleProcessFileSubmission = (e) => {
         this.setState({
             FileData: e.target.files[0]
         })
     }
 
-    handleChange(value) {
-        this.setState({
-            timelineId: value
-        })
+    onSubmitAssignment = () => {
+        this.setState({ isSubmitAssignment: true });
+    }
+    onCancelSubmitAssignment = () => {
+        this.setState({ isSubmitAssignment: false });
     }
 
-    submissionFile = async (idAssignment) => {
-        // console.log(idAssignment)
-        // const formData = new FormData();
-        const objResult = await this.handleImageUpload();
-        this.setState({
-            isLoading: true
-        })
-        // formData.append('file', this.state.FileAssign)
-        await restClient.asyncPost(`/assignment/${idAssignment}/submit`, { idSubject: this.props.idSubject, idTimeline: this.state.timelineIdRequirement, file: objResult }, this.props.token)
+    submissionFile = async ({ file, idAssignment }) => {
+        await restClient.asyncPost(`/assignment/${idAssignment}/submit`, { idSubject: this.props.idSubject, idTimeline: this.state.idTimelineRequired, file: file }, this.props.token)
             .then(res => {
+                this.setState({ isSubmitAssignment: false });
                 if (!res.hasError) {
                     this.notifySuccess('Thành công!', 'Nộp bài thành công')
-                    this.setState({
-                        isLoading: false
-                    })
                     console.log('Notification', res)
+                    let submission = res.data.submission;
+                    let timelineUpdate = this.state.timelines.find(({ _id }) => _id === this.state.idTimelineRequired);
+                    let assignmentUpdate = timelineUpdate.assignments.find(({ _id }) => _id === idAssignment);
+                    assignmentUpdate = {
+                        ...assignmentUpdate, submissionStatus: true,
+                        data: { ...assignmentUpdate.data, submission: submission }
+                    };
+                    console.log('timelineUpdate', timelineUpdate);
+                    console.log('assignmentUpdated', assignmentUpdate);
+                    this.setState({
+                        timelines: [...this.state.timelines]
+                    }, () => {
+                        console.log('timeline Updated', this.state.timelines)
+                    })
+                    this.setState({ assignmentRequirement: assignmentUpdate.data });
+                } else {
+                    this.notifyError("Thất bại!", res.data.message);
                 }
             })
     }
 
-    handleImageUpload = async () => {
-        const formData = new FormData();
-        formData.append('file', this.state.FileData)
-        // replace this with your upload preset name
-        formData.append('upload_preset', 'gmttm4bo');
-        const options = {
-            method: 'POST',
-            body: formData,
-            header: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Accept',
-                mode: 'no-cors'
-            }
-        };
-
-        // replace cloudname with your Cloudinary cloud_name
-        return await fetch('https://api.Cloudinary.com/v1_1/dkepvw2rz/upload', options)
-            .then(res => res.json())
-            .then(res => {
-
-                console.log('Response', res)
-                return {
-                    name: res.original_filename,
-                    path: res.url,
-                    type: res.format || res.public_id.split('.')[1]
-                }
-            })
-            .catch(err => console.log(err));
-    }
-
-    createFileWord = async () => {
+    createFile = async ({ file, idTimeline }) => {
 
         this.setState({
             isLoading: true
         })
-
-        const objResult = await this.handleImageUpload();
-        console.log('objResult', objResult)
-
-        if (objResult) {
-            console.log('Save on database')
-        }
         await restClient.asyncPost(`/timeline/upload`, {
             idSubject: this.props.idSubject,
-            idTimeline: this.state.timelineId,
-            data: objResult
+            idTimeline: idTimeline,
+            data: file
         }, this.props.token)
             .then(res => {
                 this.setState({
@@ -330,7 +266,7 @@ class Subject extends React.Component {
                 if (!res.hasError) {
                     this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công document')
 
-                    let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === this.state.timelineId)
+                    let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
 
                     head(timelineUpdate).files.push(res.data.file)
 
@@ -342,6 +278,8 @@ class Subject extends React.Component {
                     }, () => {
                         console.log(this.state.timelines)
                     })
+                } else {
+                    this.notifyError('Thất bại!', res.data.message);
                 }
             })
     }
@@ -430,7 +368,7 @@ class Subject extends React.Component {
             })
     }
 
-    onUploadFileAssignment = () => {
+    onUploadFile = () => {
         this.setState({
             isLoading: true
         })
@@ -550,33 +488,49 @@ class Subject extends React.Component {
         });
     };
 
-    createTimeline = async () => {
-        if (this.state.timeLine.name.trim() == '' || this.state.timeLine.description.trim() == '') {
-            this.notifyWarning('Cảnh báo', 'Hãy nhập đầy đủ thông tin cần thiết');
-            return;
+    createInformation = async ({ information, idTimeline }) => {
+        this.setState({ isLoading: true });
+        const data = {
+            idSubject: this.props.idSubject,
+            idTimeline: idTimeline,
+            data: information
         }
+        console.log('createInformation', data);
+        await restClient.asyncPost('/information', data, this.props.token)
+            .then(res => {
+                this.setState({ isLoading: false });
+                if (!res.hasError) {
+                    this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công information')
+                    console.log('information', res)
+                    let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === data.idTimeline)
+                    head(timelineUpdate).information.push(res.data.information)
+                    this.setState({
+                        timelines: [...this.state.timelines]
+                    })
+                } else {
+                    this.notifyError('Thất bại!', res.data.message);
+                }
+            })
+    }
 
+    createTimeline = async (timeline) => {
         this.setState({
             isLoading: true
         })
 
         const data = {
             idSubject: this.props.idSubject,
-            data: this.state.timeLine
+            data: timeline
         }
 
         await restClient.asyncPost('/timeline', data, this.props.token)
             .then(res => {
                 console.log('Timeline', res)
+                this.setState({ isLoading: false });
                 if (!res.hasError) {
                     this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công timeline')
                     this.setState({
                         timelines: [...this.state.timelines, get(res, 'data').timeline],
-                        isLoading: false,
-                        timeLine: {
-                            name: '',
-                            description: ''
-                        },
                         lstTimelines: [...this.state.lstTimelines, {
                             _id: get(res, 'data').timeline._id,
                             isDeleted: get(res, 'data').timeline.isDeleted,
@@ -585,15 +539,17 @@ class Subject extends React.Component {
                         }]
                     })
 
+                } else {
+                    this.notifyError('Thất bại!', res.data.message);
                 }
             })
     }
 
     addFilePdf = () => {
         this.setState({
-            isAddInfomation: false,
+            isAddInformation: false,
             isAddFilePdf: true,
-            isAddFileWord: false,
+            isAddFile: false,
             isAddFileExcel: false,
             isAddTimeline: false,
             isAddAssignment: false,
@@ -605,9 +561,9 @@ class Subject extends React.Component {
 
     addFileWord = () => {
         this.setState({
-            isAddInfomation: false,
+            isAddInformation: false,
             isAddFilePdf: false,
-            isAddFileWord: true,
+            isAddFile: true,
             isAddFileExcel: false,
             isAddTimeline: false,
             isAddAssignment: false,
@@ -619,9 +575,9 @@ class Subject extends React.Component {
 
     addFileExcel = () => {
         this.setState({
-            isAddInfomation: false,
+            isAddInformation: false,
             isAddFilePdf: false,
-            isAddFileWord: false,
+            isAddFile: false,
             isAddFileExcel: true,
             isAddTimeline: false,
             isAddAssignment: false,
@@ -634,9 +590,9 @@ class Subject extends React.Component {
     addInformation = () => {
         console.log('Add information')
         this.setState({
-            isAddInfomation: true,
+            isAddInformation: true,
             isAddFilePdf: false,
-            isAddFileWord: false,
+            isAddFile: false,
             isAddFileExcel: false,
             isAddTimeline: false,
             isAddAssignment: false,
@@ -649,9 +605,9 @@ class Subject extends React.Component {
 
     addTimeline = () => {
         this.setState({
-            isAddInfomation: false,
+            isAddInformation: false,
             isAddFilePdf: false,
-            isAddFileWord: false,
+            isAddFile: false,
             isAddFileExcel: false,
             isAddTimeline: true,
             isAddAssignment: false,
@@ -664,9 +620,9 @@ class Subject extends React.Component {
     addAssignment = () => {
         this.setState({
             isAddAssignment: true,
-            isAddInfomation: false,
+            isAddInformation: false,
             isAddFilePdf: false,
-            isAddFileWord: false,
+            isAddFile: false,
             isAddFileExcel: false,
             isAddTimeline: false,
             isAddQuiz: false,
@@ -678,9 +634,9 @@ class Subject extends React.Component {
     addQuiz = () => {
         this.setState({
             isAddQuiz: false,
-            isAddInfomation: false,
+            isAddInformation: false,
             isAddFilePdf: false,
-            isAddFileWord: false,
+            isAddFile: false,
             isAddFileExcel: false,
             isAddTimeline: false,
             isAddQuiz: true,
@@ -692,9 +648,9 @@ class Subject extends React.Component {
     addSurvey = () => {
         this.setState({
             isAddQuiz: false,
-            isAddInfomation: false,
+            isAddInformation: false,
             isAddFilePdf: false,
-            isAddFileWord: false,
+            isAddFile: false,
             isAddFileExcel: false,
             isAddTimeline: false,
             isAddQuiz: false,
@@ -702,45 +658,6 @@ class Subject extends React.Component {
             isAddSurvey: true
         })
     }
-
-
-    createInfomation = async () => {
-        console.log('createInfomation', this.state.timelineId, this.state.timelines)
-        console.log(this.state.information)
-        const data = {
-            idSubject: this.props.idSubject,
-            idTimeline: this.state.timelineId,
-            data: this.state.information
-        }
-        await restClient.asyncPost('/information', data, this.props.token)
-            .then(res => {
-                if (!res.hasError) {
-                    console.log('information', res)
-                    let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === data.idTimeline)
-
-                    head(timelineUpdate).information.push(res.data.information)
-
-
-                    console.log(timelineUpdate)
-
-                    this.setState({
-                        timelines: [...this.state.timelines]
-                    }, () => {
-                        console.log(this.state.timelines)
-                    })
-
-
-
-                    this.setState({
-                        information: {
-                            name: '',
-                            content: ''
-                        }
-                    })
-                }
-            })
-    }
-
 
     downloadFile = async (idTimeline, idFile) => {
         await restClient.asyncDownLoad(`/timeline/${idTimeline}/download/${idFile}?idSubject=${this.props.idSubject}`, this.props.token)
@@ -781,7 +698,7 @@ class Subject extends React.Component {
         console.log('Edit', id)
     }
 
-    lock = async (url, timelineId, Id) => {
+    lock = async (url, timelineId) => {
         console.log('token', this.props.token)
 
         let timelineUpdate = this.state.timelines.filter(({ _id }) => _id == timelineId)
@@ -897,7 +814,7 @@ class Subject extends React.Component {
 
         }
 
-        const template = (id, name, description, assignments, exams, forums, infomation, files, surveys) => (
+        const template = (id, name, description, assignments, exams, forums, information, files, surveys) => (
             <div style={{ margin: '0 10px 10px 10px', border: "2px solid #cacaca" }}>
                 <div style={{ position: 'relative' }}>
                     {/* {this.state.isLoadingRequirement && <Spin style={{position: 'absolute', top: '50%', left: '50%', zIndex: 100}}/>} */}
@@ -930,10 +847,10 @@ class Subject extends React.Component {
                     </Row>
                     {
 
-                        infomation != null ? (
+                        information != null ? (
                             <Row style={{ paddingLeft: 35 }}>
                                 <Timeline>
-                                    {infomation.map(info => {
+                                    {information.map(info => {
                                         return (
                                             <Timeline.Item key={info._id} dot={info.isNew && <><img src={newInfo} style={{
                                                 width: "66px",
@@ -964,7 +881,7 @@ class Subject extends React.Component {
 
                         surveys != null ? (
                             surveys.map(f => {
-                                console.log('File', f); return (
+                                return (
                                     <Row style={{ marginBottom: 10 }} key={f._id} >
                                         <Col span={2} style={{
                                             textAlign: 'center',
@@ -994,7 +911,7 @@ class Subject extends React.Component {
                     {
                         files != null ? (
                             files.map(f => {
-                                console.log('File', f); return (
+                                return (
                                     <Row style={{ marginBottom: 10 }} key={f._id} >
                                         <Col span={2} style={{
                                             textAlign: 'center',
@@ -1022,10 +939,7 @@ class Subject extends React.Component {
                             assignments.map(assign => (
                                 !this.state.isTeacherPrivilege ?
                                     <Row style={{ marginBottom: 10, position: 'relative', cursor: 'pointer' }} onClick={() => {
-                                        this.getRequirementAssignment(assign._id, this.props.idSubject, id);
-                                        // if(flagLoading){
-                                        //     this.setState({ visible: true })
-                                        // }
+                                        this.getRequirementAssignment({ assignment: assign.data, idTimeline: id });
                                     }} key={assign._id}>
 
                                         <Col span={2} style={{
@@ -1236,111 +1150,12 @@ class Subject extends React.Component {
             </Col>
         )
 
-
-        console.log('attachments', get(this.state.assignmentRequirement, 'attachments'))
+        //console.log('attachments', get(this.state.assignmentRequirement, 'attachments'))
         return (
             <>
-                <Modal
-                    title="[ Assignment ] Submission file word"
-                    visible={this.state.visible}
-                    onOk={this.handleOk}
-                    onCancel={this.handleCancel}
-                    okButtonProps={{ style: { display: 'none' } }}
-                    cancelButtonProps={{ style: { display: 'none' } }}
-                    footer={null}
-                >
-                    <Tabs defaultActiveKey="1" centered>
-                        <TabPane tab="Submission" key="1">
-                            <div>
-                                <div>{t('sbmit_stat')}</div>
-                                <div style={{ margin: '10px 0' }}>
-                                    <span style={{ fontWeight: 600 }}>Due date: </span>
-                                    <span>{this.transTime(get(this.state.assignmentRequirement, 'setting')?.expireTime)}</span>
-                                </div>
-                                <div style={{ margin: '10px 0' }}>
-                                    <span style={{ fontWeight: 600 }}>Time remaining: </span>
-                                    <span>{get(this.state.assignmentRequirement, 'timingRemain')}</span>
-                                </div>
-                                <div style={{ margin: '10px 0' }}>
-                                    <span style={{ fontWeight: 600 }}>Last modified: </span>
-                                    <span>{this.transTime(head(get(this.state.assignmentRequirement, 'submission'))?.submitTime)}</span>
-                                </div>
-                                <div style={{ margin: '10px 0' }} >
-                                    <span style={{ fontWeight: 600 }}>File submissions: </span>
-                                    <Input type="file" onChange={e => this.handleProcessFileSubmission(e)} style={{ width: 200, borderRadius: 20, overflow: 'hidden' }} />
-                                </div>
-                                {
-                                    (this.state.assignmentRequirement.submission !== null) && <div style={{ margin: '10px 0' }}>
-                                        <div style={{
-                                            border: '1px dashed #cacaca',
-                                            padding: '5px 20px',
-                                            textAlign: 'center'
-                                        }}>
-                                            <img src={get(this.state.assignmentRequirement.submission, 'file')?.type.includes('doc') ? word : get(this.state.assignmentRequirement.submission, 'file')?.type == 'rar' ? rar : file} />
-                                            <div>{get(this.state.assignmentRequirement.submission, 'file')?.name}</div>
-                                        </div>
-                                    </div>
-                                }
+                <AssignmentModal visible={this.state.visible} isLoading={this.state.isSubmitAssignment} assignment={this.state.assignmentRequirement} handleCancelModal={this.handleCancelModal} submitAssignment={this.submissionFile} onSubmitAssignment={this.onSubmitAssignment} onCancelSubmitAssignment={this.onCancelSubmitAssignment} />
 
 
-                            </div>
-                            {
-                                get(this.state.assignmentRequirement, 'isCanSubmit') &&
-                                <Row style={{ marginTop: 10 }}>
-                                    <div>
-                                        <Button type="primary" onClick={() => this.submissionFile(get(this.state.assignmentRequirement, '_id'))} style={{ borderRadius: 20 }}><Spin spinning={this.state.isLoading} indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />{t('submit_assign')}</Button>
-                                    </div>
-                                </Row>
-                            }
-
-                        </TabPane>
-                        <TabPane tab="Requirement" key="2">
-                            <div style={{ fontWeight: "700" }}>[Content requirement]</div>
-                            <div dangerouslySetInnerHTML={{ __html: get(this.state.assignmentRequirement, 'content') }} />
-                            {/* <div>
-                                {get(this.state.assignmentRequirement, 'content')}
-                            </div> */}
-                            <div style={{ fontWeight: "700" }}>File attachment</div>
-                            <div style={{ height: 50 }}>
-                                {
-                                    (get(this.state.assignmentRequirement, 'attachments') || []).map(f => {
-                                        return <span style={{
-                                            verticalAlign: '-webkit-baseline-middle',
-                                            border: '1px dashed #cacaca',
-                                            padding: '3px 10px',
-                                            borderRadius: '20px',
-                                        }}>
-                                            {f.type.includes('doc') ? <img src={word} width={20} /> : <img src={pdf} width={20} />}<a href={f.path} style={{ marginLeft: 10 }}>{f.name}</a>
-                                        </span>
-                                    })
-                                }
-                            </div>
-                        </TabPane>
-                        <TabPane tab="Grade" key="3">
-                            {
-                                get(this.state.assignmentRequirement, 'gradeStatus') ? (<>
-                                    <div>Grade status</div>
-                                    <div>
-                                        <span style={{ fontWeight: 600 }}>Grade: </span>
-                                        <span>{get(get(this.state.assignmentRequirement, 'submission')?.feedBack, 'grade')}</span>
-                                    </div>
-                                    <div>
-                                        <span style={{ fontWeight: 600 }}>Grade on: </span>
-                                        <span>{this.transTime(get(head(get(this.state.assignmentRequirement, 'submission'))?.feedBack, 'gradeOn'))}</span>
-                                    </div>
-                                    <div>
-                                        <div style={{ marginBottom: 10 }}>Feedback comments</div>
-                                        <TextArea rows={2} />
-                                    </div></>
-                                )
-                                    :
-                                    (
-                                        <div style={{ color: '#ff4000', fontStyle: 'italic' }}>Chưa chấm điểm</div>
-                                    )
-                            }
-                        </TabPane>
-                    </Tabs>
-                </Modal>
                 <Row className={styles.background} style={{ justifyContent: 'center' }}>
                     {
                         this.state.isTeacher ? contentTeacher : contentNormal
@@ -1439,99 +1254,29 @@ class Subject extends React.Component {
 
                                                 {
                                                     this.state.isAddQuiz && (
-                                                        <AddQuiz lstQuizzes={this.state.lstQuizzes} lstTimelines={this.state.lstTimelines} createQuiz={this.createQuiz} />
+                                                        <AddQuiz isLoading={this.state.isLoading} lstQuizzes={this.state.lstQuizzes} lstTimelines={this.state.lstTimelines} createQuiz={this.createQuiz} />
                                                     )
                                                 }
 
                                                 {
                                                     this.state.isAddSurvey && (
-                                                        <AddSurvey lstTimelines={this.state.lstTimelines} lstSurveys={this.state.lstSurveys} createSurvey={this.createSurvey} />
+                                                        <AddSurvey isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} lstSurveys={this.state.lstSurveys} createSurvey={this.createSurvey} />
                                                     )
                                                 }
 
                                                 {
                                                     this.state.isAddAssignment && (
-                                                        <AddAssignment lstTimelines={this.state.lstTimelines} onUploadFileAssignment={this.onUploadFileAssignment} createAssignment={this.createAssignment} notifyError={this.notifyError} />
+                                                        <AddAssignment isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} onUploadFile={this.onUploadFile} createAssignment={this.createAssignment} notifyError={this.notifyError} />
                                                     )}
-                                                {this.state.isAddFileWord && <>
-                                                    <div style={{
-                                                        fontStyle: "italic",
-                                                        color: "#cacaca"
-                                                    }}>
-                                                        {t('setting_file')}
-                                                    </div>
-                                                    <Row style={{ margin: '10px 0' }}>
-                                                        <Col span={6} style={{ fontWeight: 700 }}>
-                                                            {t('timeline')}
-                                                        </Col>
-                                                        <Col>
-                                                            <Select defaultValue={this.state.timelineId} style={{ width: 200 }} onChange={e => this.handleChange(e)}>
-                                                                {
-                                                                    this.state.lstTimelines.map(tl => (<Option value={tl._id} key={tl._id}>{tl.name}</Option>))
-                                                                }
-                                                            </Select>
-                                                        </Col>
-                                                    </Row>
-                                                    <Row style={{ margin: '10px 0' }}>
-                                                        <Col span={6} style={{ fontWeight: 700 }}>
-                                                            {t('fileAttach')}
-                                                        </Col>
-                                                        <Col>
-                                                            <Input type="file" onChange={e => this.handleProcessFile(e)} style={{ width: 200, borderRadius: 20, overflow: 'hidden' }} />
-                                                        </Col>
-                                                    </Row>
-                                                    <Row style={{ textAlign: "center" }}>
-                                                        <div>
-                                                            <Button type="primary" onClick={() => this.createFileWord()} style={{ borderRadius: 20 }}>{t('submit')}</Button>
-                                                        </div>
-                                                    </Row>
+                                                {this.state.isAddFile && <>
+                                                    <AddFile isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} onUploadFile={this.onUploadFile} createFile={this.createFile} />
                                                 </>}
+                                                {this.state.isAddInformation && <>
+                                                    <AddInformation lstTimelines={this.state.lstTimelines} isLoading={this.state.isLoading} createInformation={this.createInformation} />
+                                                </>}
+
                                                 {this.state.isAddTimeline && <>
-
-                                                    <div style={{
-                                                        fontStyle: "italic",
-                                                        color: "#cacaca"
-                                                    }}>
-                                                        {t('setting_timeline')}
-                                                    </div>
-                                                    <Row style={{ margin: '10px 0' }}>
-                                                        <Col span={6} style={{ fontWeight: 700 }}>
-                                                            {t('name')}
-                                                        </Col>
-                                                        <Col>
-                                                            <Input placeholder="Name timeline" style={{ width: 200 }}
-                                                                value={get(this.state.timeLine, 'name')}
-                                                                onChange={e => {
-                                                                    this.setState({
-                                                                        timeLine: { ...this.state.timeLine, name: e.target.value }
-                                                                    })
-                                                                }} />
-                                                        </Col>
-                                                    </Row>
-                                                    <Row style={{ margin: '10px 0' }}>
-                                                        <Col span={6} style={{ fontWeight: 700 }}>
-                                                            {t('description')}
-                                                        </Col>
-                                                        <Col>
-                                                            <TextArea style={{ width: 200 }}
-
-                                                                placeholder="Description timeline"
-                                                                autoSize={{ minRows: 3, maxRows: 5 }}
-                                                                showCount
-                                                                value={get(this.state.timeLine, 'description')}
-                                                                onChange={e => {
-                                                                    this.setState({
-                                                                        timeLine: { ...this.state.timeLine, description: e.target.value }
-                                                                    })
-                                                                }}
-                                                            />
-                                                        </Col>
-                                                    </Row>
-                                                    <Row style={{ textAlign: 'center', paddingTop: "20px" }}>
-                                                        <div>
-                                                            <Button type="primary" onClick={() => this.createTimeline()} style={{ borderRadius: 20 }}>{t('submit')}</Button>
-                                                        </div>
-                                                    </Row>
+                                                    <AddTimeline createTimeline={this.createTimeline} isLoading={this.state.isLoading} />
                                                 </>}
 
                                             </div>

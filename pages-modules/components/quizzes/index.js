@@ -107,7 +107,7 @@ class Quiz extends React.Component {
 
         console.log('requirementExam', requirementExam)
 
-        return (<>
+        return (<div className="lms-ws-quizzes-page">
             <Row style={{
                 width: '80%',
                 textAlign: 'center',
@@ -161,7 +161,7 @@ class Quiz extends React.Component {
                 </div>
             </Row>
 
-        </>)
+        </div>)
     }
 }
 

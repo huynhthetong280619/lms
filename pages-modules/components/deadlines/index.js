@@ -55,7 +55,6 @@ const DeadlineItem = ({ deadline }) => (
 class Deadline extends React.Component {
     render() {
         const { deadlines, t, dueTo } = this.props
-        console.log(deadlines);
         return (<Row style={
             { justifyContent: 'center', padding: "5px 0" }} >
             <Tabs defaultActiveKey="1" centered >
