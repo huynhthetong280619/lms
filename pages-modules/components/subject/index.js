@@ -53,7 +53,7 @@ class Subject extends React.Component {
             timelines: [],
             updateTimelines: [],
             isTeacher: false,
-            assignmentRequirement: {},
+            assignmentRequirement: null,
             lstTimelines: [],
             lstQuizzes: [],
             lstSurveys: [],
@@ -73,6 +73,7 @@ class Subject extends React.Component {
             orderTl: false,
             isLoading: false,
             isSubmitAssignment: false,
+            isCommentAssignment: false,
             isExe: false,
             isTeacherPrivilege: false
         }
@@ -119,13 +120,8 @@ class Subject extends React.Component {
 
     }
 
-    handleOk = e => {
-        console.log(e);
-
-    };
-
     handleCancelModal = () => {
-        this.setState({ visible: false, assignmentRequirement: {} })
+        this.setState({ visible: false, assignmentRequirement: null })
     };
 
     handleOnDragEnd = async (result) => {
@@ -180,22 +176,6 @@ class Subject extends React.Component {
         }
     }
 
-    transTime = (time) => {
-        return moment(time).format('MMM DD h:mm A')
-    }
-
-    getRequirementAssignment = ({ assignment, idTimeline }) => {
-        this.setState({
-            assignmentRequirement: assignment,
-            idTimelineRequired: idTimeline
-        }, () => {
-            this.setState({
-                visible: true
-            })
-        })
-
-    }
-
     deleteExercise = async () => {
 
     }
@@ -221,6 +201,26 @@ class Subject extends React.Component {
         this.setState({ isSubmitAssignment: false });
     }
 
+    getRequirementAssignment = async ({ idAssignment, idTimeline }) => {
+        this.setState({
+            visible: true
+        });
+        await restClient.asyncGet(`/assignment/${idAssignment}?idSubject=${this.props.idSubject}&idTimeline=${idTimeline}`, this.props.token)
+            .then(res => {
+                if (!res.hasError) {
+                    console.log('getRequirementAssignment', res);
+
+                    this.setState({
+                        assignmentRequirement: get(res, 'data').assignment,
+                        idTimelineRequired: idTimeline
+                    });
+                } else {
+                    this.notifyError('Thất bại!', res.data.message);
+                }
+            })
+
+    }
+
     submissionFile = async ({ file, idAssignment }) => {
         await restClient.asyncPost(`/assignment/${idAssignment}/submit`, { idSubject: this.props.idSubject, idTimeline: this.state.idTimelineRequired, file: file }, this.props.token)
             .then(res => {
@@ -235,13 +235,28 @@ class Subject extends React.Component {
                         ...assignmentUpdate, submissionStatus: true,
                         data: { ...assignmentUpdate.data, submission: submission }
                     };
-                    console.log('timelineUpdate', timelineUpdate);
-                    console.log('assignmentUpdated', assignmentUpdate);
-                    this.setState({
-                        timelines: [...this.state.timelines]
-                    }, () => {
-                        console.log('timeline Updated', this.state.timelines)
-                    })
+                    this.setState({ assignmentRequirement: assignmentUpdate.data });
+                } else {
+                    this.notifyError("Thất bại!", res.data.message);
+                }
+            })
+    }
+
+    commentAssignmentGrade = async ({ comment, idAssignment }) => {
+        this.setState({ isCommentAssignment: true });
+        await restClient.asyncPost(`/assignment/${idAssignment}/comment`, { idSubject: this.props.idSubject, idTimeline: this.state.idTimelineRequired, comment: comment }, this.props.token)
+            .then(res => {
+                this.setState({ isCommentAssignment: false });
+                if (!res.hasError) {
+                    this.notifySuccess('Thành công!', res.data.message)
+                    console.log('Notification', res)
+                    let submission = res.data.submission;
+                    let timelineUpdate = this.state.timelines.find(({ _id }) => _id === this.state.idTimelineRequired);
+                    let assignmentUpdate = timelineUpdate.assignments.find(({ _id }) => _id === idAssignment);
+                    assignmentUpdate = {
+                        ...assignmentUpdate, submissionStatus: true,
+                        data: { ...assignmentUpdate.data, submission: submission }
+                    };
                     this.setState({ assignmentRequirement: assignmentUpdate.data });
                 } else {
                     this.notifyError("Thất bại!", res.data.message);
@@ -659,13 +674,6 @@ class Subject extends React.Component {
         })
     }
 
-    downloadFile = async (idTimeline, idFile) => {
-        await restClient.asyncDownLoad(`/timeline/${idTimeline}/download/${idFile}?idSubject=${this.props.idSubject}`, this.props.token)
-            .then(res => {
-                console.log(res)
-            })
-    }
-
     createNotification = (type, title, message) => {
         return () => {
             switch (type) {
@@ -939,7 +947,7 @@ class Subject extends React.Component {
                             assignments.map(assign => (
                                 !this.state.isTeacherPrivilege ?
                                     <Row style={{ marginBottom: 10, position: 'relative', cursor: 'pointer' }} onClick={() => {
-                                        this.getRequirementAssignment({ assignment: assign.data, idTimeline: id });
+                                        this.getRequirementAssignment({ idAssignment: assign._id, idTimeline: id });
                                     }} key={assign._id}>
 
                                         <Col span={2} style={{
@@ -1153,7 +1161,7 @@ class Subject extends React.Component {
         //console.log('attachments', get(this.state.assignmentRequirement, 'attachments'))
         return (
             <>
-                <AssignmentModal visible={this.state.visible} isLoading={this.state.isSubmitAssignment} assignment={this.state.assignmentRequirement} handleCancelModal={this.handleCancelModal} submitAssignment={this.submissionFile} onSubmitAssignment={this.onSubmitAssignment} onCancelSubmitAssignment={this.onCancelSubmitAssignment} />
+                <AssignmentModal visible={this.state.visible} isSubmitAssignment={this.state.isSubmitAssignment} isCommentAssignment={this.state.isCommentAssignment} commentAssignmentGrade={this.commentAssignmentGrade} assignment={this.state.assignmentRequirement} handleCancelModal={this.handleCancelModal} submitAssignment={this.submissionFile} onSubmitAssignment={this.onSubmitAssignment} onCancelSubmitAssignment={this.onCancelSubmitAssignment} />
 
 
                 <Row className={styles.background} style={{ justifyContent: 'center' }}>

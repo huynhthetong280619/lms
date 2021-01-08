@@ -2,6 +2,8 @@ import { Row, Col, Table, Input, Popconfirm } from 'antd';
 import React from 'react'
 import { get } from 'lodash'
 import restClient from '../../../assets/common/core/restClient';
+import fetch from 'node-fetch';
+import fileDownload from 'js-file-download';
 
 class Manage extends React.Component {
 
@@ -17,10 +19,11 @@ class Manage extends React.Component {
     componentDidMount() {
         this.setState({
             lstSubmission: get(this.props.lstSubmission, 'submission')
-        })
+        });
+        console.log('lstSubmission', this.props.lstSubmission);
     }
 
-    enterGradeVerif = async (idSubmission) => {
+    enterGradeVerify = async (idSubmission) => {
         const data = {
             idSubject: this.props.idSubject,
             idTimeline: this.props.idTimeline,
@@ -29,14 +32,17 @@ class Manage extends React.Component {
 
         await restClient.asyncPost(`/assignment/${this.props.idAssign}/grade/${idSubmission}`, data, this.props.token)
             .then(res => {
-                console.log('enterGradeVerif', res)
+                console.log('enterGradeVerify', res)
             })
     }
 
-    downloadFile = async (idTimeline, idFile) => {
-        await restClient.asyncDownLoad(`/timeline/${idTimeline}/download/${idFile}?idSubject=${this.props.idSubject}`)
+    downloadFile = async (file) => {
+        fetch(file.path, { method: 'GET' })
             .then(res => {
-                console.log(res)
+                return res.blob();
+            })
+            .then((blob) => {
+                fileDownload(blob, `${file.name}.${file.type}`);
             })
     }
 
@@ -48,7 +54,7 @@ class Manage extends React.Component {
             { title: 'Họ và tên', dataIndex: 'student', key: 'student', render: data => <span>{get(data, 'surName') + " " + get(data, 'firstName')}</span> },
             {
                 title: 'File submission', dataIndex: 'file', key: 'file',
-                render: data => <a onClick={() => this.downloadFile(this.props.idTimeline, data._id)}>{data.name}</a>
+                render: data => <a onClick={() => this.downloadFile(data)}>{data.name}.{data.type}</a>
             },
             {
                 title: 'Grade', dataIndex: 'feedBack', key: 'feedBack',
@@ -61,12 +67,12 @@ class Manage extends React.Component {
                 render: (data) => (
                     <Popconfirm
                         title="Bạn có chắc chắn xác nhận hay không?"
-                        onConfirm={() => this.enterGradeVerif(data._id)}
+                        onConfirm={() => this.enterGradeVerify(data._id)}
                         onCancel={() => console.log('Cancel')}
                         okText="Yes"
                         cancelText="No"
                     >
-                        <a href='#'>Confirm</a>,
+                        <a href='#'>Confirm</a>
                     </Popconfirm>
                 )
             },
@@ -84,8 +90,8 @@ class Manage extends React.Component {
                 <Row style={{ width: '100%' }}>
                     <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>{get(this.props.lstSubmission, 'name')}</Col>
                 </Row>
-                <Row style={{width: '100%', padding: 10}}>
-                    <div style={{width: '100%', border: '1px solid #cacaca'}}>
+                <Row style={{ width: '100%', padding: 10 }}>
+                    <div style={{ width: '100%', border: '1px solid #cacaca' }}>
                         <Table
                             columns={columns}
                             pagination={{ pageSize: 50 }} scroll={{ y: 240 }}
@@ -94,7 +100,7 @@ class Manage extends React.Component {
                                 rowExpandable: record => record.name !== 'Not Expandable',
                             }}
                             dataSource={this.state.lstSubmission}
-                            rowKey="student"
+                            rowKey={["student"], ["_id"]}
                             pagination={false}
                         />
                     </div>

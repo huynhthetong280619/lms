@@ -24,7 +24,7 @@ const data = parseCookies(ctx.req);
     const lstSubmission = await restClient.asyncGet(`/assignment/${idAssign}?idSubject=${idSubject}&idTimeline=${idTimeline}`, token)
 
     return {
-        lstSubmission: get(lstSubmission, 'data'),
+        lstSubmission: get(lstSubmission, 'data').assignment,
         idAssign,
         idSubject,
         idTimeline,
