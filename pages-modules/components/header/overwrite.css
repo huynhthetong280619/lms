@@ -89,8 +89,10 @@
 }
 
 .ui-avatar img {
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
+    border-radius: 25px;
+    cursor: pointer;
 }
 
 button.btn-account-info {
@@ -104,20 +106,9 @@ button.btn-account-info.ant-popover-open {
 }
 
 button.btn-login {
-    border-radius: 20px;
     width: 210px;
-    padding: 5px 0px;
-    font-size: 20px;
-    line-height: 20px;
-    cursor: pointer;
-    padding: 8px 0;
-    /* display: block; */
 }
 
-button.btn-login:hover{
-    background: #3498db;
-    color: #fff;
-}
 
 .ant-btn-round.ant-btn-lg {
     font-size: 20px;
@@ -130,3 +121,32 @@ button.btn-login:hover{
 div.ant-row.ant-form-item {
     margin: 10px 10px;
 }
+
+.social {
+    margin-bottom: 20px;
+    width: 220px;
+    height: 36px;
+    border-radius: 2px;
+    font-size: 15px;
+    transition: .2;
+    color: #fff;
+    border: none;
+    cursor: pointer
+}
+
+.facebook{
+    background: #32508e
+}
+
+.facebook:hover{
+    background: #32508e
+}
+
+.google{
+    background: #dd4b39
+}
+
+.google:hover{
+    background: #dd4b39
+}
+

@@ -88,19 +88,11 @@ class Courses extends React.Component {
                     </div>
                     <div className={styles.listCourses}>
                         {/* empty course */}
-                        {/* <div style={{
-                            textAlign: 'center',
-                            padding: '45px'
-                        }}>
-                            <i>
-                                <img src={courseEmpty} />
-                            </i>
-                            <div style={{color: '#c4c4c4', fontStyle: 'italic'}}>No course register</div>
-                        </div> */}
+
                         {/* Courses */}
                         <Row style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
                             {
-                                this.state.courses.map(course => (
+                                this.state.courses.length > 0 ? this.state.courses.map(course => (
                                     <a className="ant-col ant-col-6"
                                         href={`/subject/${course._id}`}
                                         key={course._id}
@@ -117,7 +109,16 @@ class Courses extends React.Component {
                                             marginTop: 10
                                         }}>{course.name}</div>
                                     </a>
-                                ))
+                                )) :
+                                    <div style={{
+                                        textAlign: 'center',
+                                        padding: '45px'
+                                    }}>
+                                        <i>
+                                            <img src={courseEmpty} />
+                                        </i>
+                                        <div style={{ color: '#c4c4c4', fontStyle: 'italic' }}>No course register</div>
+                                    </div>
                             }
                         </Row>
                     </div>
@@ -166,19 +167,8 @@ class Courses extends React.Component {
                                     </div>
                                 </div>
                                 <div>
-                                    {/* Empty */}
-                                    {/* <div style={{
-                                                textAlign: 'center',
-                                                padding: '45px'
-                                            }}>
-                                                <i>
-                                                    <img src={deadlineCalcular} />
-                                                </i>
-                                                <div style={{ color: '#c4c4c4', fontStyle: 'italic' }}>No upcoming deadline</div>
-                                            </div> */}
-                                    {/* Deadline */}
-                                    <Row style={{ justifyContent: 'center', padding: "5px 0" }}>
-                                        <Tabs defaultActiveKey="1" centered>
+                                    <Row style={{ justifyContent: 'center', padding: '5px 5px' }}>
+                                        <Tabs defaultActiveKey="1" centered style={{ width: '100%' }}>
                                             <TabPane tab={<span> <AlertOutlined twoToneColor="#ff0000" />{t('dl')}</span>} key="1">
                                                 <div style={{
                                                     maxHeight: '400px',
@@ -202,7 +192,7 @@ class Courses extends React.Component {
                                                                 </div>
                                                             </Col>
                                                         </Row>
-                                                    )) : <Row>
+                                                    )) : <Row style={{ justifyContent: 'center' }}>
                                                             <img src={deadlineCalcular} />
                                                             <div style={{ width: "100%", color: '#cacaca', textAlign: 'center' }}>No upcoming deadline</div>
                                                         </Row>}
@@ -216,7 +206,7 @@ class Courses extends React.Component {
                                                     maxHeight: '400px',
                                                     overflowY: 'auto'
                                                 }}>
-                                                    {this.state.dueTo.map(dt => (
+                                                    {this.state.dueTo.length > 0 ? this.state.dueTo.map(dt => (
                                                         <Row key={dt._id} style={{
                                                             marginBottom: 5, color: "#2ecc71", border: "2px solid #cacaca",
                                                             padding: "10px 0"
@@ -234,7 +224,10 @@ class Courses extends React.Component {
                                                                 </div>
                                                             </Col>
                                                         </Row>
-                                                    ))}
+                                                    )) : <Row style={{ justifyContent: 'center' }}>
+                                                            <img src={deadlineCalcular} />
+                                                            <div style={{ width: "100%", color: '#cacaca', textAlign: 'center' }}>No deadline complete</div>
+                                                        </Row>}
                                                 </div>
                                             </TabPane>
                                         </Tabs>

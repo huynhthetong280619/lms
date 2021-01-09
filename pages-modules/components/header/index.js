@@ -160,7 +160,7 @@ class Headers extends React.Component {
     }
 
     logout = (e) => {
-        this.setState({isLoadingPage: true, isLogin: false})
+        this.setState({ isLoadingPage: true, isLogin: false })
 
         removeCookie('token');
         localStorage.removeItem('user')
@@ -193,12 +193,15 @@ class Headers extends React.Component {
         const { current } = this.state;
 
         return (
-            <Row style={{ paddingTop: 10, paddingBottom: 10 }} className="lms_ws_header--">
+            <Row style={{
+                paddingTop: 10, paddingBottom: 10, display: 'flex',
+                justifyContent: 'space-around'
+            }} className="lms_ws_header--">
                 <div className="sweet-loading" style={{
-                        position: 'absolute',
-                        zIndex: 1000,
-                        top: '50%',
-                        left: '50%',
+                    position: 'absolute',
+                    zIndex: 1000,
+                    top: '50%',
+                    left: '50%',
                 }}>
                     <FadeLoader
                         css={override}
@@ -221,7 +224,6 @@ class Headers extends React.Component {
                             ]}
                         >
                             <Input
-                                style={{ borderRadius: 20, }}
                                 size='large'
                                 prefix={<UserOutlined className="site-form-item-icon" />}
                                 placeholder="Enter your code..." />
@@ -237,7 +239,7 @@ class Headers extends React.Component {
                         >
                             <Input.Password
                                 prefix={<KeyOutlined className="site-form-item-icon" />}
-                                style={{ borderRadius: 20, }} size='large'
+                                size='large'
                                 placeholder="Enter your password..."
                             />
                         </Form.Item>
@@ -245,7 +247,7 @@ class Headers extends React.Component {
                         <Form.Item
                             style={{ textAlign: 'center' }}
                         >
-                            <Button className="btn-login" type="primary" size='large' shape="round" htmlType="submit"
+                            <Button className="btn-login" type="primary" size='large' htmlType="submit"
                                 loading={this.state.isLoading}>
                                 {this.state.loginChange}</Button>
                         </Form.Item>
@@ -254,34 +256,29 @@ class Headers extends React.Component {
                     <Row style={{ textAlign: 'center' }}>
                         <Divider style={{
                             width: "100%", color: '#cacaca',
-                            fontWeight: 600
                         }}> Or sign by certificate</Divider>
-                        <Row style={{ width: "100%" }}>
+                        <Row style={{ width: '100%', justifyContent: 'center' }}>
                             <GoogleLogin
                                 clientId={GOOGLE_CLIENT_ID}
                                 render={renderProps => (
-                                    <Col span={12} style={{ cursor: 'pointer' }}>
-                                        <div>
-                                            <GoogleOutlined onClick={renderProps.onClick} disabled={renderProps.disabled} style={{ color: "#ff4000", fontSize: 50 }} /></div><div style={{
-                                                fontWeight: 700,
-                                                color: '#756c6c'
-                                            }}>Login with Google</div>
-                                    </Col>
+                                    <Row>
+                                        <Button className="social google" onClick={renderProps.onClick} disabled={renderProps.disabled}>Log in with Google</Button>
+                                    </Row>
                                 )}
                                 onSuccess={this.responseGoogle}
                                 onFailure={this.responseGoogle}
                                 cookiePolicy={'single_host_origin'}
                             />
+
+                        </Row>
+                        <Row style={{ width: '100%', justifyContent: 'center' }}>
                             <FacebookLogin
                                 appId={FACEBOOK_CLIENT_ID}
                                 callback={this.responseFacebook}
                                 render={renderProps => (
-                                    <Col span={12} style={{ cursor: 'pointer' }}>
-                                        <FacebookOutlined onClick={renderProps.onClick} disabled={renderProps.disabled} style={{ color: "#0B83ED", fontSize: 50 }} /><div style={{
-                                            fontWeight: 700,
-                                            color: '#756c6c'
-                                        }}>Login with Facebook</div>
-                                    </Col>
+                                    <Row>
+                                        <Button className="social facebook" onClick={renderProps.onClick} disabled={renderProps.disabled}>Log in with Facebook</Button>
+                                    </Row>
                                 )}
                             />
                         </Row>
@@ -297,21 +294,21 @@ class Headers extends React.Component {
                     </div>
                 </Col>
                 <Col span={4}>
-                    
+
                 </Col>
                 <Col xs={10}>
                     {/* Authentication */}
                     {
                         this.state.isLogin ? <div style={{ textAlign: 'right' }}>
                             <Popover placement="bottomRight" title={title} content={content} trigger="click">
-                                <button className='btn-account-info' style={{
+                                {/* <button className='btn-account-info' style={{
                                     height: '46px',
                                     verticalAlign: 'bottom',
                                     lineHeight: '46px',
                                     borderRadius: '50%'
-                                }}>
+                                }}> */}
                                     <Avatar image={this.state.profile.urlAvatar} />
-                                </button>
+                                {/* </button> */}
                             </Popover>
                         </div>
                             :

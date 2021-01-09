@@ -1,31 +1,57 @@
+.subject-lms-ws
+
 .wrapper-container{
     font-size: 2em;
 }
+.subject-lms-ws
 
 .ant-tabs.ant-tabs-top.ant-tabs-centered{
     width: 96%;
 }
+.subject-lms-ws
 
 .ant-tabs-nav-list{
     width: 100%;
 }
+.subject-lms-ws
 
 .ant-tabs-tab{
     width: 100%;
+    justify-content: center;
 }
+.subject-lms-ws
 
 .ant-tabs-content-holder{
     width: 100%;
-}
+}.subject-lms-ws
+
 
 .ant-select-item.ant-select-item-option{
     width: 100%;
 }
+.subject-lms-ws
 
 .DayPickerInput input{
     width: 200px;
 }
+.subject-lms-ws
 
 .ant-timeline-item-content{
     padding-left: 30px;
+}
+
+.ant-timeline-item{
+    padding-bottom: 0 !important;
+}
+
+.ant-col a:hover{
+    transform: scaleX(1.1);
+    transition: cubic-bezier(0.075, 0.82, 0.165, 1);
+    color: #7f8fa6 !important;
+}
+
+.action-select-add-content:hover{
+    transition: cubic-bezier(0.075, 0.82, 0.165, 1);
+    transform: scaleX(1.1);
+    font-weight: 600;
 }

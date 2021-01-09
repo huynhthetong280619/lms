@@ -31,7 +31,8 @@ class IndexContent extends Component {
     render() {
         const {t} = this.props
         return <>
-            <Row className="lms_ws_content" style={{background: '#fff'}}>
+            <Row className="lms_ws_content" style={{background: '#fff',     display: 'flex',
+    justifyContent: 'center'}}>
                 <Col className={styles.carouselIntro} span={10}>
                     <div>
                         <Carousel>

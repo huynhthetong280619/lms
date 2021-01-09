@@ -38,6 +38,7 @@ function getBase64(img, callback) {
 }
 
 function beforeUpload(file) {
+    console.log('beforeUpload', file)
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
     if (!isJpgOrPng) {
         message.error('You can only upload JPG/PNG file!');
@@ -69,7 +70,8 @@ const Profile = ({ token }) => {
         forceUpdate({});
         const usrObj = JSON.parse(localStorage.getItem('user'))
 
-        setState({...state,
+        setState({
+            ...state,
             imageUrl: usrObj.urlAvatar,
         });
         setProfile(usrObj);
@@ -89,7 +91,7 @@ const Profile = ({ token }) => {
     const updateProfile = async (values) => {
         console.log('profile', values);
         console.log('image', imageUrl);
-        setState({...state, submitProfile: true });
+        setState({ ...state, submitProfile: true });
         const tokenCookies = getCookie('token');
         await restClient.asyncPut(`/user/`, {
             surName: values.surName,
@@ -97,7 +99,7 @@ const Profile = ({ token }) => {
             urlAvatar: imageUrl,
         }, tokenCookies)
             .then(res => {
-                setState({...state, submitProfile: false });
+                setState({ ...state, submitProfile: false });
                 console.log('resLink', res)
                 // localStorage.removeItem('user');
                 if (!res.hasError) {
@@ -112,14 +114,14 @@ const Profile = ({ token }) => {
 
     const updatePassword = async (values) => {
         console.log('password', values);
-        setState({...state, submitPassword: true });
+        setState({ ...state, submitPassword: true });
         const tokenCookies = getCookie('token');
         await restClient.asyncPut(`/user/password`, {
             password: values.current,
             newPassword: values.new
         }, tokenCookies)
             .then(res => {
-                setState({...state, submitPassword: false });
+                setState({ ...state, submitPassword: false });
                 console.log('resLink', res)
                 // localStorage.removeItem('user');
                 if (!res.hasError) {
@@ -133,7 +135,8 @@ const Profile = ({ token }) => {
 
 
     const handleImageUpload = (info, onSuccess) => {
-        setState({...state,
+        setState({
+            ...state,
             loading: true,
         });
         const formData = new FormData();
@@ -156,14 +159,16 @@ const Profile = ({ token }) => {
                 .then(res => res.json())
                 .then(res => {
                     console.log('url', res.url);
-                    setState({...state,
+                    setState({
+                        ...state,
                         imageUrl: res.url,
                         loading: false
                     });
                 })
                 .catch(err => {
                     console.log(err)
-                    setState({...state,
+                    setState({
+                        ...state,
                         loading: false
                     });
                 });
@@ -171,12 +176,12 @@ const Profile = ({ token }) => {
     }
 
     const linkSocial = async (data) => {
-        setState({...state, connectFacebook: true });
+        setState({ ...state, connectFacebook: true });
         const tokenCookies = getCookie('token');
         await restClient.asyncPut(`/user/auth/facebook/link`, data, tokenCookies)
             .then(res => {
                 console.log('resLink', res)
-                setState({...state, connectFacebook: false });
+                setState({ ...state, connectFacebook: false });
                 // localStorage.removeItem('user');
                 if (!res.hasError) {
                     localStorage.setItem('user', JSON.stringify(res.data.user));
@@ -189,13 +194,13 @@ const Profile = ({ token }) => {
     }
 
     const unlinkSocial = async () => {
-        setState({...state, disconnectFacebook: true });
+        setState({ ...state, disconnectFacebook: true });
         const tokenCookies = getCookie('token');
         await restClient.asyncPut(`/user/auth/facebook/unlink`, {
             token: tokenCookies
         }, tokenCookies)
             .then(res => {
-                setState({...state, disconnectFacebook: false });
+                setState({ ...state, disconnectFacebook: false });
                 console.log('resLink unlink', res)
                 if (!res.hasError) {
                     localStorage.setItem('user', JSON.stringify(res.data.user));
@@ -219,11 +224,13 @@ const Profile = ({ token }) => {
     }
 
     return (
-        <Row style={{
-            margin: '10px 20px 10px 20px',
+        <Row className="profile-lms-ws" style={{
             background: '#fff',
             minHeight: '200px',
-            paddingBottom: '30px'
+            maxWidth: '86%',
+            justifyContent: 'center',
+            paddingBottom: '30px',
+            margin: '0 auto'
         }}>
             <div style={{ padding: "10px 0", textAlign: "center" }}>
                 <i>
@@ -235,7 +242,7 @@ const Profile = ({ token }) => {
                 }}>YOUR DETAIL PROFILE</span>
             </div>
             <Divider />
-            <Row>
+            <Row style={{ justifyContent: 'space-between' }}>
                 <Col span={8}>
                     <SectionDescription title="Profile" content="Your email address is your identity on LMS and is used to log in." />
                 </Col>
@@ -325,26 +332,33 @@ const Profile = ({ token }) => {
                                 Connect to Facebook
                             </Button>
                         )}
-                    />) : (<Row>
-                        <Tag icon={<FacebookOutlined />} color="#3b5999">Facebook</Tag>
-                        <Tag color="purple">ID: {profile.facebookId}</Tag>
-                        <Button
-                            size={"small"}
-                            style={{ marginLeft: 8 }}
-                            type={"primary"}
-                            danger
-                            icon={<DisconnectOutlined />}
-                            loading={disconnectFacebook}
-                            onClick={unlinkSocial}
-                        >
-                            Unlink Facebook
+                    />) : (<Row style={{justifyContent: 'space-between'}}>
+                        <Col span={6}>
+                            <Tag icon={<FacebookOutlined />} color="#3b5999">Facebook</Tag>
+                        </Col>
+                        <Col span={8}>
+                            <Tag color="purple">ID: {profile.facebookId}</Tag>
+                        </Col>
+                        <Col span={10}>
+                            <Button
+                                size={"small"}
+                                style={{ marginLeft: 8 }}
+                                type={"primary"}
+                                danger
+                                icon={<DisconnectOutlined />}
+                                loading={disconnectFacebook}
+                                onClick={unlinkSocial}
+                            >
+                                Unlink Facebook
                         </Button>
+                        </Col>
+
                     </Row>)}
                 </Col>
             </Row>
 
             <Divider />
-            <Row>
+            <Row style={{ justifyContent: 'space-between' }}>
                 <Col span={8}>
                     <SectionDescription title="Password" content="Changing your password will also required your current password" />
                 </Col>

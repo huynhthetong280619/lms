@@ -37,7 +37,8 @@ class ViewOnline extends React.Component {
                 background: '#fff',
                 minHeight: '20px',
                 paddingBottom: 50,
-                paddingTop: 50
+                paddingTop: 50,
+                margin: '0 auto'
             }}>
                 <h1 style={{width: "100%"}}>{this.props.detailFile.name}</h1>
                 <div style={{

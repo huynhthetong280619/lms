@@ -12,6 +12,7 @@
 
 .ant-tabs-tab{
     width: 100%;
+    justify-content: center;
 }
 
 .ant-tabs-content-holder{
