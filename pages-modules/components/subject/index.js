@@ -1,5 +1,5 @@
 import React from 'react'
-import { Row, Col, Popover, Modal, Tooltip, Tabs, Drawer, Input, Timeline, Select, Button, Checkbox, InputNumber, notification, Spin } from 'antd'
+import { Row, Col, Popover, Tooltip, Tabs, Input, Timeline, Select, notification, Spin, Drawer, Modal } from 'antd'
 import { Switch } from 'antd';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
@@ -9,7 +9,6 @@ import { get, pick, head } from 'lodash';
 import add from '../../../assets/images/contents/add.png'
 import forum from '../../../assets/images/contents/forum.png'
 import excel from '../../../assets/images/contents/excel.png'
-import fastTime from '../../../assets/images/courses/fastTime.png'
 import file from '../../../assets/images/contents/file.png'
 import pdf from '../../../assets/images/contents/pdf.png'
 import video from '../../../assets/images/contents/video.png'
@@ -25,24 +24,26 @@ import external from '../../../assets/images/contents/external.png'
 import manageScore from '../../../assets/images/contents/manage-score.png'
 import { withTranslation } from 'react-i18next';
 import restClient from '../../../assets/common/core/restClient';
-import { MoreOutlined, EyeOutlined, SettingOutlined, AndroidOutlined, AlertOutlined, CheckCircleTwoTone, LoadingOutlined } from '@ant-design/icons'
+import { MoreOutlined, SettingOutlined, AndroidOutlined } from '@ant-design/icons'
 import moment from 'moment'
 require('isomorphic-fetch');
 import 'react-day-picker/lib/style.css';
 import newInfo from '../../../assets/images/contents/new.png';
 import deadline from '../../../assets/images/courses/deadline.png'
-import deadlineCalcular from '../../../assets/images/courses/deadlineCalcular.png'
-import points from '../../../assets/images/contents/statistics-point.png'
 import opts from '../../../assets/images/contents/opts.png'
-import rar from '../../../assets/images/contents/rar.png'
-import DayPickerInputCustomize from '../../basic-component/time-picker';
-import { NotificationContainer, NotificationManager } from 'react-notifications';
+import { NotificationManager } from 'react-notifications';
+import Deadline from '../../components/deadlines'
 import Widget from '../widget';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import '../fontAwesomeIcon'
+import AddQuiz from './addQuiz/addQuiz.jsx';
+import AddSurvey from './addSurvey/addSurvey.jsx';
+import AddAssignment from './addAssignment/addAssignment.jsx';
+import AddInformation from './addInformation/addInformation.jsx';
+import AddTimeline from './addTimeline/addTimeline.jsx'
+import AddFile from './addFile/addFile.jsx'
+import AssignmentModal from './assignmentModal/assignmentModal.jsx';
 
-const { Option } = Select;
-const { TextArea } = Input;
 const { TabPane } = Tabs;
 
 class Subject extends React.Component {
@@ -55,101 +56,40 @@ class Subject extends React.Component {
             timelines: [],
             updateTimelines: [],
             isTeacher: false,
-            assigmentRequirement: {},
+            assignmentRequirement: null,
             lstTimelines: [],
-            lstQuizzis: [],
-            quizId: null,
-            timeLine: {
-                name: '',
-                description: ''
-            },
-            information: {
-                name: '',
-                content: ''
-            },
-            timelineId: null,
-            assignment: {
-                name: '',
-                content: '',
-                setting: {
-                    startTime: `${new Date().getFullYear()}-${`${new Date().getMonth() +
-                        1}`.padStart(2, 0)}-${`${new Date().getDate() + 1}`.padStart(
-                            2,
-                            0
-                        )}T${`${new Date().getHours()}`.padStart(
-                            2,
-                            0
-                        )}:${`${new Date().getMinutes()}`.padStart(2, 0)}`,
-                    expireTime: `${new Date().getFullYear()}-${`${new Date().getMonth() +
-                        1}`.padStart(2, 0)}-${`${new Date().getDate() + 1}`.padStart(
-                            2,
-                            0
-                        )}T${`${new Date().getHours()}`.padStart(
-                            2,
-                            0
-                        )}:${`${new Date().getMinutes()}`.padStart(2, 0)}`,
-                    isOverDue: false,
-                    overDueDate: null,
-                    fileSize: ''
-                }
-            },
-            quiz: {
-                name: '',
-                content: '',
-                startTime: `${new Date().getFullYear()}-${`${new Date().getMonth() +
-                    1}`.padStart(2, 0)}-${`${new Date().getDate() + 1}`.padStart(
-                        2,
-                        0
-                    )}T${`${new Date().getHours()}`.padStart(
-                        2,
-                        0
-                    )}:${`${new Date().getMinutes()}`.padStart(2, 0)}`,
-                expireTime: `${new Date().getFullYear()}-${`${new Date().getMonth() +
-                    1}`.padStart(2, 0)}-${`${new Date().getDate() + 1}`.padStart(
-                        2,
-                        0
-                    )}T${`${new Date().getHours()}`.padStart(
-                        2,
-                        0
-                    )}:${`${new Date().getMinutes()}`.padStart(2, 0)}`,
-                setting: {
-                    questionCount: null,
-                    timeToDo: null,
-                    code: get(head(this.props.lstQuizzis), '_id'),
-                    attemptCount: null
-                }
-            },
+            lstQuizzes: [],
+            lstSurveys: [],
             FileData: null,
-            isAddInfomation: false,
+            isAddInformation: false,
             isAddFilePdf: false,
-            isAddFileWord: false,
+            isAddFile: false,
             isAddFileExcel: false,
             isAddTimeline: false,
             isAddAssignment: false,
             isAddQuiz: false,
             isAddSurvey: false,
-            selectedDay: (new Date()),
             isOpenSetting: true,
             deadlines: [],
             dueTo: [],
-            timelineIdRequirement: null,
+            idTimelineRequired: null,
             orderTl: false,
             isLoading: false,
-            isLoadingRequirement: true,
+            isSubmitAssignment: false,
+            isCommentAssignment: false,
             isExe: false,
-            isOverDue: false,
-            isTeacherPriviledge: false
+            isTeacherPrivilege: false
         }
     }
 
     async componentDidMount() {
-        console.log('componentDidMount', this.props.subject, this.props.lstQuizzis, this.props.lstTimeline);
+        console.log('componentDidMount', this.props.subject, this.props.lstQuizzes, this.props.lstTimeline);
 
         const user = JSON.parse(localStorage.getItem('user'));
 
         if (user?.idPrivilege == 'student') {
             this.setState({
-                isTeacherPriviledge: false,
+                isTeacherPrivilege: false,
                 deadlines: this.props.lstDeadline,
                 dueTo: this.props.lstDueTo
             })
@@ -157,22 +97,23 @@ class Subject extends React.Component {
 
         if (user?.idPrivilege == 'teacher') {
             this.setState({
-                isTeacherPriviledge: true
+                isTeacherPrivilege: true
             })
         }
 
         this.setState({
             lstTimelines: this.props.lstTimeline,
-            timelineId: get(head(this.props.lstTimeline), '_id'),
         })
 
 
 
         this.setState({
-            lstQuizzis: this.props.lstQuizzis,
-            quizId: get(head(this.props.lstQuizzis), '_id')
+            lstQuizzes: this.props.lstQuizzes
         })
 
+        this.setState({
+            lstSurveys: this.props.lstSurveys
+        })
 
 
         this.setState({
@@ -182,14 +123,8 @@ class Subject extends React.Component {
 
     }
 
-    handleOk = e => {
-        console.log(e);
-
-    };
-
-    handleCancel = e => {
-        console.log(e);
-        this.setState({ visible: false })
+    handleCancelModal = () => {
+        this.setState({ visible: false, assignmentRequirement: null })
     };
 
     handleOnDragEnd = async (result) => {
@@ -244,38 +179,6 @@ class Subject extends React.Component {
         }
     }
 
-    transTime = (time) => {
-        return moment(time).format('MMM DD h:mm A')
-    }
-
-    getRequirementAssignment = async (id, idSubject, idTimeline) => {
-        console.log('getRequirementAssignment', idTimeline);
-        this.setState({
-            isLoadingRequirement: true
-        })
-        await restClient.asyncGet(`/assignment/${id}?idSubject=${idSubject}&idTimeline=${idTimeline}`, this.props.token)
-            .then(res => {
-                if (!res.hasError) {
-                    // this.setState({
-                    //     isLoadingRequirement: false
-                    // })
-                    console.log('getRequirementAssignment', res);
-
-                    this.setState({
-                        assigmentRequirement: get(res, 'data').assignment,
-                        timelineIdRequirement: idTimeline
-                    }, () => {
-                        this.setState({
-                            visible: true
-                        })
-                    })
-
-                    // return true;
-                }
-            })
-
-    }
-
     deleteExercise = async () => {
 
     }
@@ -288,141 +191,87 @@ class Subject extends React.Component {
 
     }
 
-    handleProcessFile = (e) => {
-        this.setState({
-            FileData: e.target.files[0]
-        })
-
-    }
-
-    handleProcessFileSubmissioin = (e) => {
+    handleProcessFileSubmission = (e) => {
         this.setState({
             FileData: e.target.files[0]
         })
     }
 
-    handleChange(value) {
+    onSubmitAssignment = () => {
+        this.setState({ isSubmitAssignment: true });
+    }
+    onCancelSubmitAssignment = () => {
+        this.setState({ isSubmitAssignment: false });
+    }
+
+    getRequirementAssignment = async ({ idAssignment, idTimeline }) => {
         this.setState({
-            timelineId: value
-        })
-    }
-
-    handleCodeQuiz = (value) => {
-        console.log('handleCodeQuiz', value)
-        this.setState({ quiz: { ...this.state.quiz, setting: { ...this.state.quiz.setting, code: value } }, quizId: value });
-    }
-
-    changeAttempQuantity = (quantity) => {
-        this.setState({ quiz: { ...this.state.quiz, setting: { ...this.state.quiz.setting, attemptCount: quantity } } });
-    }
-
-    changeQuantityQuestion = (quantity) => {
-        this.setState({ quiz: { ...this.state.quiz, setting: { ...this.state.quiz.setting, questionCount: quantity } } });
-    }
-
-    changeTimeTodo = (time) => {
-        this.setState({ quiz: { ...this.state.quiz, setting: { ...this.state.quiz.setting, timeToDo: time * 60000 } } });
-    }
-
-    handleSelectStartTime(day) {
-        this.setState({ assignment: { ...this.state.assignment, setting: { ...this.state.assignment.setting, startTime: day } } });
-    }
-
-    handleSelectExpireTime(day) {
-        this.setState({ assignment: { ...this.state.assignment, setting: { ...this.state.assignment.setting, expireTime: day } } });
-    }
-
-    handleSelectStartTimeQuiz(day) {
-        console.log('handleSelectStartTimeQuiz', day)
-        this.setState({ quiz: { ...this.state.quiz, startTime: day } });
-    }
-
-    handleSelectExpireTimeQuiz(day) {
-        console.log('handleSelectExpireTimeQuiz', day)
-
-        this.setState({ quiz: { ...this.state.quiz, expireTime: day } });
-    }
-
-
-    handleSelectoverDueDate(day) {
-        this.setState({ assignment: { ...this.state.assignment, setting: { ...this.state.assignment.setting, overDueDate: day } } });
-    }
-
-    handleFileSize(size) {
-        this.setState({ assignment: { ...this.state.assignment, setting: { ...this.state.assignment.setting, fileSize: size } } });
-    }
-
-    handleIsOverDue = (status) => {
-        console.log('handleIsOverDue', status.target.checked)
-        this.setState({ isOverDue: status.target.checked, assignment: { ...this.state.assignment, setting: { ...this.state.assignment.setting, isOverDue: status.target.checked } } });
-    }
-
-    submissionFile = async (idAssignment) => {
-        // console.log(idAssignment)
-        // const formData = new FormData();
-        const objResult = await this.handleImageUpload();
-        this.setState({
-            isLoading: true
-        })
-        // formData.append('file', this.state.FileAssign)
-        await restClient.asyncPost(`/assignment/${idAssignment}/submit`, { idSubject: this.props.idSubject, idTimeline: this.state.timelineIdRequirement, file: objResult }, this.props.token)
+            visible: true
+        });
+        await restClient.asyncGet(`/assignment/${idAssignment}?idSubject=${this.props.idSubject}&idTimeline=${idTimeline}`, this.props.token)
             .then(res => {
                 if (!res.hasError) {
-                    this.notifySuccess('Thành công!', 'Nộp bài thành công')
+                    console.log('getRequirementAssignment', res);
+
                     this.setState({
-                        isLoading: false
-                    })
-                    console.log('Notification', res)
+                        assignmentRequirement: get(res, 'data').assignment,
+                        idTimelineRequired: idTimeline
+                    });
+                } else {
+                    this.notifyError('Thất bại!', res.data.message);
                 }
             })
+
     }
 
-    handleImageUpload = async () => {
-        const formData = new FormData();
-        formData.append('file', this.state.FileData)
-        // replace this with your upload preset name
-        formData.append('upload_preset', 'gmttm4bo');
-        const options = {
-            method: 'POST',
-            body: formData,
-            header: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Accept',
-                mode: 'no-cors'
-            }
-        };
-
-        // replace cloudname with your Cloudinary cloud_name
-        return await fetch('https://api.Cloudinary.com/v1_1/dkepvw2rz/upload', options)
-            .then(res => res.json())
+    submissionFile = async ({ file, idAssignment }) => {
+        await restClient.asyncPost(`/assignment/${idAssignment}/submit`, { idSubject: this.props.idSubject, idTimeline: this.state.idTimelineRequired, file: file }, this.props.token)
             .then(res => {
-
-                console.log('Response', res)
-                return {
-                    name: res.original_filename,
-                    path: res.url,
-                    type: res.format || res.public_id.split('.')[1]
+                this.setState({ isSubmitAssignment: false });
+                if (!res.hasError) {
+                    this.notifySuccess('Thành công!', 'Nộp bài thành công')
+                    console.log('Notification', res)
+                    let submission = res.data.submission;
+                    console.log('OLD-ASSIGNMENT', this.state.assignmentRequirement);
+                    this.setState({ assignmentRequirement: { ...this.state.assignmentRequirement, submission: submission } }
+                        , () => {
+                            console.log('New-ASSIGNMENT', this.state.assignmentRequirement);
+                        });
+                } else {
+                    this.notifyError("Thất bại!", res.data.message);
                 }
             })
-            .catch(err => console.log(err));
     }
 
-    createFileWord = async () => {
+    commentAssignmentGrade = async ({ comment, idAssignment }) => {
+        this.setState({ isCommentAssignment: true });
+        await restClient.asyncPost(`/assignment/${idAssignment}/comment`, { idSubject: this.props.idSubject, idTimeline: this.state.idTimelineRequired, comment: comment }, this.props.token)
+            .then(res => {
+                this.setState({ isCommentAssignment: false });
+                if (!res.hasError) {
+                    this.notifySuccess('Thành công!', res.data.message)
+                    console.log('Notification', res)
+                    let submission = res.data.submission;
+                    console.log('OLD-ASSIGNMENT', this.state.assignmentRequirement);
+                    this.setState({ assignmentRequirement: { ...this.state.assignmentRequirement, submission: submission } }
+                        , () => {
+                            console.log('New-ASSIGNMENT', this.state.assignmentRequirement);
+                        });
+                } else {
+                    this.notifyError("Thất bại!", res.data.message);
+                }
+            })
+    }
+
+    createFile = async ({ file, idTimeline }) => {
 
         this.setState({
             isLoading: true
         })
-
-        const objResult = await this.handleImageUpload();
-        console.log('objResult', objResult)
-
-        if (objResult) {
-            console.log('Save on database')
-        }
         await restClient.asyncPost(`/timeline/upload`, {
             idSubject: this.props.idSubject,
-            idTimeline: this.state.timelineId,
-            data: objResult
+            idTimeline: idTimeline,
+            data: file
         }, this.props.token)
             .then(res => {
                 this.setState({
@@ -431,7 +280,7 @@ class Subject extends React.Component {
                 if (!res.hasError) {
                     this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công document')
 
-                    let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === this.state.timelineId)
+                    let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
 
                     head(timelineUpdate).files.push(res.data.file)
 
@@ -443,16 +292,18 @@ class Subject extends React.Component {
                     }, () => {
                         console.log(this.state.timelines)
                     })
+                } else {
+                    this.notifyError('Thất bại!', res.data.message);
                 }
             })
     }
 
-    createQuiz = async () => {
-        console.log('createQuiz', this.state.quiz)
+    createQuiz = async ({ quiz, idTimeline }) => {
+        console.log('createQuiz', quiz)
         const data = {
             idSubject: this.props.idSubject,
-            idTimeline: this.state.timelineId,
-            data: this.state.quiz
+            idTimeline: idTimeline,
+            data: quiz
         }
         this.setState({
             isLoading: true
@@ -461,11 +312,11 @@ class Subject extends React.Component {
         await restClient.asyncPost('/exam', data, this.props.token)
             .then(res => {
                 console.log('createQuiz', res)
+                this.setState({
+                    isLoading: false
+                })
                 if (!res.hasError) {
                     this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công quiz')
-                    this.setState({
-                        isLoading: false
-                    })
                     let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === data.idTimeline)
 
                     console.log('timelineUpdate', timelineUpdate)
@@ -525,30 +376,36 @@ class Subject extends React.Component {
                             }
                         }
                     })
+                } else {
+                    this.notifyError(res.data.message);
                 }
             })
     }
 
-    createAssignment = async () => {
-        console.log(this.state.assignment)
-        const objResult = await this.handleImageUpload();
+    onUploadFile = () => {
+        this.setState({
+            isLoading: true
+        })
+    }
 
+    createAssignment = async ({ assignment, idTimeline }) => {
         const data = {
             idSubject: this.props.idSubject,
-            idTimeline: this.state.timelineId,
-            data: { ...this.state.assignment, file: [objResult] }
+            idTimeline: idTimeline,
+            data: assignment
         }
         this.setState({
             isLoading: true
         })
+        console.log('CreateAssignment', data);
         await restClient.asyncPost('/assignment', data, this.props.token)
             .then(res => {
                 console.log(res)
+                this.setState({
+                    isLoading: false
+                })
                 if (!res.hasError) {
                     this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công assignment')
-                    this.setState({
-                        isLoading: false
-                    })
                     let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === data.idTimeline)
 
                     head(timelineUpdate).assignments.push(res.data.assignment)
@@ -576,6 +433,46 @@ class Subject extends React.Component {
                             }
                         }
                     })
+                } else {
+                    this.notifyError("Thất bại", res.data.message);
+                }
+            })
+    }
+
+    createSurvey = async ({ survey, idTimeline }) => {
+        console.log('createSurvey', survey)
+        const data = {
+            idSubject: this.props.idSubject,
+            idTimeline: idTimeline,
+            data: survey
+        }
+        this.setState({
+            isLoading: true
+        })
+        console.log('data', data)
+        await restClient.asyncPost('/survey', data, this.props.token)
+            .then(res => {
+                console.log('createSurvey', res)
+                this.setState({
+                    isLoading: false
+                })
+                if (!res.hasError) {
+                    this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công survey')
+                    let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === data.idTimeline)
+
+                    console.log('timelineUpdate', timelineUpdate)
+                    head(timelineUpdate).surveys.push(res.data.survey)
+
+
+                    console.log(timelineUpdate)
+
+                    this.setState({
+                        timelines: [...this.state.timelines]
+                    }, () => {
+                        console.log(this.state.timelines)
+                    })
+                } else {
+                    this.notifyError("Thất bại", res.data.message);
                 }
             })
     }
@@ -605,33 +502,49 @@ class Subject extends React.Component {
         });
     };
 
-    createTimeline = async () => {
-        if (this.state.timeLine.name.trim() == '' || this.state.timeLine.description.trim() == '') {
-            this.notifyWarning('Cảnh báo', 'Hãy nhập đầy đủ thông tin cần thiết');
-            return;
+    createInformation = async ({ information, idTimeline }) => {
+        this.setState({ isLoading: true });
+        const data = {
+            idSubject: this.props.idSubject,
+            idTimeline: idTimeline,
+            data: information
         }
+        console.log('createInformation', data);
+        await restClient.asyncPost('/information', data, this.props.token)
+            .then(res => {
+                this.setState({ isLoading: false });
+                if (!res.hasError) {
+                    this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công information')
+                    console.log('information', res)
+                    let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === data.idTimeline)
+                    head(timelineUpdate).information.push(res.data.information)
+                    this.setState({
+                        timelines: [...this.state.timelines]
+                    })
+                } else {
+                    this.notifyError('Thất bại!', res.data.message);
+                }
+            })
+    }
 
+    createTimeline = async (timeline) => {
         this.setState({
             isLoading: true
         })
 
         const data = {
             idSubject: this.props.idSubject,
-            data: this.state.timeLine
+            data: timeline
         }
 
         await restClient.asyncPost('/timeline', data, this.props.token)
             .then(res => {
                 console.log('Timeline', res)
+                this.setState({ isLoading: false });
                 if (!res.hasError) {
                     this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công timeline')
                     this.setState({
                         timelines: [...this.state.timelines, get(res, 'data').timeline],
-                        isLoading: false,
-                        timeLine: {
-                            name: '',
-                            description: ''
-                        },
                         lstTimelines: [...this.state.lstTimelines, {
                             _id: get(res, 'data').timeline._id,
                             isDeleted: get(res, 'data').timeline.isDeleted,
@@ -640,15 +553,17 @@ class Subject extends React.Component {
                         }]
                     })
 
+                } else {
+                    this.notifyError('Thất bại!', res.data.message);
                 }
             })
     }
 
     addFilePdf = () => {
         this.setState({
-            isAddInfomation: false,
+            isAddInformation: false,
             isAddFilePdf: true,
-            isAddFileWord: false,
+            isAddFile: false,
             isAddFileExcel: false,
             isAddTimeline: false,
             isAddAssignment: false,
@@ -660,9 +575,9 @@ class Subject extends React.Component {
 
     addFileWord = () => {
         this.setState({
-            isAddInfomation: false,
+            isAddInformation: false,
             isAddFilePdf: false,
-            isAddFileWord: true,
+            isAddFile: true,
             isAddFileExcel: false,
             isAddTimeline: false,
             isAddAssignment: false,
@@ -674,9 +589,9 @@ class Subject extends React.Component {
 
     addFileExcel = () => {
         this.setState({
-            isAddInfomation: false,
+            isAddInformation: false,
             isAddFilePdf: false,
-            isAddFileWord: false,
+            isAddFile: false,
             isAddFileExcel: true,
             isAddTimeline: false,
             isAddAssignment: false,
@@ -689,9 +604,9 @@ class Subject extends React.Component {
     addInformation = () => {
         console.log('Add information')
         this.setState({
-            isAddInfomation: true,
+            isAddInformation: true,
             isAddFilePdf: false,
-            isAddFileWord: false,
+            isAddFile: false,
             isAddFileExcel: false,
             isAddTimeline: false,
             isAddAssignment: false,
@@ -704,9 +619,9 @@ class Subject extends React.Component {
 
     addTimeline = () => {
         this.setState({
-            isAddInfomation: false,
+            isAddInformation: false,
             isAddFilePdf: false,
-            isAddFileWord: false,
+            isAddFile: false,
             isAddFileExcel: false,
             isAddTimeline: true,
             isAddAssignment: false,
@@ -719,9 +634,9 @@ class Subject extends React.Component {
     addAssignment = () => {
         this.setState({
             isAddAssignment: true,
-            isAddInfomation: false,
+            isAddInformation: false,
             isAddFilePdf: false,
-            isAddFileWord: false,
+            isAddFile: false,
             isAddFileExcel: false,
             isAddTimeline: false,
             isAddQuiz: false,
@@ -733,9 +648,9 @@ class Subject extends React.Component {
     addQuiz = () => {
         this.setState({
             isAddQuiz: false,
-            isAddInfomation: false,
+            isAddInformation: false,
             isAddFilePdf: false,
-            isAddFileWord: false,
+            isAddFile: false,
             isAddFileExcel: false,
             isAddTimeline: false,
             isAddQuiz: true,
@@ -747,63 +662,15 @@ class Subject extends React.Component {
     addSurvey = () => {
         this.setState({
             isAddQuiz: false,
-            isAddInfomation: false,
+            isAddInformation: false,
             isAddFilePdf: false,
-            isAddFileWord: false,
+            isAddFile: false,
             isAddFileExcel: false,
             isAddTimeline: false,
             isAddQuiz: false,
             isOpenSetting: false,
             isAddSurvey: true
         })
-    }
-
-
-    createInfomation = async () => {
-        console.log('createInfomation', this.state.timelineId, this.state.timelines)
-        console.log(this.state.information)
-        const data = {
-            idSubject: this.props.idSubject,
-            idTimeline: this.state.timelineId,
-            data: this.state.information
-        }
-        await restClient.asyncPost('/information', data, this.props.token)
-            .then(res => {
-                if (!res.hasError) {
-                    console.log('information', res)
-                    let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === data.idTimeline)
-
-                    head(timelineUpdate).information.push(res.data.information)
-
-
-                    console.log(timelineUpdate)
-
-                    this.setState({
-                        timelines: [...this.state.timelines]
-                    }, () => {
-                        console.log(this.state.timelines)
-                    })
-
-
-
-                    this.setState({
-                        information: {
-                            name: '',
-                            content: ''
-                        }
-                    })
-                }
-
-
-            })
-    }
-
-
-    downloadFile = async (idTimeline, idFile) => {
-        await restClient.asyncDownLoad(`/timeline/${idTimeline}/download/${idFile}?idSubject=${this.props.idSubject}`, this.props.token)
-            .then(res => {
-                console.log(res)
-            })
     }
 
     createNotification = (type, title, message) => {
@@ -958,7 +825,7 @@ class Subject extends React.Component {
 
         }
 
-        const template = (id, name, description, assignments, exams, forums, infomation, files, surveys) => (
+        const template = (id, name, description, assignments, exams, forums, information, files, surveys) => (
             <div style={{ margin: '0 10px 10px 10px', border: "2px solid #cacaca" }}>
                 <div style={{ position: 'relative' }}>
                     {/* {this.state.isLoadingRequirement && <Spin style={{position: 'absolute', top: '50%', left: '50%', zIndex: 100}}/>} */}
@@ -994,7 +861,7 @@ class Subject extends React.Component {
                         infomation != null ? (
                             <Row style={{ paddingLeft: 25 }}>
                                 <Timeline>
-                                    {infomation.map(info => {
+                                    {information.map(info => {
                                         return (
                                             <Timeline.Item key={info._id} dot={info.isNew && <><img src={newInfo} style={{
                                                 width: "66px",
@@ -1025,7 +892,7 @@ class Subject extends React.Component {
 
                         surveys != null ? (
                             surveys.map(f => {
-                                console.log('File', f); return (
+                                return (
                                     <Row style={{ marginBottom: 10 }} key={f._id} >
                                         <Col span={2} style={{
                                             textAlign: 'center',
@@ -1058,7 +925,7 @@ class Subject extends React.Component {
                     {
                         files != null ? (
                             files.map(f => {
-                                console.log('File', f); return (
+                                return (
                                     <Row style={{ marginBottom: 10 }} key={f._id} >
                                         <Col span={2} style={{
                                             textAlign: 'center',
@@ -1088,9 +955,9 @@ class Subject extends React.Component {
                     {
                         assignments != null ? (
                             assignments.map(assign => (
-                                !this.state.isTeacherPriviledge ?
+                                !this.state.isTeacherPrivilege ?
                                     <Row style={{ marginBottom: 10, position: 'relative', cursor: 'pointer' }} onClick={() => {
-                                        this.getRequirementAssignment(assign._id, this.props.idSubject, id);
+                                        this.getRequirementAssignment({ idAssignment: assign._id, idTimeline: id });
                                     }} key={assign._id}>
 
                                         <Col span={2} style={{
@@ -1306,8 +1173,7 @@ class Subject extends React.Component {
             </Col>
         )
 
-
-        console.log('attachments', get(this.state.assigmentRequirement, 'attachments'))
+        //console.log('attachments', get(this.state.assignmentRequirement, 'attachments'))
         return (
             <>
                 <Drawer
@@ -1384,111 +1250,12 @@ class Subject extends React.Component {
                             TUẦN
                        </Col>
                     </Row>
-                    
+
                 </Drawer>
-                <Modal
-                    title="[ Assignment ] Submission file word"
-                    visible={this.state.visible}
-                    onOk={this.handleOk}
-                    onCancel={this.handleCancel}
-                    okButtonProps={{ style: { display: 'none' } }}
-                    cancelButtonProps={{ style: { display: 'none' } }}
-                    footer={null}
-                >
-                    <Tabs defaultActiveKey="1" centered>
-                        <TabPane tab="Submission" key="1">
-                            <div>
-                                <div>{t('sbmit_stat')}</div>
-                                <div style={{ margin: '10px 0' }}>
-                                    <span style={{ fontWeight: 600 }}>Due date: </span>
-                                    <span>{this.transTime(get(this.state.assigmentRequirement, 'setting')?.expireTime)}</span>
-                                </div>
-                                <div style={{ margin: '10px 0' }}>
-                                    <span style={{ fontWeight: 600 }}>Time remaining: </span>
-                                    <span>{get(this.state.assigmentRequirement, 'timingRemain')}</span>
-                                </div>
-                                <div style={{ margin: '10px 0' }}>
-                                    <span style={{ fontWeight: 600 }}>Last modified: </span>
-                                    <span>{this.transTime(head(get(this.state.assigmentRequirement, 'submission'))?.submitTime)}</span>
-                                </div>
-                                <div style={{ margin: '10px 0' }} >
-                                    <span style={{ fontWeight: 600 }}>File submissions: </span>
-                                    <Input type="file" onChange={e => this.handleProcessFileSubmissioin(e)} style={{ width: 200, borderRadius: 20, overflow: 'hidden' }} />
-                                </div>
-                                {
-                                    (this.state.assigmentRequirement.submission !== null) && <div style={{ margin: '10px 0' }}>
-                                        <div style={{
-                                            border: '1px dashed #cacaca',
-                                            padding: '5px 20px',
-                                            textAlign: 'center'
-                                        }}>
-                                            <img src={get(this.state.assigmentRequirement.submission, 'file')?.type.includes('doc') ? word : get(this.state.assigmentRequirement.submission, 'file')?.type == 'rar' ? rar : file} />
-                                            <div>{get(this.state.assigmentRequirement.submission, 'file')?.name}</div>
-                                        </div>
-                                    </div>
-                                }
-
-
-                            </div>
-                            {
-                                get(this.state.assigmentRequirement, 'isCanSubmit') &&
-                                <Row style={{ marginTop: 10 }}>
-                                    <div>
-                                        <Button type="primary" onClick={() => this.submissionFile(get(this.state.assigmentRequirement, '_id'))} style={{ borderRadius: 20 }}><Spin spinning={this.state.isLoading} indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />{t('submit_assign')}</Button>
-                                    </div>
-                                </Row>
-                            }
-
-                        </TabPane>
-                        <TabPane tab="Requirement" key="2">
-                            <div style={{ fontWeight: "700" }}>[Content requirement]</div>
-                            <div dangerouslySetInnerHTML={{ __html: get(this.state.assigmentRequirement, 'content') }} />
-                            {/* <div>
-                                {get(this.state.assigmentRequirement, 'content')}
-                            </div> */}
-                            <div style={{ fontWeight: "700" }}>File attachment</div>
-                            <div style={{ height: 50 }}>
-                                {
-                                    (get(this.state.assigmentRequirement, 'attachments') || []).map(f => {
-                                        return <span style={{
-                                            verticalAlign: '-webkit-baseline-middle',
-                                            border: '1px dashed #cacaca',
-                                            padding: '3px 10px',
-                                            borderRadius: '20px',
-                                        }}>
-                                            {f.type.includes('doc') ? <img src={word} width={20} /> : <img src={pdf} width={20} />}<a href={f.path} style={{ marginLeft: 10 }}>{f.name}</a>
-                                        </span>
-                                    })
-                                }
-                            </div>
-                        </TabPane>
-                        <TabPane tab="Grade" key="3">
-                            {
-                                get(this.state.assigmentRequirement, 'gradeStatus') ? (<>
-                                    <div>Grade status</div>
-                                    <div>
-                                        <span style={{ fontWeight: 600 }}>Grade: </span>
-                                        <span>{get(get(this.state.assigmentRequirement, 'submission')?.feedBack, 'grade')}</span>
-                                    </div>
-                                    <div>
-                                        <span style={{ fontWeight: 600 }}>Grade on: </span>
-                                        <span>{this.transTime(get(head(get(this.state.assigmentRequirement, 'submission'))?.feedBack, 'gradeOn'))}</span>
-                                    </div>
-                                    <div>
-                                        <div style={{ marginBottom: 10 }}>Feedback comments</div>
-                                        <TextArea rows={2} />
-                                    </div></>
-                                )
-                                    :
-                                    (
-                                        <div style={{ color: '#ff4000', fontStyle: 'italic' }}>Chưa chấm điểm</div>
-                                    )
-                            }
-                        </TabPane>
-                    </Tabs>
-                </Modal>
-
                 <Widget openDrawerContent={() => this.openDrawerContent()} />
+                <AssignmentModal visible={this.state.visible} isSubmitAssignment={this.state.isSubmitAssignment} isCommentAssignment={this.state.isCommentAssignment} commentAssignmentGrade={this.commentAssignmentGrade} assignment={this.state.assignmentRequirement} handleCancelModal={this.handleCancelModal} submitAssignment={this.submissionFile} onSubmitAssignment={this.onSubmitAssignment} onCancelSubmitAssignment={this.onCancelSubmitAssignment} />
+
+
                 <Row className={styles.background} style={{ justifyContent: 'center' }}>
                     {
                         this.state.isTeacher ? contentTeacher : contentNormal
@@ -1496,644 +1263,127 @@ class Subject extends React.Component {
 
 
                     {
-                        this.state.isTeacherPriviledge
+                        this.state.isTeacherPrivilege
 
                             ?
-                            // <Col span={8}
-                            //     style={{
-                            //         margin: '10px',
-                            //         background: '#fff',
-                            //         minHeight: '200px',
-                            //         maxHeight: 726
-                            //     }}>
+                            <Col span={8}
+                                style={{
+                                    margin: '10px',
+                                    background: '#fff',
+                                    minHeight: '200px',
+                                    maxHeight: 726
+                                }}>
 
-                            //     <div
-                            //         style={{
-                            //             textAlign: 'center',
-                            //             padding: 10
-                            //         }}>
+                                <div
+                                    style={{
+                                        textAlign: 'center',
+                                        padding: 10
+                                    }}>
 
-                            //         <Tabs defaultActiveKey="1">
-                            //             <TabPane
-                            //                 tab={
-                            //                     <span>
-                            //                         <SettingOutlined />
-                            //                         {t('setting')}
-                            //                     </span>
-                            //                 }
-                            //                 key="1"
-                            //                 style={{ height: 'auto' }}
-                            //             >
-                            //                 <Row>
-                            //                     <Col span={10}>
-                            //                         <span style={{ fontWeight: 600 }}>Sắp xếp mốc thời gian</span>
-                            //                     </Col>
-                            //                     <Col span={10}>
-                            //                         <Switch defaultChecked={false} onChange={e => this.onOrderTimeLine(e)} />
-                            //                     </Col>
-                            //                 </Row>
-                            //                 <Row>
-                            //                     <Col span={10}>
-                            //                         <span style={{ fontWeight: 600 }}>Nghiệp vụ thao tác</span>
-                            //                     </Col>
-                            //                     <Col span={10}>
-                            //                         <Switch defaultChecked={false} onChange={e => this.onExe(e)} />
-                            //                     </Col>
-                            //                 </Row>
-                            //             </TabPane>
-                            //             <TabPane
-                            //                 tab={
-                            //                     <span>
-                            //                         <AndroidOutlined />
-                            //                         {t('add_content')}
-                            //                     </span>
-                            //                 }
-                            //                 key="2"
-                            //                 style={{ height: 'auto' }}
-                            //             >
+                                    <Tabs defaultActiveKey="1">
+                                        <TabPane
+                                            tab={
+                                                <span>
+                                                    <SettingOutlined />
+                                                    {t('setting')}
+                                                </span>
+                                            }
+                                            key="1"
+                                            style={{ height: 'auto' }}
+                                        >
+                                            <Row>
+                                                <Col span={10}>
+                                                    <span style={{ fontWeight: 600 }}>Sắp xếp mốc thời gian</span>
+                                                </Col>
+                                                <Col span={10}>
+                                                    <Switch defaultChecked={false} onChange={e => this.onOrderTimeLine(e)} />
+                                                </Col>
+                                            </Row>
+                                            <Row>
+                                                <Col span={10}>
+                                                    <span style={{ fontWeight: 600 }}>Nghiệp vụ thao tác</span>
+                                                </Col>
+                                                <Col span={10}>
+                                                    <Switch defaultChecked={false} onChange={e => this.onExe(e)} />
+                                                </Col>
+                                            </Row>
+                                        </TabPane>
+                                        <TabPane
+                                            tab={
+                                                <span>
+                                                    <AndroidOutlined />
+                                                    {t('add_content')}
+                                                </span>
+                                            }
+                                            key="2"
+                                            style={{ height: 'auto' }}
+                                        >
 
-                            //                 <Row style={{
-                            //                     background: '#cacaca',
-                            //                     borderRadius: '30px',
-                            //                     padding: '10px 0',
-                            //                     width: '47px',
-                            //                     marginBottom: "15px"
-                            //                 }}>
-                            //                     <Popover content={content} title="Thêm nội dung">
-                            //                         <div>
-                            //                             <i>
-                            //                                 <img src={add} style={{ width: '25px' }} />
-                            //                             </i>
-                            //                         </div>
-                            //                     </Popover>
-                            //                 </Row>
+                                            <Row style={{
+                                                background: '#cacaca',
+                                                borderRadius: '30px',
+                                                padding: '10px 0',
+                                                width: '47px',
+                                                marginBottom: "15px"
+                                            }}>
+                                                <Popover content={content} title="Thêm nội dung">
+                                                    <div>
+                                                        <i>
+                                                            <img src={add} style={{ width: '25px' }} />
+                                                        </i>
+                                                    </div>
+                                                </Popover>
+                                            </Row>
 
-                            //                 <div style={{
-                            //                     border: "2px solid #cacaca",
-                            //                     padding: "20px 0",
-                            //                     borderRadius: "11px",
-                            //                     position: 'relative'
+                                            <div style={{
+                                                border: "2px solid #cacaca",
+                                                padding: "20px 0",
+                                                borderRadius: "11px",
+                                                position: 'relative'
 
-                            //                 }}>
-                            //                     {this.state.isLoading && <Spin style={{ position: 'absolute', top: '50%', left: '50%', zIndex: 100 }} />}
-                            //                     {
-                            //                         this.state.isOpenSetting && <div style={{
-                            //                             fontStyle: "italic",
-                            //                             color: "#cacaca"
-                            //                         }}>
-                            //                             {t('setting_title')}
-                            //                         </div>
-                            //                     }
+                                            }}>
+                                                {this.state.isLoading && <Spin style={{ position: 'absolute', top: '50%', left: '50%', zIndex: 100 }} />}
+                                                {
+                                                    this.state.isOpenSetting && <div style={{
+                                                        fontStyle: "italic",
+                                                        color: "#cacaca"
+                                                    }}>
+                                                        {t('setting_title')}
+                                                    </div>
+                                                }
 
-                            //                     {
-                            //                         this.state.isAddQuiz && (<>
-                            //                             <div style={{
-                            //                                 fontStyle: "italic",
-                            //                                 color: "#cacaca"
-                            //                             }}>
-                            //                                 {t('setting_quiz')}
-                            //                             </div>
-                            //                             <Row style={{ margin: '10px 0' }}>
-                            //                                 <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                     {t('timeline')}
-                            //                                 </Col>
-                            //                                 <Col>
-                            //                                     <Select defaultValue={this.state.timelineId} style={{ width: 200 }} onChange={e => this.handleChange(e)}>
-                            //                                         {
-                            //                                             this.state.lstTimelines.map(tl => (<Option value={tl._id} key={tl._id}>{tl.name}</Option>))
-                            //                                         }
-                            //                                     </Select>
-                            //                                 </Col>
-                            //                             </Row>
+                                                {
+                                                    this.state.isAddQuiz && (
+                                                        <AddQuiz isLoading={this.state.isLoading} lstQuizzes={this.state.lstQuizzes} lstTimelines={this.state.lstTimelines} createQuiz={this.createQuiz} />
+                                                    )
+                                                }
 
-                            //                             <Row style={{ margin: '10px 0' }}>
-                            //                                 <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                     {t('name')}
-                            //                                 </Col>
-                            //                                 <Col>
-                            //                                     <Input placeholder="Name assigment" style={{ width: 200 }}
-                            //                                         value={get(this.state.quiz, 'name')}
-                            //                                         onChange={e => {
-                            //                                             this.setState({
-                            //                                                 quiz: { ...this.state.quiz, name: e.target.value }
-                            //                                             })
-                            //                                         }} />
-                            //                                 </Col>
+                                                {
+                                                    this.state.isAddSurvey && (
+                                                        <AddSurvey isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} lstSurveys={this.state.lstSurveys} createSurvey={this.createSurvey} />
+                                                    )
+                                                }
 
-                            //                             </Row>
+                                                {
+                                                    this.state.isAddAssignment && (
+                                                        <AddAssignment isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} onUploadFile={this.onUploadFile} createAssignment={this.createAssignment} notifyError={this.notifyError} />
+                                                    )}
+                                                {this.state.isAddFile && <>
+                                                    <AddFile isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} onUploadFile={this.onUploadFile} createFile={this.createFile} />
+                                                </>}
+                                                {this.state.isAddInformation && <>
+                                                    <AddInformation lstTimelines={this.state.lstTimelines} isLoading={this.state.isLoading} createInformation={this.createInformation} />
+                                                </>}
 
-                            //                             <Row style={{ margin: '10px 0' }}>
-                            //                                 <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                     {t('content')}
-                            //                                 </Col>
-                            //                                 <Col>
-                            //                                     <TextArea style={{ width: 200 }}
+                                                {this.state.isAddTimeline && <>
+                                                    <AddTimeline createTimeline={this.createTimeline} isLoading={this.state.isLoading} />
+                                                </>}
 
-                            //                                         placeholder="Content assignment"
-                            //                                         autoSize={{ minRows: 3, maxRows: 5 }}
-                            //                                         showCount
-                            //                                         value={get(this.state.quiz, 'content')}
-                            //                                         onChange={e => {
-                            //                                             this.setState({
-                            //                                                 quiz: { ...this.state.quiz, content: e.target.value }
-                            //                                             })
-                            //                                         }}
-                            //                                     />
-                            //                                 </Col>
-
-                            //                             </Row>
-                            //                             <Row style={{ margin: '10px 0' }}>
-                            //                                 <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                     <span>{t('startTime')}</span>
-                            //                                 </Col>
-                            //                                 <Col>
-                            //                                     {/* <DayPickerInput value={get(this.state.quiz, 'startTime')} onDayChange={e => this.handleSelectStartTimeQuiz(e)} style={{ width: 200 }} /> */}
-                            //                                     {/* <DayPickerInputCustomize value={get(this.state.quiz, 'startTime')} onDayChange={e => this.handleSelectStartTimeQuiz(e)} style={{ width: 200 }} /> */}
-                            //                                     <input type="datetime-local" id="start-time"
-                            //                                         name="start-time" value={get(this.state.quiz, 'startTime')}
-                            //                                         min="2001-06-07T00:00" max="2050-06-14T00:00" onChange={e => this.handleSelectStartTimeQuiz(e.target.value)} />
-                            //                                 </Col>
-                            //                             </Row>
-                            //                             <Row style={{ margin: '10px 0' }}>
-                            //                                 <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                     <span>{t('expireTime')}</span>
-                            //                                 </Col>
-                            //                                 <Col>
-                            //                                     {/* <DayPickerInputCustomize value={get(this.state.quiz, 'expireTime')} onDayChange={e => this.handleSelectExpireTimeQuiz(e)} style={{ width: 200 }} /> */}
-                            //                                     <input type="datetime-local" id="expire-time"
-                            //                                         name="expire-time" value={get(this.state.quiz, 'expireTime')}
-                            //                                         min="2001-06-07T00:00" max="2050-06-14T00:00" onChange={e => this.handleSelectExpireTimeQuiz(e.target.value)} />
-                            //                                 </Col>
-                            //                             </Row>
-                            //                             <Row style={{ margin: '10px 0' }}>
-                            //                                 <Col style={{ fontWeight: 700 }}>
-                            //                                     {t('settings')}
-                            //                                 </Col>
-                            //                             </Row>
-
-                            //                             <Row style={{ margin: '10px 0' }}>
-                            //                                 <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                     <span>{t('questionCount')}</span>
-                            //                                 </Col>
-                            //                                 <Col>
-                            //                                     <InputNumber size="small" min={1} max={100000} defaultValue={3} onChange={e => this.changeQuantityQuestion(e)} style={{ width: 200 }} />
-                            //                                 </Col>
-                            //                             </Row>
-
-                            //                             <Row style={{ margin: '10px 0' }}>
-                            //                                 <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                     <span>{t('timeTodo')}</span>
-                            //                                 </Col>
-                            //                                 <Col>
-                            //                                     <InputNumber size="small" min={1} max={180} defaultValue={3} onChange={e => this.changeTimeTodo(e)} style={{ width: 200 }} />
-                            //                                 </Col>
-                            //                             </Row>
-
-                            //                             <Row style={{ margin: '10px 0' }}>
-                            //                                 <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                     {t('code')}
-                            //                                 </Col>
-                            //                                 <Col>
-                            //                                     <Select defaultValue={this.state.quizId} style={{ width: 200 }} onChange={e => this.handleCodeQuiz(e)}>
-                            //                                         {
-                            //                                             this.state.lstQuizzis.map(q => (<Option value={q._id} key={q._id}>{q.name}</Option>))
-                            //                                         }
-                            //                                     </Select>
-                            //                                 </Col>
-                            //                             </Row>
-
-
-                            //                             <Row style={{ margin: '10px 0' }}>
-                            //                                 <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                     <span>{t('attemptQuantity')}</span>
-                            //                                 </Col>
-                            //                                 <Col>
-                            //                                     <InputNumber size="small" min={1} max={10} defaultValue={3} onChange={e => this.changeAttempQuantity(e)} style={{ width: 200 }} />
-                            //                                 </Col>
-                            //                             </Row>
-
-                            //                             <Row style={{ textAlign: 'center', paddingTop: "20px" }}>
-                            //                                 <div>
-                            //                                     <Button type="primary" onClick={() => this.createQuiz()} style={{ borderRadius: 20 }}>{t('submit')}</Button>
-                            //                                 </div>
-                            //                             </Row>
-                            //                         </>)
-                            //                     }
-
-                            //                     {
-                            //                         this.state.isAddSurvey && (<>
-                            //                             <div style={{
-                            //                                 fontStyle: "italic",
-                            //                                 color: "#cacaca"
-                            //                             }}>
-                            //                                 {t('setting_quiz')}
-                            //                             </div>
-                            //                             <Row style={{ margin: '10px 0' }}>
-                            //                                 <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                     {t('timeline')}
-                            //                                 </Col>
-                            //                                 <Col>
-                            //                                     <Select defaultValue={this.state.timelineId} style={{ width: 200 }} onChange={e => this.handleChange(e)}>
-                            //                                         {
-                            //                                             this.state.lstTimelines.map(tl => (<Option value={tl._id} key={tl._id}>{tl.name}</Option>))
-                            //                                         }
-                            //                                     </Select>
-                            //                                 </Col>
-                            //                             </Row>
-
-                            //                             <Row style={{ margin: '10px 0' }}>
-                            //                                 <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                     {t('name')}
-                            //                                 </Col>
-                            //                                 <Col>
-                            //                                     <Input placeholder="Name assigment" style={{ width: 200 }}
-                            //                                         value={get(this.state.quiz, 'name')}
-                            //                                         onChange={e => {
-                            //                                             this.setState({
-                            //                                                 quiz: { ...this.state.quiz, name: e.target.value }
-                            //                                             })
-                            //                                         }} />
-                            //                                 </Col>
-
-                            //                             </Row>
-
-                            //                             <Row style={{ margin: '10px 0' }}>
-                            //                                 <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                     {t('content')}
-                            //                                 </Col>
-                            //                                 <Col>
-                            //                                     <TextArea style={{ width: 200 }}
-
-                            //                                         placeholder="Content assignment"
-                            //                                         autoSize={{ minRows: 3, maxRows: 5 }}
-                            //                                         showCount
-                            //                                         value={get(this.state.quiz, 'content')}
-                            //                                         onChange={e => {
-                            //                                             this.setState({
-                            //                                                 quiz: { ...this.state.quiz, content: e.target.value }
-                            //                                             })
-                            //                                         }}
-                            //                                     />
-                            //                                 </Col>
-
-                            //                             </Row>
-                            //                             <Row style={{ margin: '10px 0' }}>
-                            //                                 <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                     <span>{t('startTime')}</span>
-                            //                                 </Col>
-                            //                                 <Col>
-                            //                                     {/* <DayPickerInput value={get(this.state.quiz, 'startTime')} onDayChange={e => this.handleSelectStartTimeQuiz(e)} style={{ width: 200 }} /> */}
-                            //                                     {/* <DayPickerInputCustomize value={get(this.state.quiz, 'startTime')} onDayChange={e => this.handleSelectStartTimeQuiz(e)} style={{ width: 200 }} /> */}
-                            //                                     <input type="datetime-local" id="start-time"
-                            //                                         name="start-time" value={get(this.state.quiz, 'startTime')}
-                            //                                         min="2001-06-07T00:00" max="2050-06-14T00:00" onChange={e => this.handleSelectStartTimeQuiz(e.target.value)} />
-                            //                                 </Col>
-                            //                             </Row>
-                            //                             <Row style={{ margin: '10px 0' }}>
-                            //                                 <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                     <span>{t('expireTime')}</span>
-                            //                                 </Col>
-                            //                                 <Col>
-                            //                                     {/* <DayPickerInputCustomize value={get(this.state.quiz, 'expireTime')} onDayChange={e => this.handleSelectExpireTimeQuiz(e)} style={{ width: 200 }} /> */}
-                            //                                     <input type="datetime-local" id="expire-time"
-                            //                                         name="expire-time" value={get(this.state.quiz, 'expireTime')}
-                            //                                         min="2001-06-07T00:00" max="2050-06-14T00:00" onChange={e => this.handleSelectExpireTimeQuiz(e.target.value)} />
-                            //                                 </Col>
-                            //                             </Row>
-                            //                             <Row style={{ margin: '10px 0' }}>
-                            //                                 <Col style={{ fontWeight: 700 }}>
-                            //                                     {t('settings')}
-                            //                                 </Col>
-                            //                             </Row>
-
-                            //                             <Row style={{ margin: '10px 0' }}>
-                            //                                 <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                     <span>{t('questionCount')}</span>
-                            //                                 </Col>
-                            //                                 <Col>
-                            //                                     <InputNumber size="small" min={1} max={100000} defaultValue={3} onChange={e => this.changeQuantityQuestion(e)} style={{ width: 200 }} />
-                            //                                 </Col>
-                            //                             </Row>
-
-                            //                             <Row style={{ margin: '10px 0' }}>
-                            //                                 <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                     <span>{t('timeTodo')}</span>
-                            //                                 </Col>
-                            //                                 <Col>
-                            //                                     <InputNumber size="small" min={1} max={180} defaultValue={3} onChange={e => this.changeTimeTodo(e)} style={{ width: 200 }} />
-                            //                                 </Col>
-                            //                             </Row>
-
-                            //                             <Row style={{ margin: '10px 0' }}>
-                            //                                 <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                     {t('code')}
-                            //                                 </Col>
-                            //                                 <Col>
-                            //                                     <Select defaultValue={this.state.quizId} style={{ width: 200 }} onChange={e => this.handleCodeQuiz(e)}>
-                            //                                         {
-                            //                                             this.state.lstQuizzis.map(q => (<Option value={q._id} key={q._id}>{q.name}</Option>))
-                            //                                         }
-                            //                                     </Select>
-                            //                                 </Col>
-                            //                             </Row>
-
-
-                            //                             <Row style={{ margin: '10px 0' }}>
-                            //                                 <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                     <span>{t('attemptQuantity')}</span>
-                            //                                 </Col>
-                            //                                 <Col>
-                            //                                     <InputNumber size="small" min={1} max={10} defaultValue={3} onChange={e => this.changeAttempQuantity(e)} style={{ width: 200 }} />
-                            //                                 </Col>
-                            //                             </Row>
-
-                            //                             <Row style={{ textAlign: 'center', paddingTop: "20px" }}>
-                            //                                 <div>
-                            //                                     <Button type="primary" onClick={() => this.createQuiz()} style={{ borderRadius: 20 }}>{t('submit')}</Button>
-                            //                                 </div>
-                            //                             </Row>
-                            //                         </>)
-                            //                     }
-
-                            //                     {
-                            //                         this.state.isAddAssignment && (<>
-                            //                             <div style={{
-                            //                                 fontStyle: "italic",
-                            //                                 color: "#cacaca"
-                            //                             }}>
-                            //                                 {t('setting_assignment')}
-                            //                             </div>
-                            //                             <Row style={{ margin: '10px 0' }}>
-                            //                                 <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                     {t('timeline')}
-                            //                                 </Col>
-                            //                                 <Col>
-                            //                                     <Select defaultValue={this.state.timelineId} style={{ width: 200 }} onChange={e => this.handleChange(e)}>
-                            //                                         {
-                            //                                             this.state.lstTimelines.map(tl => (<Option value={tl._id} key={tl._id}>{tl.name}</Option>))
-                            //                                         }
-                            //                                     </Select>
-                            //                                 </Col>
-                            //                             </Row>
-
-                            //                             <Row style={{ margin: '10px 0' }}>
-                            //                                 <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                     {t('name')}
-                            //                                 </Col>
-                            //                                 <Col>
-                            //                                     <Input placeholder="Name assigment" style={{ width: 200 }}
-                            //                                         value={get(this.state.assignment, 'name')}
-                            //                                         onChange={e => {
-                            //                                             this.setState({
-                            //                                                 assignment: { ...this.state.assignment, name: e.target.value }
-                            //                                             })
-                            //                                         }} />
-                            //                                 </Col>
-
-                            //                             </Row>
-
-                            //                             <Row style={{ margin: '10px 0' }}>
-                            //                                 <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                     {t('content')}
-                            //                                 </Col>
-                            //                                 <Col>
-                            //                                     <TextArea style={{ width: 200 }}
-
-                            //                                         placeholder="Content assignment"
-                            //                                         autoSize={{ minRows: 3, maxRows: 5 }}
-                            //                                         showCount
-                            //                                         value={get(this.state.assignment, 'content')}
-                            //                                         onChange={e => {
-                            //                                             this.setState({
-                            //                                                 assignment: { ...this.state.assignment, content: e.target.value }
-                            //                                             })
-                            //                                         }}
-                            //                                     />
-                            //                                 </Col>
-                            //                             </Row>
-                            //                             <Row style={{ margin: '10px 0' }}>
-                            //                                 <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                     <span>{t('startTime')}</span>
-                            //                                 </Col>
-                            //                                 <Col>
-                            //                                     <input type="datetime-local" id="start-time"
-                            //                                         name="start-time" value={get(this.state.assignment.setting, 'startTime')}
-                            //                                         min="2001-06-07T00:00" max="2050-06-14T00:00" onChange={e => this.handleSelectStartTime(e.target.value)} />
-                            //                                     {/* <DayPickerInputCustomize  onDayChange={e => this.handleSelectStartTime(e)} style={{ width: 200 }} /> */}
-                            //                                 </Col>
-                            //                             </Row>
-                            //                             <Row style={{ margin: '10px 0' }}>
-                            //                                 <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                     <span>{t('expireTime')}</span>
-                            //                                 </Col>
-                            //                                 <Col>
-                            //                                     <input type="datetime-local" id="start-time"
-                            //                                         name="start-time" value={get(this.state.assignment.setting, 'expireTime')}
-                            //                                         min="2001-06-07T00:00" max="2050-06-14T00:00" onChange={e => this.handleSelectExpireTime(e.target.value)} />
-                            //                                     {/* <DayPickerInputCustomize value={get(this.state.assignment.setting, 'expireTime')} onDayChange={e => this.handleSelectExpireTime(e)} style={{ width: 200 }} /> */}
-                            //                                 </Col>
-                            //                             </Row>
-                            //                             <Row style={{ margin: '10px 0' }}>
-                            //                                 <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                     <span>{t('isOverDue')}</span>
-                            //                                 </Col>
-                            //                                 <Col>
-                            //                                     <Checkbox onChange={e => this.handleIsOverDue(e)} style={{ width: 200 }} />
-                            //                                 </Col>
-                            //                             </Row>
-
-                            //                             {
-                            //                                 this.state.isOverDue && (
-                            //                                     <Row style={{ margin: '10px 0' }}>
-                            //                                         <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                             <span>{t('overDueDate')}</span>
-                            //                                         </Col>
-                            //                                         <Col>
-                            //                                             <input type="datetime-local" id="start-time"
-                            //                                                 name="start-time" value={get(this.state.assignment.setting, 'overDueDate')}
-                            //                                                 min="2001-06-07T00:00" max="2050-06-14T00:00" onChange={e => this.handleSelectoverDueDate(e.target.value)} />
-                            //                                             {/* <DayPickerInputCustomize value={get(this.state.assignment.setting, 'overDueDate')} onDayChange={e => this.handleSelectoverDueDate(e)} style={{ width: 200 }} /> */}
-                            //                                         </Col>
-                            //                                     </Row>
-                            //                                 )
-                            //                             }
-
-                            //                             <Row style={{ margin: '10px 0' }}>
-                            //                                 <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                     <span>{t('fileSize')}</span>
-                            //                                 </Col>
-                            //                                 <Col>
-                            //                                     <Select defaultValue="5" style={{ width: 200 }} onChange={e => this.handleFileSize(e)} >
-                            //                                         <Option value="5">5</Option>
-                            //                                         <Option value="10">10</Option>
-                            //                                         <Option value="15">
-                            //                                             15
-                            //                                         </Option>
-                            //                                         <Option value="20">20</Option>
-                            //                                     </Select>
-                            //                                 </Col>
-                            //                             </Row>
-                            //                             <Row style={{ margin: '10px 0' }}>
-                            //                                 <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                     {t('fileAttach')}
-                            //                                 </Col>
-                            //                                 <Col>
-                            //                                     <Input type="file" onChange={e => this.handleProcessFile(e)} style={{ width: 200, borderRadius: 20, overflow: 'hidden' }} />
-                            //                                 </Col>
-                            //                             </Row>
-                            //                             <Row style={{ textAlign: 'center', paddingTop: "20px" }}>
-                            //                                 <div>
-                            //                                     <Button type="primary" onClick={() => this.createAssignment()} style={{ borderRadius: 20 }}>{t('submit')}</Button>
-                            //                                 </div>
-                            //                             </Row>
-                            //                         </>)
-                            //                     }
-
-                            //                     {this.state.isAddInfomation && <>
-                            //                         <div style={{
-                            //                             fontStyle: "italic",
-                            //                             color: "#cacaca"
-                            //                         }}>
-                            //                             {t('setting_inform')}
-                            //                         </div>
-                            //                         <Row style={{ margin: '10px 0' }}>
-                            //                             <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                 {t('timeline')}
-                            //                             </Col>
-                            //                             <Col>
-                            //                                 <Select defaultValue={this.state.timelineId} style={{ width: 200 }} onChange={e => this.handleChange(e)}>
-                            //                                     {
-                            //                                         this.state.lstTimelines.map(tl => (<Option value={tl._id} key={tl._id}>{tl.name}</Option>))
-                            //                                     }
-                            //                                 </Select>
-                            //                             </Col>
-                            //                         </Row>
-                            //                         <Row style={{ margin: '10px 0' }}>
-                            //                             <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                 {t('name')}
-                            //                             </Col>
-                            //                             <Col>
-                            //                                 <Input placeholder="Basic usage" style={{ width: 200 }}
-                            //                                     value={get(this.state.information, 'name')}
-                            //                                     onChange={e => {
-                            //                                         this.setState({
-                            //                                             information: { ...this.state.information, name: e.target.value }
-                            //                                         })
-                            //                                     }} />
-                            //                             </Col>
-                            //                         </Row>
-                            //                         <Row style={{ margin: '10px 0' }}>
-                            //                             <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                 {t('content')}
-                            //                             </Col>
-                            //                             <Col>
-                            //                                 <TextArea style={{ width: 200 }}
-                            //                                     placeholder="Controlled autosize"
-                            //                                     autoSize={{ minRows: 3, maxRows: 5 }}
-                            //                                     showCount
-                            //                                     value={get(this.state.information, 'content')}
-                            //                                     onChange={e => {
-                            //                                         this.setState({
-                            //                                             information: { ...this.state.information, content: e.target.value }
-                            //                                         })
-                            //                                     }}
-                            //                                 />
-                            //                             </Col>
-                            //                         </Row>
-                            //                         <Row style={{ textAlign: 'center', paddingTop: "20px" }}>
-                            //                             <div>
-                            //                                 <Button type="primary" onClick={() => this.createInfomation()} style={{ borderRadius: 20 }}>{t('submit')}</Button>
-                            //                             </div>
-                            //                         </Row>
-                            //                     </>}
-                            //                     {this.state.isAddFileWord && <>
-                            //                         <div style={{
-                            //                             fontStyle: "italic",
-                            //                             color: "#cacaca"
-                            //                         }}>
-                            //                             {t('setting_file')}
-                            //                         </div>
-                            //                         <Row style={{ margin: '10px 0' }}>
-                            //                             <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                 {t('timeline')}
-                            //                             </Col>
-                            //                             <Col>
-                            //                                 <Select defaultValue={this.state.timelineId} style={{ width: 200 }} onChange={e => this.handleChange(e)}>
-                            //                                     {
-                            //                                         this.state.lstTimelines.map(tl => (<Option value={tl._id} key={tl._id}>{tl.name}</Option>))
-                            //                                     }
-                            //                                 </Select>
-                            //                             </Col>
-                            //                         </Row>
-                            //                         <Row style={{ margin: '10px 0' }}>
-                            //                             <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                 {t('fileAttach')}
-                            //                             </Col>
-                            //                             <Col>
-                            //                                 <Input type="file" onChange={e => this.handleProcessFile(e)} style={{ width: 200, borderRadius: 20, overflow: 'hidden' }} />
-                            //                             </Col>
-                            //                         </Row>
-                            //                         <Row style={{ textAlign: "center" }}>
-                            //                             <div>
-                            //                                 <Button type="primary" onClick={() => this.createFileWord()} style={{ borderRadius: 20 }}>{t('submit')}</Button>
-                            //                             </div>
-                            //                         </Row>
-                            //                     </>}
-                            //                     {this.state.isAddTimeline && <>
-
-                            //                         <div style={{
-                            //                             fontStyle: "italic",
-                            //                             color: "#cacaca"
-                            //                         }}>
-                            //                             {t('setting_timeline')}
-                            //                         </div>
-                            //                         <Row style={{ margin: '10px 0' }}>
-                            //                             <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                 {t('name')}
-                            //                             </Col>
-                            //                             <Col>
-                            //                                 <Input placeholder="Name timeline" style={{ width: 200 }}
-                            //                                     value={get(this.state.timeLine, 'name')}
-                            //                                     onChange={e => {
-                            //                                         this.setState({
-                            //                                             timeLine: { ...this.state.timeLine, name: e.target.value }
-                            //                                         })
-                            //                                     }} />
-                            //                             </Col>
-                            //                         </Row>
-                            //                         <Row style={{ margin: '10px 0' }}>
-                            //                             <Col span={6} style={{ fontWeight: 700 }}>
-                            //                                 {t('description')}
-                            //                             </Col>
-                            //                             <Col>
-                            //                                 <TextArea style={{ width: 200 }}
-
-                            //                                     placeholder="Description timeline"
-                            //                                     autoSize={{ minRows: 3, maxRows: 5 }}
-                            //                                     showCount
-                            //                                     value={get(this.state.timeLine, 'description')}
-                            //                                     onChange={e => {
-                            //                                         this.setState({
-                            //                                             timeLine: { ...this.state.timeLine, description: e.target.value }
-                            //                                         })
-                            //                                     }}
-                            //                                 />
-                            //                             </Col>
-                            //                         </Row>
-                            //                         <Row style={{ textAlign: 'center', paddingTop: "20px" }}>
-                            //                             <div>
-                            //                                 <Button type="primary" onClick={() => this.createTimeline()} style={{ borderRadius: 20 }}>{t('submit')}</Button>
-                            //                             </div>
-                            //                         </Row>
-                            //                     </>}
-
-                            //                 </div>
-                            //             </TabPane>
-                            //         </Tabs>
-                            //     </div>
-                            // </Col>
-
-                            null
+                                            </div>
+                                        </TabPane>
+                                    </Tabs>
+                                </div>
+                            </Col>
                             :
                             <Col span={8}
                                 style={{
@@ -2155,70 +1405,9 @@ class Subject extends React.Component {
                                     </div>
                                 </div>
                                 <div>
-                                    <Row style={{ justifyContent: 'center', padding: '5px 5px' }}>
-                                        <Tabs defaultActiveKey="1" centered style={{ width: '100%' }}>
-                                            <TabPane tab={<span> <AlertOutlined twoToneColor="#ff0000" style={{ color: '#ff4000' }} />{t('dl')}</span>} key="1">
-                                                <div style={{
-                                                    maxHeight: '400px',
-                                                    overflowY: 'auto'
-                                                }}>
-                                                    {this.state.deadlines.length > 0 ? this.state.deadlines.map(dl => (
-                                                        <Row key={dl._id} style={{
-                                                            marginBottom: 5, border: "2px solid #cacaca",
-                                                            padding: "10px 0", cursor: 'pointer'
-                                                        }} onClick={() => {
-                                                            this.getRequirementAssignment(dl._id, dl.idSubject, dl.idTimeline);
-                                                        }}>
-                                                            <Col span={10} style={{ textAlign: "center", alignSelf: "center" }}><i>
-                                                                <img src={fastTime} width="36px" />
-                                                            </i></Col>
-                                                            <Col span={12} >
-                                                                <div>{dl.name}</div>
-                                                                <div>
-                                                                    <span style={{ fontWeight: 600 }}>Due to: </span>{this.transTime(get(dl, 'expireTime'))}
-                                                                </div>
-                                                                <div>
-                                                                    <span style={{ fontWeight: 600 }}>Time remaining:</span> {moment.utc(get(dl, 'expireTime')).fromNow()}
-                                                                </div>
-                                                            </Col>
-                                                        </Row>
-                                                    )) : <Row>
-                                                            <img src={deadlineCalcular} />
-                                                            <div style={{ width: "100%", color: '#cacaca', textAlign: 'center' }}>No upcoming deadline</div>
-                                                        </Row>}
-                                                </div>
-                                            </TabPane>
-                                            <TabPane tab={
-                                                <span><CheckCircleTwoTone twoToneColor="#52c41a" />
-                                                    {t('complt')}
-                                                </span>} key="2">
-                                                <div style={{
-                                                    maxHeight: '400px',
-                                                    overflowY: 'auto'
-                                                }}>
-                                                    {this.state.dueTo.map(dt => (
-                                                        <Row key={dt._id} style={{
-                                                            marginBottom: 5, color: "#2ecc71", border: "2px solid #cacaca",
-                                                            padding: "10px 0"
-                                                        }}>
-                                                            <Col span={10} style={{ textAlign: "center", alignSelf: "center" }}><i>
-                                                                <img src={fastTime} width="36px" />
-                                                            </i></Col>
-                                                            <Col span={10} >
-                                                                <div>{dt.name}</div>
-                                                                <div>
-                                                                    <span style={{ fontWeight: 600 }}>Due to: </span>{this.transTime(get(dt, 'expireTime'))}
-                                                                </div>
-                                                                <div>
-                                                                    <span style={{ fontWeight: 600 }}>Time remaining:</span> {moment.utc(get(dt, 'expireTime')).fromNow()}
-                                                                </div>
-                                                            </Col>
-                                                        </Row>
-                                                    ))}
-                                                </div>
-                                            </TabPane>
-                                        </Tabs>
-                                    </Row>
+
+                                    <Deadline deadlines={this.state.deadlines} dueTo={this.state.dueTo} />
+
                                 </div>
                             </Col>
                     }

@@ -2,22 +2,16 @@ import React from 'react'
 
 // import images
 import onlineCourse from '../../../assets/images/courses/onlineCourse.png'
-import courseEmpty from '../../../assets/images/courses/courseEmpty.png'
-import deadlineCalcular from '../../../assets/images/courses/deadlineCalcular.png'
-import fastTime from '../../../assets/images/courses/fastTime.png'
 import deadline from '../../../assets/images/courses/deadline.png'
 
-import Link from 'next/link'
-import { Layout, Row, Col, Tabs } from 'antd'
-import { CheckCircleTwoTone, AlertOutlined } from '@ant-design/icons'
+import { Row, Col, Card } from 'antd'
+const { Meta } = Card;
 import styles from './styles.scss'
 import './overwrite.css'
-import { get, isEmpty, split, includes, omit } from 'lodash';
 import { withTranslation } from 'react-i18next'
-import moment from 'moment'
+import Deadline from '../../components/deadlines'
 
 
-const { TabPane } = Tabs;
 class Courses extends React.Component {
     constructor(props) {
         super(props);
@@ -34,7 +28,7 @@ class Courses extends React.Component {
         this.setState({
             courses: this.props.listCourses || [],
             deadlines: this.props.listDeadline || [],
-            dueTo: this.props.listDueAssginment || []
+            dueTo: this.props.listDueAssignment || []
         })
 
         const usrJson = JSON.stringify(localStorage.getItem('user'))
@@ -59,11 +53,6 @@ class Courses extends React.Component {
     generateColor = () => {
         return '#' + Math.random().toString(16).substr(-6);
     }
-
-    transTime = (time) => {
-        return moment(time).format('MMM DD h:mm A')
-    }
-
     render() {
         const { t } = this.props
         console.log(this.state.isTeacher)
@@ -74,6 +63,7 @@ class Courses extends React.Component {
                         margin: '10px',
                         background: '#fff',
                         minHeight: '200px',
+                        paddingBottom: '30px'
                     }}>
                     <div>
                         <div style={{
@@ -97,17 +87,19 @@ class Courses extends React.Component {
                                         href={`/subject/${course._id}`}
                                         key={course._id}
                                         style={{
-                                            margin: '15px',
+                                            margin: '10px',
                                             flexGrow: '1',
                                             cursor: 'pointer'
                                         }}>
-                                        <div style={{ height: '250px', background: `${this.generateColor()}` }}>
-                                        </div>
-                                        <div style={{
-                                            textAlign: "center",
-                                            fontWeight: "600",
-                                            marginTop: 10
-                                        }}>{course.name}</div>
+                                        <Card
+                                            hoverable
+                                            cover={
+                                                <div style={{ height: '150px', background: `${this.generateColor()}` }}>
+                                                </div>
+                                            }
+                                        >
+                                            <Meta title={course.name} style={{ textAlign: 'center' }} />
+                                        </Card>
                                     </a>
                                 )) :
                                     <div style={{
@@ -167,71 +159,19 @@ class Courses extends React.Component {
                                     </div>
                                 </div>
                                 <div>
-                                    <Row style={{ justifyContent: 'center', padding: '5px 5px' }}>
-                                        <Tabs defaultActiveKey="1" centered style={{ width: '100%' }}>
-                                            <TabPane tab={<span> <AlertOutlined twoToneColor="#ff0000" />{t('dl')}</span>} key="1">
-                                                <div style={{
-                                                    maxHeight: '400px',
-                                                    overflowY: 'auto'
-                                                }}>
-                                                    {this.state.deadlines.length > 0 ? this.state.deadlines.map(dl => (
-                                                        <Row key={dl._id} style={{
-                                                            marginBottom: 5, border: "2px solid #cacaca",
-                                                            padding: "10px 0"
-                                                        }}>
-                                                            <Col span={10} style={{ textAlign: "center", alignSelf: "center" }}><i>
-                                                                <img src={fastTime} width="36px" />
-                                                            </i></Col>
-                                                            <Col span={10} >
-                                                                <div>{dl.name}</div>
-                                                                <div>
-                                                                    <span style={{ fontWeight: 600 }}>Due to: </span>{this.transTime(get(dl, 'expireTime'))}
-                                                                </div>
-                                                                <div>
-                                                                    <span style={{ fontWeight: 600 }}>Time remaining:</span> {moment.utc(get(dl, 'expireTime')).fromNow()}
-                                                                </div>
-                                                            </Col>
-                                                        </Row>
-                                                    )) : <Row style={{ justifyContent: 'center' }}>
-                                                            <img src={deadlineCalcular} />
-                                                            <div style={{ width: "100%", color: '#cacaca', textAlign: 'center' }}>No upcoming deadline</div>
-                                                        </Row>}
-                                                </div>
-                                            </TabPane>
-                                            <TabPane tab={
-                                                <span><CheckCircleTwoTone twoToneColor="#52c41a" />
-                                                    {t('complt')}
-                                                </span>} key="2">
-                                                <div style={{
-                                                    maxHeight: '400px',
-                                                    overflowY: 'auto'
-                                                }}>
-                                                    {this.state.dueTo.length > 0 ? this.state.dueTo.map(dt => (
-                                                        <Row key={dt._id} style={{
-                                                            marginBottom: 5, color: "#2ecc71", border: "2px solid #cacaca",
-                                                            padding: "10px 0"
-                                                        }}>
-                                                            <Col span={10} style={{ textAlign: "center", alignSelf: "center" }}><i>
-                                                                <img src={fastTime} width="36px" />
-                                                            </i></Col>
-                                                            <Col span={10} >
-                                                                <div>{dt.name}</div>
-                                                                <div>
-                                                                    <span style={{ fontWeight: 600 }}>Due to: </span>{this.transTime(get(dt, 'expireTime'))}
-                                                                </div>
-                                                                <div>
-                                                                    <span style={{ fontWeight: 600 }}>Time remaining:</span> {moment.utc(get(dt, 'expireTime')).fromNow()}
-                                                                </div>
-                                                            </Col>
-                                                        </Row>
-                                                    )) : <Row style={{ justifyContent: 'center' }}>
-                                                            <img src={deadlineCalcular} />
-                                                            <div style={{ width: "100%", color: '#cacaca', textAlign: 'center' }}>No deadline complete</div>
-                                                        </Row>}
-                                                </div>
-                                            </TabPane>
-                                        </Tabs>
-                                    </Row>
+                                    {/* Empty */}
+                                    {/* <div style={{
+                                                textAlign: 'center',
+                                                padding: '45px'
+                                            }}>
+                                                <i>
+                                                    <img src={deadlineCalcular} />
+                                                </i>
+                                                <div style={{ color: '#c4c4c4', fontStyle: 'italic' }}>No upcoming deadline</div>
+                                            </div> */}
+                                    {/* Deadline */}
+
+                                    <Deadline deadlines={this.state.deadlines} dueTo={this.state.dueTo} />
                                 </div>
                             </Col>
                         )

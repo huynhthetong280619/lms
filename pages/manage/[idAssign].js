@@ -4,27 +4,27 @@ import restClient from '../../assets/common/core/restClient'
 import { get } from 'lodash'
 import { parseCookies } from '../../assets/helpers'
 
-const DetailPage = ({ lstSubmission, idAssign, idSubject,
+const DetailPage = ({ assignment, idAssign, idSubject,
     idTimeline, token }) => {
 
     return (
         <IndexLayout>
-            <Manage lstSubmission={lstSubmission} idAssign={idAssign} idSubject={idSubject}
-                idTimeline={idTimeline} token={token}/>
+            <Manage assignment={assignment} idAssign={idAssign} idSubject={idSubject}
+                idTimeline={idTimeline} token={token} />
         </IndexLayout>
     )
 }
 
 DetailPage.getInitialProps = async (ctx) => {
 
-const data = parseCookies(ctx.req);
+    const data = parseCookies(ctx.req);
     const token = data.token
     const { idAssign, idSubject, idTimeline } = ctx.query
 
-    const lstSubmission = await restClient.asyncGet(`/assignment/${idAssign}?idSubject=${idSubject}&idTimeline=${idTimeline}`, token)
-
+    const res = await restClient.asyncGet(`/assignment/${idAssign}?idSubject=${idSubject}&idTimeline=${idTimeline}`, token)
+    const assignment = get(res, 'data').assignment;
     return {
-        lstSubmission: get(lstSubmission, 'data'),
+        assignment: assignment,
         idAssign,
         idSubject,
         idTimeline,

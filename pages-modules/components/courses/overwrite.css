@@ -1,20 +1,25 @@
-.wrapper-container{
+.wrapper-container {
     font-size: 2em;
 }
 
-.ant-tabs.ant-tabs-top.ant-tabs-centered{
+.ant-tabs.ant-tabs-top.ant-tabs-centered {
     width: 96%;
 }
 
-.ant-tabs-nav-list{
+.ant-tabs-nav-list {
     width: 100%;
 }
 
-.ant-tabs-tab{
+.ant-tabs-tab {
     width: 100%;
     justify-content: center;
 }
 
-.ant-tabs-content-holder{
+.ant-tabs-content-holder {
     width: 100%;
+}
+
+.ant-card-meta-title {
+    color: royalblue;
+    font-size: small;
 }

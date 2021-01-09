@@ -36,9 +36,7 @@ class Forum extends React.Component {
     };
 
     handleOk = () => {
-
         this.createForum()
-        this.setState({ isModalCreateTopic: false });
     };
 
     handleCancel = () => {
@@ -46,6 +44,7 @@ class Forum extends React.Component {
     };
 
     createForum = async () => {
+
         const data = {
             idSubject: this.props.idSubject,
             idTimeline: this.props.idTimeline,
@@ -59,18 +58,23 @@ class Forum extends React.Component {
             isLoading: true
         })
 
-        await restClient.asyncPost('/topic', data)
+        await restClient.asyncPost('/topic', data, this.props.token)
             .then(res => {
                 console.log('Create topic', res)
-
-                if (!res.hasError) {
-                    this.notifySuccess('Thành công!', 'Tạo chủ đề thành công')
                 this.setState({
                     isLoading: false
                 })
+                if (!res.hasError) {
+                    this.notifySuccess('Thành công!', 'Tạo chủ đề thành công')
                     this.setState({
-                        detailForum: [...this.state.detailForum, get(res, 'data')]
+                        isLoading: false
                     })
+                    this.setState({
+                        detailForum: [...this.state.detailForum, get(res, 'data').topic]
+                    })
+                    this.setState({ isModalCreateTopic: false });
+                } else {
+                    this.notifyError('Thất bại!', res.data.message);
                 }
 
             })
@@ -78,28 +82,28 @@ class Forum extends React.Component {
 
     notifySuccess = (message, description) => {
         notification.success({
-          message,
-          description,
-          placement: 'bottomRight'
+            message,
+            description,
+            placement: 'bottomRight'
         });
-      };
+    };
 
-      notifyWarning = (message, description) => {
+    notifyWarning = (message, description) => {
         notification.warning({
-          message,
-          description,
-          placement: 'bottomRight'
+            message,
+            description,
+            placement: 'bottomRight'
         });
-      };
+    };
 
 
-      notifyError = (message, description) => {
+    notifyError = (message, description) => {
         notification.error({
-          message,
-          description,
-          placement: 'bottomRight'
+            message,
+            description,
+            placement: 'bottomRight'
         });
-      };
+    };
 
 
     render() {
@@ -120,6 +124,7 @@ class Forum extends React.Component {
                     visible={this.state.isModalCreateTopic}
                     onOk={this.handleOk}
                     onCancel={this.handleCancel}
+                    confirmLoading={this.state.isLoading}
                 >
                     <Row style={{ margin: "10px 0" }}>
                         <Col span={6}>

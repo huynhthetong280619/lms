@@ -1,5 +1,5 @@
 import React from 'react'
-import { Row, Col, Badge, Radio, Button, Checkbox } from 'antd'
+import { Row, Col, Badge, Radio, Button, Checkbox, notification } from 'antd'
 import { get } from 'lodash'
 import '../overwrite.css'
 import survey from '../../../../assets/images/contents/surveylogo.png'
@@ -8,27 +8,28 @@ import Router from 'next/router'
 class SurveyExecute extends React.Component {
 
     state = {
-        surveys: [],
-        answer: {}
+        questions: [],
+        answer: {},
+        loading: false
     }
 
     componentDidMount() {
         console.log('this.props.surveyQ.questionnaire', this.props.surveyQ.questionnaire)
 
-        if (!this.props.surveyQ.questionnaire) {
-            Router.push({ pathname: "/courses" })
-        }
-        console.log('componentDidMount', this.props.surveyQ.questionnaire)
+        // if (!this.props.questionnaire.questions) {
+        //     Router.push({ pathname: "/courses" })
+        // }
+        console.log('componentDidMount', this.props.questionnaire.questions)
         this.setState({
-            surveys: this.props.surveyQ.questionnaire.questions || []
+            questions: this.props.questionnaire.questions || []
         })
 
 
 
         const obj = {};
 
-        if (this.props.surveyQ.questionnaire != null) {
-            this.props.surveyQ.questionnaire.questions.map(q => {
+        if (this.props.questionnaire.questions != null) {
+            this.props.questionnaire.questions.map(q => {
                 obj[q._id] = null
             })
         }
@@ -36,7 +37,7 @@ class SurveyExecute extends React.Component {
 
         this.setState({
             answer: obj,
-            callBackRepsonse: false
+            callBackResponse: false
         })
     }
 
@@ -61,6 +62,7 @@ class SurveyExecute extends React.Component {
     }
 
     submitSurvey = async () => {
+        this.setState({ loading: true });
         const questionId = Object.keys(this.state.answer)
 
         let convert = []
@@ -81,7 +83,17 @@ class SurveyExecute extends React.Component {
         await restClient.asyncPost(`/survey/${this.props.idSurvey}/submit?idSubject=${this.props.idSubject}&idTimeline=${this.props.idTimeline}`, data, this.props.token)
             .then(res => {
                 if (!res.hasError) {
-                    Router.push({ pathname: `/subject/${this.props.idSubject}` })
+                    Router.push(`/surveys/${this.props.idSurvey}?idSubject=${this.props.idSubject}&idTimeline=${this.props.idTimeline}`)
+                    notification.success({
+                        message: res.data.message,
+                        placement: 'topRight'
+                    });
+                } else {
+                    this.setState({ loading: false });
+                    notification.error({
+                        message: res.data.message,
+                        placement: 'topRight'
+                    });
                 }
             })
     }
@@ -108,7 +120,7 @@ class SurveyExecute extends React.Component {
                         <span>
                             <img src={survey} width="80px" />
                         </span>
-                        <span style={{ fontWeight: '700' }}>[ SURVEY ] PART 1: CONSOLATE KNOWLEDGE</span>
+                        <span style={{ fontWeight: '700' }}>[ SURVEY ] {this.props.survey.name}</span>
                     </div>
                     <div style={{ width: '100%', minHeight: '150px' }}>
                         <div style={{
@@ -120,7 +132,7 @@ class SurveyExecute extends React.Component {
                         }}>
 
                             {
-                                (this.state.surveys).map((q, index) => (
+                                (this.state.questions).map((q, index) => (
                                     q.typeQuestion == 'choice' ?
                                         (<div style={{ marginBottom: '20px', textAlign: 'left' }} key={q._id}>
                                             <div style={{ fontWeight: 600 }}><span>Question {index}: </span>{q.question}</div>
@@ -246,7 +258,7 @@ class SurveyExecute extends React.Component {
                         </div>
                         <Row style={{ padding: "25px" }}>
                             <div>
-                                <Button type="primary" style={{ borderRadius: 20 }} onClick={() => this.submitSurvey()}>Submit survey</Button>
+                                <Button type="primary" loading={this.state.loading} style={{ borderRadius: 20 }} onClick={() => this.submitSurvey()}>Submit survey</Button>
                             </div>
                         </Row>
                     </div>

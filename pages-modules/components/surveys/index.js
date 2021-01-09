@@ -3,7 +3,7 @@ import React from 'react'
 import surveyImg from '../../../assets/images/contents/survey.png'
 import { get } from 'lodash'
 import moment from 'moment'
-import { Drawer, Row, Checkbox, Radio, Progress, Col, Popover, Modal, Tabs, Input, DatePicker, Upload, message, Button, Select, InputNumber } from 'antd'
+import { Row, Checkbox, Radio, Progress, Col, Tabs, Button } from 'antd'
 const { TabPane } = Tabs;
 import './overwrite.css'
 
@@ -35,12 +35,12 @@ class Survey extends React.Component {
                     <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject}</Col>
                 </Row>
                 <div style={{ width: '90%' }}>
-                    <div style={{ textAlign: 'left', width: '100%', padding: '10px 0' }}>
+                    {/* <div style={{ textAlign: 'left', width: '100%', padding: '10px 0' }}>
                         <span>
                             <img src={surveyImg} width="80px" />
                         </span>
-                        <span style={{ fontWeight: '700' }}>[ SURVEY ] PART 1: CONSOLATE KNOWLEDGE</span>
-                    </div>
+                        <span style={{ fontWeight: '700' }}>[ SURVEY ] {survey.name}</span>
+                    </div> */}
                     <div style={{ width: '100%', minHeight: '150px' }}>
                         {/* <Row style={{ width: '100%' }}>
                             <Col span={20} style={{ padding: '25px', fontSize: '2em' }}></Col>
@@ -58,10 +58,10 @@ class Survey extends React.Component {
                                     <i>
                                         <img src={surveyImg} />
                                     </i>
-                                    <div style={{ fontSize: '2em' }}>{get(survey, 'name')}</div>
+                                    <div style={{ fontSize: '2em' }}>[SURVEY] {get(survey, 'name')}</div>
                                     <div>
                                         <div><span style={{ fontWeight: 700 }}>Closed: </span> {this.transTime(get(survey, 'expireTime'))}</div>
-                                        <div><span style={{ fontWeight: 700 }}>Time remaining: </span> {moment(Number(get(survey, 'timeRemain'))/1000).fromNow()}</div>
+                                        <div><span style={{ fontWeight: 700 }}>Time remaining: </span> {moment.utc(get(survey, 'expireTime')).fromNow()}</div>
                                         <div><span style={{ fontWeight: 700 }}>Status: </span>{get(survey, 'isRemain') ? <span style={{ color: '#44bd32', fontWeight: 900 }}>Opening</span> : <span style={{ color: '#e84118', fontWeight: 900 }}>Closed</span>}</div>
                                     </div>
                                     <div>
@@ -84,65 +84,65 @@ class Survey extends React.Component {
                     <Tabs defaultActiveKey="1" centered style={{ width: "100%" }}>
                         <TabPane tab="Your response" key="1" >
 
-                            {!this.props.replyCurrent.success ?  <div>You not priviledge...</div> : 
-                            <div>
-                                {
-                                (this.props.replyCurrent.questionnaire).map((q, index) => (
-                                    q.typeQuestion == 'choice' ?
-                                        (<div style={{ marginBottom: '20px', textAlign: 'left' }} key={q._id}>
-                                            <div style={{ fontWeight: 600 }}><span>Question {index}: </span>{q.question}</div>
-                                            <div>
-                                                <Radio.Group disabled value={this.props.replyCurrent.response.answerSheet[index].answer}>
-                                                    {
-                                                        q.answer.map(a => (
-                                                            <Radio style={radioStyle} value={a._id} key={a._id}>
-                                                                {a.content}
-                                                            </Radio>
-                                                        ))
-                                                    }
-                                                </Radio.Group>
-                                            </div>
-                                        </div>) :
-                                        (
-                                            q.typeQuestion == 'multiple' ? (<div style={{ textAlign: 'left' }} key={q._id}>
-                                                <div style={{ fontWeight: 600 }}>
-                                                    <span>Question {index}: </span>{q.question}
-                                                </div>
-                                                <div>
-                                                    <Checkbox.Group style={{ width: '100%' }} disabled value={this.props.replyCurrent.response.answerSheet[index].answer}>
-                                                        <Row>
-                                                            <Col span={12} style={{ textAlign: 'left' }}>
-                                                                <div>
-                                                                    {
-                                                                        q.answer.map(a => (
-                                                                            <div key={a._id}>
-                                                                                <Checkbox value={a._id}>{a.content}</Checkbox>
-                                                                            </div>
-                                                                        ))
-                                                                    }
-                                                                </div>
-                                                            </Col>
-                                                            <Col span={12}>
-                                                            </Col>
-                                                        </Row>
-                                                    </Checkbox.Group>
-                                                </div>
-                                            </div>
-                                            )
-
-                                                : <div style={{ textAlign: 'left' }} key={q._id}>
-                                                    <div style={{ fontWeight: 600 }}>
-                                                        <span>Question {index}: </span>{q.question}
-                                                    </div>
+                            {!this.props.replyCurrent.success ? <div>You not privilege...</div> :
+                                <div>
+                                    {
+                                        (this.props.replyCurrent.questionnaire).map((q, index) => (
+                                            q.typeQuestion == 'choice' ?
+                                                (<div style={{ marginBottom: '20px', textAlign: 'left' }} key={q._id}>
+                                                    <div style={{ fontWeight: 600 }}><span>Question {index}: </span>{q.question}</div>
                                                     <div>
-                                                        <input type="text" value={this.props.replyCurrent.response.answerSheet[index].answer} disabled/>
+                                                        <Radio.Group disabled value={this.props.replyCurrent.response.answerSheet[index].answer}>
+                                                            {
+                                                                q.answer.map(a => (
+                                                                    <Radio style={radioStyle} value={a._id} key={a._id}>
+                                                                        {a.content}
+                                                                    </Radio>
+                                                                ))
+                                                            }
+                                                        </Radio.Group>
                                                     </div>
-                                                </div>
+                                                </div>) :
+                                                (
+                                                    q.typeQuestion == 'multiple' ? (<div style={{ textAlign: 'left' }} key={q._id}>
+                                                        <div style={{ fontWeight: 600 }}>
+                                                            <span>Question {index}: </span>{q.question}
+                                                        </div>
+                                                        <div>
+                                                            <Checkbox.Group style={{ width: '100%' }} disabled value={this.props.replyCurrent.response.answerSheet[index].answer}>
+                                                                <Row>
+                                                                    <Col span={12} style={{ textAlign: 'left' }}>
+                                                                        <div>
+                                                                            {
+                                                                                q.answer.map(a => (
+                                                                                    <div key={a._id}>
+                                                                                        <Checkbox value={a._id}>{a.content}</Checkbox>
+                                                                                    </div>
+                                                                                ))
+                                                                            }
+                                                                        </div>
+                                                                    </Col>
+                                                                    <Col span={12}>
+                                                                    </Col>
+                                                                </Row>
+                                                            </Checkbox.Group>
+                                                        </div>
+                                                    </div>
+                                                    )
+
+                                                        : <div style={{ textAlign: 'left' }} key={q._id}>
+                                                            <div style={{ fontWeight: 600 }}>
+                                                                <span>Question {index}: </span>{q.question}
+                                                            </div>
+                                                            <div>
+                                                                <input type="text" value={this.props.replyCurrent.response.answerSheet[index].answer} disabled />
+                                                            </div>
+                                                        </div>
+                                                )
                                         )
-                                )
-                                )
-                            }
-                            </div>
+                                        )
+                                    }
+                                </div>
                             }
                         </TabPane>
                         <TabPane tab={`View all response (${this.props.responseSurvey.totalResponses})`} key="2" >
