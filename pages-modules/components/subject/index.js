@@ -858,7 +858,7 @@ class Subject extends React.Component {
                     </Row>
                     {
 
-                        infomation != null ? (
+                        information != null ? (
                             <Row style={{ paddingLeft: 25 }}>
                                 <Timeline>
                                     {information.map(info => {

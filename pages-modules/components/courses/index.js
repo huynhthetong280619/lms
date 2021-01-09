@@ -3,6 +3,7 @@ import React from 'react'
 // import images
 import onlineCourse from '../../../assets/images/courses/onlineCourse.png'
 import deadline from '../../../assets/images/courses/deadline.png'
+import courseEmpty from '../../../assets/images/courses/courseEmpty.png'
 
 import { Row, Col, Card } from 'antd'
 const { Meta } = Card;
