@@ -229,13 +229,11 @@ class Subject extends React.Component {
                     this.notifySuccess('Thành công!', 'Nộp bài thành công')
                     console.log('Notification', res)
                     let submission = res.data.submission;
-                    let timelineUpdate = this.state.timelines.find(({ _id }) => _id === this.state.idTimelineRequired);
-                    let assignmentUpdate = timelineUpdate.assignments.find(({ _id }) => _id === idAssignment);
-                    assignmentUpdate = {
-                        ...assignmentUpdate, submissionStatus: true,
-                        data: { ...assignmentUpdate.data, submission: submission }
-                    };
-                    this.setState({ assignmentRequirement: assignmentUpdate.data });
+                    console.log('OLD-ASSIGNMENT', this.state.assignmentRequirement);
+                    this.setState({ assignmentRequirement: { ...this.state.assignmentRequirement, submission: submission } }
+                        , () => {
+                            console.log('New-ASSIGNMENT', this.state.assignmentRequirement);
+                        });
                 } else {
                     this.notifyError("Thất bại!", res.data.message);
                 }
@@ -251,13 +249,11 @@ class Subject extends React.Component {
                     this.notifySuccess('Thành công!', res.data.message)
                     console.log('Notification', res)
                     let submission = res.data.submission;
-                    let timelineUpdate = this.state.timelines.find(({ _id }) => _id === this.state.idTimelineRequired);
-                    let assignmentUpdate = timelineUpdate.assignments.find(({ _id }) => _id === idAssignment);
-                    assignmentUpdate = {
-                        ...assignmentUpdate, submissionStatus: true,
-                        data: { ...assignmentUpdate.data, submission: submission }
-                    };
-                    this.setState({ assignmentRequirement: assignmentUpdate.data });
+                    console.log('OLD-ASSIGNMENT', this.state.assignmentRequirement);
+                    this.setState({ assignmentRequirement: { ...this.state.assignmentRequirement, submission: submission } }
+                        , () => {
+                            console.log('New-ASSIGNMENT', this.state.assignmentRequirement);
+                        });
                 } else {
                     this.notifyError("Thất bại!", res.data.message);
                 }
