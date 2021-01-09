@@ -112,7 +112,9 @@ class Quiz extends React.Component {
                 width: '80%',
                 textAlign: 'center',
                 background: '#fff',
-                minHeight: '20px'
+                minHeight: '20px',
+                margin: '0 auto',
+                justifyContent: 'center'
             }}>
                 <Row style={{ width: '100%' }}>
                     <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject}</Col>

@@ -85,6 +85,11 @@ class AssignmentModal extends React.Component {
         this.props.commentAssignmentGrade({ comment: this.state.comment, idAssignment: idAssignment });
     }
 
+    handleCancel=()=>{
+        this.setState({fileData:null,comment:''});
+        this.props.handleCancelModal();
+    }
+
 
 
     render() {
@@ -92,7 +97,7 @@ class AssignmentModal extends React.Component {
         return <Modal
             title={`[ Assignment ] ${this.props.assignment ? this.props.assignment.name : ' '}`}
             visible={this.props.visible}
-            onCancel={this.props.handleCancelModal}
+            onCancel={()=>this.handleCancel()}
             footer={null}
         >
             {this.props.assignment ?

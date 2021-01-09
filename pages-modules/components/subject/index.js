@@ -78,7 +78,10 @@ class Subject extends React.Component {
             isSubmitAssignment: false,
             isCommentAssignment: false,
             isExe: false,
-            isTeacherPrivilege: false
+            isTeacherPrivilege: false,
+            isOpenDrawerCreate: false,
+            isOpenDrawerContent: false,
+            titleDrawCreate: "NỘI DUNG"
         }
     }
 
@@ -735,6 +738,20 @@ class Subject extends React.Component {
         })
     }
 
+
+    openDrawerCreate = (title) => {
+        this.setState({
+            isOpenDrawerCreate: true,
+            titleDrawCreate: title
+        })
+    }
+
+    closeDrawerCreate = () => {
+        this.setState({
+            isOpenDrawerCreate: false
+        })
+    }
+
     render() {
 
         const { t } = this.props;
@@ -974,7 +991,7 @@ class Subject extends React.Component {
                                             marginLeft: '10px'
 
                                         }}>
-                                            <a style={{ display: 'inline-block', cursor: 'pointer', color: '#000' }} href={`/manage/${assign._id}?idSubject=${this.props.idSubject}&idTimeline=${id}`}>{assign.name}</a>
+                                            <a style={{ display: 'inline-block', cursor: 'pointer', color: '#000' }} >{assign.name}</a>
                                         </Col>
                                     </Row>
                                     :
@@ -1186,6 +1203,7 @@ class Subject extends React.Component {
                     width={540}
                     style={{ textAlign: 'center' }}
                 >
+
                     <Row style={{ justifyContent: 'space-around' }}>
                         <Col span={6} className="action-select-add-content" style={{
                             height: '50px',
@@ -1194,7 +1212,7 @@ class Subject extends React.Component {
                             color: '#fff',
                             lineHeight: '50px',
                             cursor: 'pointer'
-                        }} onClick={() => this.addInformation()}>
+                        }} onClick={() => this.openDrawerCreate('TẠO THÔNG BÁO')}>
                             THÔNG BÁO
                        </Col>
                         <Col span={6} className="action-select-add-content" style={{
@@ -1204,7 +1222,8 @@ class Subject extends React.Component {
                             color: '#fff',
                             lineHeight: '50px',
                             cursor: 'pointer'
-                        }}>
+                        }}
+                            onClick={() => this.openDrawerCreate('TẠO TÀI LIỆU')}>
                             TÀI LIỆU
                        </Col>
                         <Col span={6} className="action-select-add-content" style={{
@@ -1214,7 +1233,7 @@ class Subject extends React.Component {
                             color: '#fff',
                             lineHeight: '50px',
                             cursor: 'pointer'
-                        }} onClick={() => this.addAssignment()}>
+                        }} onClick={() => this.openDrawerCreate('TẠO BÀI TẬP')}>
                             BÀI TẬP
                        </Col>
                     </Row>
@@ -1226,7 +1245,7 @@ class Subject extends React.Component {
                             color: '#fff',
                             lineHeight: '50px',
                             cursor: 'pointer'
-                        }} onClick={() => this.addQuiz()}>
+                        }} onClick={() => this.openDrawerCreate('TẠO BÀI KIỂM TRA')}>
                             KIỂM TRA
                        </Col>
                         <Col span={6} className="action-select-add-content" style={{
@@ -1236,7 +1255,7 @@ class Subject extends React.Component {
                             color: '#fff',
                             lineHeight: '50px',
                             cursor: 'pointer'
-                        }} onClick={() => this.addSurvey()}>
+                        }} onClick={() => this.openDrawerCreate('TẠO BÀI KHẢO SÁT')}>
                             KHẢO SÁT
                        </Col>
                         <Col span={6} className="action-select-add-content" style={{
@@ -1246,11 +1265,58 @@ class Subject extends React.Component {
                             color: '#fff',
                             lineHeight: '50px',
                             cursor: 'pointer'
-                        }} onClick={() => this.addTimeline()}>
+                        }} onClick={() => this.openDrawerCreate('TẠO TUẦN MỚI')}>
                             TUẦN
                        </Col>
                     </Row>
 
+                    <Row>
+                        <div style={{
+                            border: "2px solid #cacaca",
+                            padding: "20px 0",
+                            borderRadius: "11px",
+                            position: 'relative',
+                            margin: '20px',
+                            width: '100%'
+                        }}>
+                            <h2>Chỉ định tạo chức năng cho một lớp học</h2>
+                            <p style={{
+                                fontStyle: 'italic',
+                                color: '#9d9393'
+                            }}>Tạo chủ đề</p>
+                            <p style={{
+                                fontStyle: 'italic',
+                                color: '#9d9393'
+                            }}>Tạo thông báo cho lớp học theo mỗi chủ để </p>
+                            <p style={{
+                                fontStyle: 'italic',
+                                color: '#9d9393'
+                            }}>Đính kèm tài liệu cho sinh viên theo mỗi chủ để</p>
+                            <p style={{
+                                fontStyle: 'italic',
+                                color: '#9d9393'
+                            }}>Tạo bài tập và các câu hỏi</p>
+                            <p style={{
+                                fontStyle: 'italic',
+                                color: '#9d9393'
+                            }}>Tạo các bài khảo sát ý kiến sau mỗi buổi học theo mỗi chủ đề</p>
+                        </div>
+                    </Row>
+
+
+
+                </Drawer>
+                <Drawer
+                    title={this.state.titleDrawCreate}
+                    placement="left"
+                    closable={false}
+                    onClose={this.closeDrawerCreate}
+                    visible={this.state.isOpenDrawerCreate}
+                    key="left"
+                    width={540}
+                    style={{ textAlign: 'center' }}
+                >
+                    <AddQuiz isLoading={this.state.isLoading} lstQuizzes={this.state.lstQuizzes} lstTimelines={this.state.lstTimelines} createQuiz={this.createQuiz} />
                 </Drawer>
                 <Widget openDrawerContent={() => this.openDrawerContent()} />
                 <AssignmentModal visible={this.state.visible} isSubmitAssignment={this.state.isSubmitAssignment} isCommentAssignment={this.state.isCommentAssignment} commentAssignmentGrade={this.commentAssignmentGrade} assignment={this.state.assignmentRequirement} handleCancelModal={this.handleCancelModal} submitAssignment={this.submissionFile} onSubmitAssignment={this.onSubmitAssignment} onCancelSubmitAssignment={this.onCancelSubmitAssignment} />
