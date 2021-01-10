@@ -62,9 +62,7 @@ class Subject extends React.Component {
             lstSurveys: [],
             FileData: null,
             isAddInformation: false,
-            isAddFilePdf: false,
             isAddFile: false,
-            isAddFileExcel: false,
             isAddTimeline: false,
             isAddAssignment: false,
             isAddQuiz: false,
@@ -291,7 +289,8 @@ class Subject extends React.Component {
                     console.log(timelineUpdate)
 
                     this.setState({
-                        timelines: [...this.state.timelines]
+                        timelines: [...this.state.timelines],
+                        isOpenDrawerCreate: false
                     }, () => {
                         console.log(this.state.timelines)
                     })
@@ -329,56 +328,12 @@ class Subject extends React.Component {
                     console.log(timelineUpdate)
 
                     this.setState({
-                        timelines: [...this.state.timelines]
+                        timelines: [...this.state.timelines],
+                        isOpenDrawerCreate: false
                     }, () => {
                         console.log(this.state.timelines)
                     })
 
-
-                    this.setState({
-                        quiz: {
-                            name: '',
-                            content: '',
-                            startTime: `${new Date().getFullYear()}-${`${new Date().getMonth() +
-                                1}`.padStart(2, 0)}-${`${new Date().getDate() + 1}`.padStart(
-                                    2,
-                                    0
-                                )}T${`${new Date().getHours()}`.padStart(
-                                    2,
-                                    0
-                                )}:${`${new Date().getMinutes()}`.padStart(2, 0)}`,
-                            expireTime: `${new Date().getFullYear()}-${`${new Date().getMonth() +
-                                1}`.padStart(2, 0)}-${`${new Date().getDate() + 1}`.padStart(
-                                    2,
-                                    0
-                                )}T${`${new Date().getHours()}`.padStart(
-                                    2,
-                                    0
-                                )}:${`${new Date().getMinutes()}`.padStart(2, 0)}`,
-                            expireTime: `${new Date().getFullYear()}-${`${new Date().getMonth() +
-                                1}`.padStart(2, 0)}-${`${new Date().getDate() + 1}`.padStart(
-                                    2,
-                                    0
-                                )}T${`${new Date().getHours()}`.padStart(
-                                    2,
-                                    0
-                                )}:${`${new Date().getMinutes()}`.padStart(2, 0)}`,
-                            expireTime: `${new Date().getFullYear()}-${`${new Date().getMonth() +
-                                1}`.padStart(2, 0)}-${`${new Date().getDate() + 1}`.padStart(
-                                    2,
-                                    0
-                                )}T${`${new Date().getHours()}`.padStart(
-                                    2,
-                                    0
-                                )}:${`${new Date().getMinutes()}`.padStart(2, 0)}`,
-                            setting: {
-                                questionCount: null,
-                                timeToDo: null,
-                                code: null,
-                                attemptCount: null
-                            }
-                        }
-                    })
                 } else {
                     this.notifyError(res.data.message);
                 }
@@ -417,7 +372,8 @@ class Subject extends React.Component {
                     console.log(timelineUpdate)
 
                     this.setState({
-                        timelines: [...this.state.timelines]
+                        timelines: [...this.state.timelines],
+                        isOpenDrawerCreate: false
                     }, () => {
                         console.log(this.state.timelines)
                     })
@@ -470,7 +426,8 @@ class Subject extends React.Component {
                     console.log(timelineUpdate)
 
                     this.setState({
-                        timelines: [...this.state.timelines]
+                        timelines: [...this.state.timelines],
+                        isOpenDrawerCreate: false
                     }, () => {
                         console.log(this.state.timelines)
                     })
@@ -522,7 +479,8 @@ class Subject extends React.Component {
                     let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === data.idTimeline)
                     head(timelineUpdate).information.push(res.data.information)
                     this.setState({
-                        timelines: [...this.state.timelines]
+                        timelines: [...this.state.timelines],
+                        isOpenDrawerCreate: false
                     })
                 } else {
                     this.notifyError('Thất bại!', res.data.message);
@@ -553,7 +511,8 @@ class Subject extends React.Component {
                             isDeleted: get(res, 'data').timeline.isDeleted,
                             name: get(res, 'data').timeline.name,
                             description: get(res, 'data').timeline.description
-                        }]
+                        }],
+                        isOpenDrawerCreate: false
                     })
 
                 } else {
@@ -562,40 +521,11 @@ class Subject extends React.Component {
             })
     }
 
-    addFilePdf = () => {
-        this.setState({
-            isAddInformation: false,
-            isAddFilePdf: true,
-            isAddFile: false,
-            isAddFileExcel: false,
-            isAddTimeline: false,
-            isAddAssignment: false,
-            isAddQuiz: false,
-            isOpenSetting: false,
-            isSurvey: false
-        })
-    }
 
-    addFileWord = () => {
+    addFile = () => {
         this.setState({
             isAddInformation: false,
-            isAddFilePdf: false,
             isAddFile: true,
-            isAddFileExcel: false,
-            isAddTimeline: false,
-            isAddAssignment: false,
-            isAddQuiz: false,
-            isOpenSetting: false,
-            isSurvey: false
-        })
-    }
-
-    addFileExcel = () => {
-        this.setState({
-            isAddInformation: false,
-            isAddFilePdf: false,
-            isAddFile: false,
-            isAddFileExcel: true,
             isAddTimeline: false,
             isAddAssignment: false,
             isAddQuiz: false,
@@ -608,9 +538,7 @@ class Subject extends React.Component {
         console.log('Add information')
         this.setState({
             isAddInformation: true,
-            isAddFilePdf: false,
             isAddFile: false,
-            isAddFileExcel: false,
             isAddTimeline: false,
             isAddAssignment: false,
             isAddQuiz: false,
@@ -623,9 +551,7 @@ class Subject extends React.Component {
     addTimeline = () => {
         this.setState({
             isAddInformation: false,
-            isAddFilePdf: false,
             isAddFile: false,
-            isAddFileExcel: false,
             isAddTimeline: true,
             isAddAssignment: false,
             isAddQuiz: false,
@@ -638,9 +564,7 @@ class Subject extends React.Component {
         this.setState({
             isAddAssignment: true,
             isAddInformation: false,
-            isAddFilePdf: false,
             isAddFile: false,
-            isAddFileExcel: false,
             isAddTimeline: false,
             isAddQuiz: false,
             isOpenSetting: false,
@@ -652,9 +576,7 @@ class Subject extends React.Component {
         this.setState({
             isAddQuiz: false,
             isAddInformation: false,
-            isAddFilePdf: false,
             isAddFile: false,
-            isAddFileExcel: false,
             isAddTimeline: false,
             isAddQuiz: true,
             isOpenSetting: false,
@@ -666,9 +588,7 @@ class Subject extends React.Component {
         this.setState({
             isAddQuiz: false,
             isAddInformation: false,
-            isAddFilePdf: false,
             isAddFile: false,
-            isAddFileExcel: false,
             isAddTimeline: false,
             isAddQuiz: false,
             isOpenSetting: false,
@@ -748,7 +668,14 @@ class Subject extends React.Component {
 
     closeDrawerCreate = () => {
         this.setState({
-            isOpenDrawerCreate: false
+            isOpenDrawerCreate: false,
+            isAddInformation: false,
+            isAddFile: false,
+            isAddTimeline: false,
+            isAddAssignment: false,
+            isAddQuiz: false,
+            isOpenSetting: false,
+            isSurvey: false
         })
     }
 
@@ -758,7 +685,7 @@ class Subject extends React.Component {
 
         const content = (
             <div>
-                <span style={{ margin: '0 10px' }} onClick={() => this.addFileWord()}>
+                <span style={{ margin: '0 10px' }} onClick={() => this.addFile()}>
                     <i>
                         <Tooltip title="Add file word">
                             <img src={file} style={{ width: '50px' }} />
@@ -1212,7 +1139,10 @@ class Subject extends React.Component {
                             color: '#fff',
                             lineHeight: '50px',
                             cursor: 'pointer'
-                        }} onClick={() => this.openDrawerCreate('TẠO THÔNG BÁO')}>
+                        }} onClick={() => {
+                            this.openDrawerCreate('TẠO THÔNG BÁO');
+                            this.addInformation()
+                        }}>
                             THÔNG BÁO
                        </Col>
                         <Col span={6} className="action-select-add-content" style={{
@@ -1223,7 +1153,10 @@ class Subject extends React.Component {
                             lineHeight: '50px',
                             cursor: 'pointer'
                         }}
-                            onClick={() => this.openDrawerCreate('TẠO TÀI LIỆU')}>
+                            onClick={() => {
+                                this.openDrawerCreate('TẠO TÀI LIỆU');
+                                this.addFile()
+                            }}>
                             TÀI LIỆU
                        </Col>
                         <Col span={6} className="action-select-add-content" style={{
@@ -1233,7 +1166,10 @@ class Subject extends React.Component {
                             color: '#fff',
                             lineHeight: '50px',
                             cursor: 'pointer'
-                        }} onClick={() => this.openDrawerCreate('TẠO BÀI TẬP')}>
+                        }} onClick={() => {
+                            this.openDrawerCreate('TẠO BÀI TẬP');
+                            this.addAssignment();
+                        }}>
                             BÀI TẬP
                        </Col>
                     </Row>
@@ -1245,7 +1181,10 @@ class Subject extends React.Component {
                             color: '#fff',
                             lineHeight: '50px',
                             cursor: 'pointer'
-                        }} onClick={() => this.openDrawerCreate('TẠO BÀI KIỂM TRA')}>
+                        }} onClick={() => {
+                            this.openDrawerCreate('TẠO BÀI KIỂM TRA');
+                            this.addQuiz();
+                        }}>
                             KIỂM TRA
                        </Col>
                         <Col span={6} className="action-select-add-content" style={{
@@ -1255,7 +1194,10 @@ class Subject extends React.Component {
                             color: '#fff',
                             lineHeight: '50px',
                             cursor: 'pointer'
-                        }} onClick={() => this.openDrawerCreate('TẠO BÀI KHẢO SÁT')}>
+                        }} onClick={() => {
+                            this.openDrawerCreate('TẠO BÀI KHẢO SÁT');
+                            this.addSurvey();
+                        }}>
                             KHẢO SÁT
                        </Col>
                         <Col span={6} className="action-select-add-content" style={{
@@ -1265,7 +1207,10 @@ class Subject extends React.Component {
                             color: '#fff',
                             lineHeight: '50px',
                             cursor: 'pointer'
-                        }} onClick={() => this.openDrawerCreate('TẠO TUẦN MỚI')}>
+                        }} onClick={() => {
+                            this.openDrawerCreate('TẠO TUẦN MỚI');
+                            this.addTimeline()
+                        }}>
                             TUẦN
                        </Col>
                     </Row>
@@ -1309,15 +1254,21 @@ class Subject extends React.Component {
                 <Drawer
                     title={this.state.titleDrawCreate}
                     placement="left"
-                    closable={false}
                     onClose={this.closeDrawerCreate}
                     visible={this.state.isOpenDrawerCreate}
                     key="left"
                     width={540}
                     style={{ textAlign: 'center' }}
                 >
-                    <AddQuiz isLoading={this.state.isLoading} lstQuizzes={this.state.lstQuizzes} lstTimelines={this.state.lstTimelines} createQuiz={this.createQuiz} />
+                    {this.state.isAddQuiz && (<AddQuiz isLoading={this.state.isLoading} lstQuizzes={this.state.lstQuizzes} lstTimelines={this.state.lstTimelines} createQuiz={this.createQuiz} />)}
+                    {this.state.isAddSurvey && (<AddSurvey isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} lstSurveys={this.state.lstSurveys} createSurvey={this.createSurvey} />)}
+                    {this.state.isAddAssignment && (<AddAssignment isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} onUploadFile={this.onUploadFile} createAssignment={this.createAssignment} notifyError={this.notifyError} />)}
+                    {this.state.isAddFile && (<AddFile isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} onUploadFile={this.onUploadFile} createFile={this.createFile} />)}
+                    {this.state.isAddInformation && (<AddInformation lstTimelines={this.state.lstTimelines} isLoading={this.state.isLoading} createInformation={this.createInformation} />)}
+                    {this.state.isAddTimeline && (<AddTimeline createTimeline={this.createTimeline} isLoading={this.state.isLoading} />)}
+
                 </Drawer>
+
                 <Widget openDrawerContent={() => this.openDrawerContent()} />
                 <AssignmentModal visible={this.state.visible} isSubmitAssignment={this.state.isSubmitAssignment} isCommentAssignment={this.state.isCommentAssignment} commentAssignmentGrade={this.commentAssignmentGrade} assignment={this.state.assignmentRequirement} handleCancelModal={this.handleCancelModal} submitAssignment={this.submissionFile} onSubmitAssignment={this.onSubmitAssignment} onCancelSubmitAssignment={this.onCancelSubmitAssignment} />
 

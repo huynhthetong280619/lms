@@ -6,15 +6,15 @@ class Widget extends React.Component {
 
     render() {
 
-        const {openDrawerContent} = this.props
+        const { openDrawerContent } = this.props
         return (
             <div class="container">
                 <a onClick={() => openDrawerContent()}>
                     <i><FontAwesomeIcon icon="plus-square" /></i>
-                <span>Setting</span>
+                    <span>Setting</span>
                 </a>
                 <a href="#">
-                <i><FontAwesomeIcon icon="sort-amount-up" /></i>
+                    <i><FontAwesomeIcon icon="sort-amount-up" /></i>
                     <span>Arrange</span>
                 </a>
             </div>
