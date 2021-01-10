@@ -1,76 +1,42 @@
 import { get, head } from 'lodash';
+import { useState, useEffect } from 'react';
 import { withTranslation } from 'react-i18next';
-import { Row, Col, Input, Select, Button, Checkbox } from 'antd'
+import { Row, Col, Input, Select, Button, Checkbox, Form, DatePicker } from 'antd'
 const { Option } = Select;
 const { TextArea } = Input;
 
-const date = `${new Date().getFullYear()}-${`${new Date().getMonth() +
-    1}`.padStart(2, 0)}-${`${new Date().getDate() + 1}`.padStart(
-        2,
-        0
-    )}T${`${new Date().getHours()}`.padStart(
-        2,
-        0
-    )}:${`${new Date().getMinutes()}`.padStart(2, 0)}`;
+const AddAssignment = ({ lstTimelines, onUploadFile, t, isLoading, createAssignment, notifyError }) => {
 
-class AddAssignment extends React.Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            idTimeline: get(head(this.props.lstTimelines), '_id'),
-            name: '',
-            content: '',
+    const [form] = Form.useForm();
+    const [isOverDue, setIsOverDue] = useState(false);
+    const [fileAttach, setFileAttach] = useState(null);
+
+    const handleOnchangeOverDue = (e) => {
+        setIsOverDue(e.target.checked);
+    }
+
+    useEffect(() => {
+        const object = {
             setting: {
-                startTime: date,
-                expireTime: date,
                 isOverDue: false,
-                overDueDate: null,
-                fileSize: '5'
-            },
-            fileData: null
-        }
-    }
-
-    handleSelectStartTime(day) {
-        console.log('handleSelectStartTime', day)
-        this.setState({ setting: { ...this.state.setting, startTime: day } });
-    }
-
-    handleSelectExpireTime(day) {
-        console.log('handleSelectExpireTime', day)
-
-        this.setState({ setting: { ...this.state.setting, expireTime: day } });
-    }
-
-    handleIsOverDue = (status) => {
-        console.log('handleIsOverDue', status.target.checked)
-        this.setState({
-            setting: {
-                ...this.state.setting, isOverDue: status.target.checked,
-                overDueDate: status.target.checked ? date : null
+                fileSize: 5,
             }
-        });
-    }
-
-    handleSelectOverDueDate(day) {
-        this.setState({ setting: { ...this.state.setting, overDueDate: day } });
-    }
-
-    handleFileSize(size) {
-        this.setState({ setting: { ...this.state.setting, fileSize: size } });
-    }
-
-    handleProcessFile = (e) => {
-        this.setState({
-            fileData: e.target.files[0]
+        }
+        form.setFieldsValue({
+            idTimeline: lstTimelines[0]._id,
+            assignment: object
         })
+    }, []);
+
+    const handleProcessFile = (e) => {
+        setFileAttach(e.target.files[0]);
 
     }
 
-    handleAttachmentUpload = async () => {
-        this.props.onUploadFile();
+    const handleAttachmentUpload = async () => {
+        onUploadFile();
         const formData = new FormData();
-        formData.append('file', this.state.fileData)
+        formData.append('file', fileAttach)
         // replace this with your upload preset name
         formData.append('upload_preset', 'gmttm4bo');
         const options = {
@@ -102,167 +68,219 @@ class AddAssignment extends React.Component {
     }
 
 
-    handleSubmit = async () => {
+    const onFinish = async (fieldsValue) => {
+        console.log('fileAttach', fileAttach);
+        const idTimeline = fieldsValue.idTimeline;
+        const assignment = fieldsValue.assignment;
+        const setting = {
+            ...assignment.setting,
+            startTime: assignment.setting.startTime.format('YYYY-MM-DDTHH:mm:ss'),
+            expireTime: assignment.setting.expireTime.format('YYYY-MM-DDTHH:mm:ss'),
+            overDueDate: assignment.setting.isOverDue ? assignment.setting.overDueDate.format('YYYY-MM-DDTHH:mm:ss') : null
+        };
+        console.log('setting', setting);
         let file = []
         let data = null;
-        if (this.state.fileData) {
-            const objectFile = await this.handleAttachmentUpload();
+        if (fileAttach) {
+            const objectFile = await handleAttachmentUpload();
             if (objectFile) {
                 file.push(objectFile);
                 data = {
-                    name: this.state.name,
-                    content: this.state.content,
-                    setting: this.state.setting,
+                    name: assignment.name,
+                    content: assignment.content,
+                    setting: setting,
                     file: file
                 }
-                this.props.createAssignment({ assignment: data, idTimeline: this.state.idTimeline });
+                createAssignment({ assignment: data, idTimeline: idTimeline });
             } else {
-                this.props.notifyError("Thất bại", 'Gặp lỗi khi tải file vui lòng thử lại');
+                notifyError("Thất bại", 'Gặp lỗi khi tải file vui lòng thử lại');
             }
 
         } else {
             data = {
-                name: this.state.name,
-                content: this.state.content,
-                setting: this.state.setting
+                name: assignment.name,
+                content: assignment.content,
+                setting: setting
             }
-            this.props.createAssignment({ assignment: data, idTimeline: this.state.idTimeline });
+            createAssignment({ assignment: data, idTimeline: idTimeline });
         }
-
     }
 
-    render() {
-        const { t } = this.props;
 
-        return <>
+    const formItemLayout = {
+        labelCol: {
+            span: 8,
+
+        },
+        wrapperCol: {
+            span: 16,
+        },
+    };
+
+    return (
+        <>
             <div style={{
                 fontStyle: "italic",
                 color: "#cacaca"
             }}>
                 {t('setting_assignment')}
             </div>
-            <Row style={{ margin: '10px 0' }}>
-                <Col span={6} style={{ fontWeight: 700 }}>
-                    {t('timeline')}
-                </Col>
-                <Col>
-                    <Select defaultValue={this.state.idTimeline} style={{ width: 200 }} onChange={e => this.setState({ idTimeline: e })}>
+
+            <Form
+                {...formItemLayout}
+                onFinish={onFinish}
+                form={form}
+            >
+                <Form.Item
+                    label={t('timeline')}
+                    name="idTimeline"
+                    rules={[
                         {
-                            this.props.lstTimelines.map(tl => (<Option value={tl._id} key={tl._id}>{tl.name}</Option>))
+                            required: true,
+                            message: "Vui lòng chọn tuần"
+                        }
+                    ]}
+                    hasFeedback>
+                    <Select >
+                        {
+                            lstTimelines.map(tl => (<Option value={tl._id} key={tl._id}>{tl.name}</Option>))
                         }
                     </Select>
-                </Col>
-            </Row>
+                </Form.Item>
 
-            <Row style={{ margin: '10px 0' }}>
-                <Col span={6} style={{ fontWeight: 700 }}>
-                    {t('name')}
-                </Col>
-                <Col>
-                    <Input placeholder="Name of assignment..." style={{ width: 200 }}
-                        onChange={e => {
-                            this.setState({
-                                name: e.target.value
-                            })
-                        }} />
-                </Col>
+                <Form.Item
+                    label={t('name')}
+                    name={['assignment', 'name']}
+                    rules={[
+                        {
+                            required: true,
+                            message: "Vui lòng nhập tiêu đề bài tập"
+                        }
+                    ]}
+                    hasFeedback>
+                    <Input placeholder="Name of assignment..." />
+                </Form.Item>
 
-            </Row>
-
-            <Row style={{ margin: '10px 0' }}>
-                <Col span={6} style={{ fontWeight: 700 }}>
-                    {t('content')}
-                </Col>
-                <Col>
-                    <TextArea style={{ width: 200 }}
-                        placeholder="Content of assignment..."
+                <Form.Item
+                    label={t('content')}
+                    name={['assignment', 'content']}
+                    rules={[
+                        {
+                            required: true,
+                            message: "Vui lòng nhập yêu cầu bài tập"
+                        }
+                    ]}
+                    hasFeedback
+                >
+                    <TextArea
+                        placeholder="Requirement of assignment..."
                         autoSize={{ minRows: 3, maxRows: 5 }}
-                        showCount
-                        onChange={e => {
-                            this.setState({
-                                content: e.target.value
-                            })
-                        }}
                     />
-                </Col>
-            </Row>
-            <Row style={{ margin: '10px 0' }}>
-                <Col span={6} style={{ fontWeight: 700 }}>
-                    <span>{t('startTime')}</span>
-                </Col>
-                <Col>
-                    <input type="datetime-local" id="start-time"
-                        name="start-time" value={get(this.state.setting, 'startTime')}
-                        min="2001-06-07T00:00" max="2050-06-14T00:00" onChange={e => this.handleSelectStartTime(e.target.value)} />
-                    {/* <DayPickerInputCustomize  onDayChange={e => this.handleSelectStartTime(e)} style={{ width: 200 }} /> */}
-                </Col>
-            </Row>
-            <Row style={{ margin: '10px 0' }}>
-                <Col span={6} style={{ fontWeight: 700 }}>
-                    <span>{t('expireTime')}</span>
-                </Col>
-                <Col>
-                    <input type="datetime-local" id="start-time"
-                        name="start-time" value={get(this.state.setting, 'expireTime')}
-                        min="2001-06-07T00:00" max="2050-06-14T00:00" onChange={e => this.handleSelectExpireTime(e.target.value)} />
-                    {/* <DayPickerInputCustomize value={get(this.state.assignment.setting, 'expireTime')} onDayChange={e => this.handleSelectExpireTime(e)} style={{ width: 200 }} /> */}
-                </Col>
-            </Row>
-            <Row style={{ margin: '10px 0' }}>
-                <Col span={6} style={{ fontWeight: 700 }}>
-                    <span>{t('isOverDue')}</span>
-                </Col>
-                <Col>
-                    <Checkbox onChange={e => this.handleIsOverDue(e)} style={{ width: 200 }} />
-                </Col>
-            </Row>
+                </Form.Item>
 
-            {
-                this.state.setting.isOverDue && (
-                    <Row style={{ margin: '10px 0' }}>
-                        <Col span={6} style={{ fontWeight: 700 }}>
-                            <span>{t('overDueDate')}</span>
-                        </Col>
-                        <Col>
-                            <input type="datetime-local" id="start-time"
-                                name="start-time" value={get(this.state.setting, 'overDueDate')}
-                                min="2001-06-07T00:00" max="2050-06-14T00:00" onChange={e => this.handleSelectOverDueDate(e.target.value)} />
-                            {/* <DayPickerInputCustomize value={get(this.state.assignment.setting, 'overDueDate')} onDayChange={e => this.handleSelectoverDueDate(e)} style={{ width: 200 }} /> */}
-                        </Col>
-                    </Row>
-                )
-            }
+                <Form.Item
+                    label={t('startTime')}
+                    name={['assignment', 'setting', 'startTime']}
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Vui lòng chọn thời gian bắt đầu',
+                        }
+                    ]}
+                    hasFeedback>
+                    <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />
+                </Form.Item>
 
-            <Row style={{ margin: '10px 0' }}>
-                <Col span={6} style={{ fontWeight: 700 }}>
-                    <span>{t('fileSize')}</span>
-                </Col>
-                <Col>
-                    <Select defaultValue="5" style={{ width: 200 }} onChange={e => this.handleFileSize(e)} >
+                <Form.Item
+                    dependencies={['assignment', 'setting', 'startTime']}
+                    label={t('expireTime')}
+                    name={['assignment', 'setting', 'expireTime']}
+                    hasFeedback
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Vui lòng chọn thời gian kết thúc',
+                        },
+                        ({ getFieldValue }) => ({
+                            validator(rule, value) {
+                                if (!value || value.isAfter(getFieldValue(['assignment', 'setting', 'startTime']))) {
+                                    return Promise.resolve();
+                                }
+
+                                return Promise.reject('Thời gian kết thúc phải lớn hơn thời gian bắt đầu!');
+                            },
+                        }),
+                    ]}
+                >
+                    <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />
+                </Form.Item>
+
+                <Form.Item
+                    label={t('isOverDue')}
+                    name={['assignment', 'setting', 'isOverDue']}
+                    valuePropName="checked"
+                >
+                    <Checkbox onChange={e => handleOnchangeOverDue(e)} />
+                </Form.Item>
+
+                {isOverDue && (
+                    <Form.Item
+                        label={t('overDueDate')}
+                        name={['assignment', 'setting', 'overDueDate']}
+                        hasFeedback
+                        dependencies={['assignment', 'setting', 'expireTime']}
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Vui lòng chọn thời gian quá hạn',
+                            },
+                            ({ getFieldValue }) => ({
+                                validator(rule, value) {
+                                    if (!value || value.isAfter(getFieldValue(['assignment', 'setting', 'expireTime']))) {
+                                        return Promise.resolve();
+                                    }
+
+                                    return Promise.reject('Thời gian quá hạn phải lớn hơn thời gian kết thúc!');
+                                },
+                            }),
+                        ]}
+                    >
+                        <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />
+                    </Form.Item>
+                )}
+
+                <Form.Item
+                    label={t('fileSize')}
+                    name={['assignment', 'setting', 'fileSize']}
+                    rules={[
+                        {
+                            required: true,
+                            message: "Vui lòng chọn kích thước file"
+                        }
+                    ]}
+                    hasFeedback>
+                    <Select  >
                         <Option value="5">5</Option>
                         <Option value="10">10</Option>
-                        <Option value="15">
-                            15
-                    </Option>
+                        <Option value="15">15</Option>
                         <Option value="20">20</Option>
                     </Select>
-                </Col>
-            </Row>
-            <Row style={{ margin: '10px 0' }}>
-                <Col span={6} style={{ fontWeight: 700 }}>
-                    {t('fileAttach')}
-                </Col>
-                <Col>
-                    <Input type="file" onChange={e => this.handleProcessFile(e)} style={{ width: 200, borderRadius: 20, overflow: 'hidden' }} />
-                </Col>
-            </Row>
-            <Row style={{ textAlign: 'center', paddingTop: "20px" }}>
-                <div>
-                    <Button type="primary" loading={this.props.isLoading} onClick={this.handleSubmit} style={{ borderRadius: 20 }}>{t('submit')}</Button>
-                </div>
-            </Row>
+                </Form.Item>
+
+                <Form.Item
+                    label={t('fileAttach')}
+                >
+                    <Input type="file" style={{ overflow: 'hidden' }} onChange={e => handleProcessFile(e)} />
+                </Form.Item>
+
+                <Form.Item wrapperCol={{ ...formItemLayout.wrapperCol, offset: 6 }}>
+                    <Button type="primary" loading={isLoading} htmlType="submit">
+                        {t('submit')}</Button>
+                </Form.Item>
+
+            </Form>
         </>
-    }
+    )
 }
 
 

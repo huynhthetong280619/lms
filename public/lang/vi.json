@@ -14,7 +14,7 @@
 
     "discussion_forum": "Diễn đàn thảo luận",
     "exercise": "Bài tập",
-    "quiz":  "Câu hỏi nhanh",
+    "quiz": "Câu hỏi nhanh",
     "message_empty_forum": "Không tồn tài cuộc thảo luận nào!",
     "new_forum": "Tạo mới thảo luận",
     "forum_name": "Tên thảo luận",
@@ -29,7 +29,7 @@
     "please_fill_into_topic_description": "Vui lòng nhập thông tin mô tả chủ đề",
     "add_content": "Nội dung",
 
-    
+
     "our": "NGƯỜI HƯỚNG DẪN",
     "top": "GIỎI NHẤT",
     "instructor": "CỦA CHÚNG TÔI",
@@ -64,6 +64,7 @@
     "submit": "Tạo mới",
     "setting_title": "Cấu hình khóa học",
     "setting_quiz": "Cấu hình bài trắc nghiệm",
+    "setting_survey": "Cấu hình bài khảo sát",
     "setting_assignment": "Cấu hình bài tập",
     "setting_inform": "Cấu hình thông báo",
     "setting_file": "Cấu hình thêm tệp",

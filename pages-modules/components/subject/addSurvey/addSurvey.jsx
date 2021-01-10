@@ -1,130 +1,139 @@
-import { get, head } from 'lodash';
+import { useState, useEffect } from 'react';
 import { withTranslation } from 'react-i18next';
-import { Row, Col, Input, Select, Button, InputNumber } from 'antd'
+import { Input, Select, Button, Form, DatePicker } from 'antd'
 const { Option } = Select;
 const { TextArea } = Input;
 
-class AddSurvey extends React.Component {
+const AddSurvey = ({ lstTimelines, lstSurveys, t, isLoading, createSurvey }) => {
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            idTimeline: get(head(this.props.lstTimelines), '_id'),
-            name: '',
-            description: '',       
-            expireTime: `${new Date().getFullYear()}-${`${new Date().getMonth() +
-                1}`.padStart(2, 0)}-${`${new Date().getDate() + 1}`.padStart(
-                    2,
-                    0
-                )}T${`${new Date().getHours()}`.padStart(
-                    2,
-                    0
-                )}:${`${new Date().getMinutes()}`.padStart(2, 0)}`,
-            code: get(head(this.props.lstSurveys), '_id')
+    const [form] = Form.useForm();
+
+    const [bank] = useState(lstSurveys[0]);
+
+    useEffect(() => {
+        const object = {
+            code: bank._id,
         }
-    }
+        form.setFieldsValue({
+            idTimeline: lstTimelines[0]._id,
+            survey: object
+        })
+    }, []);
 
-    handleSelectExpireTime(day) {
-        console.log('handleSelectExpireTime', day)
+    const onFinish = (fieldsValue) => {
 
-        this.setState({ expireTime: day });
-    }
-
-    handleSubmit = () => {
         const data = {
-            name: this.state.name,
-            description: this.state.description,
-            expireTime: this.state.expireTime,
-            code: this.state.code
-        }
-        this.props.createSurvey({ survey: data, idTimeline: this.state.idTimeline });
+            ...fieldsValue.survey,
+            expireTime: fieldsValue.survey.expireTime.format('YYYY-MM-DDTHH:mm:ss')
+        };
+        createSurvey({ survey: data, idTimeline: fieldsValue.idTimeline });
     }
 
-    render() {
-        const { t } = this.props;
 
-        return <>
-            <div style={{
-                fontStyle: "italic",
-                color: "#cacaca"
-            }}>
-                {t('setting_quiz')}
-            </div>
-            <Row style={{ margin: '10px 0' }}>
-                <Col span={6} style={{ fontWeight: 700 }}>
-                    {t('timeline')}
-                </Col>
-                <Col>
-                    <Select defaultValue={this.state.idTimeline} style={{ width: 200 }} onChange={e => this.setState({ idTimeline: e })}>
-                        {
-                            this.props.lstTimelines.map(tl => (<Option value={tl._id} key={tl._id}>{tl.name}</Option>))
-                        }
-                    </Select>
-                </Col>
-            </Row>
+    const formItemLayout = {
+        labelCol: {
+            span: 8,
 
-            <Row style={{ margin: '10px 0' }}>
-                <Col span={6} style={{ fontWeight: 700 }}>
-                    {t('name')}
-                </Col>
-                <Col>
-                    <Input placeholder="Name of survey..." style={{ width: 200 }}
-                        onChange={e => {
-                            this.setState({ name: e.target.value })
-                        }} />
-                </Col>
+        },
+        wrapperCol: {
+            span: 16,
+        },
+    };
 
-            </Row>
 
-            <Row style={{ margin: '10px 0' }}>
-                <Col span={6} style={{ fontWeight: 700 }}>
-                    {t('content')}
-                </Col>
-                <Col>
-                    <TextArea style={{ width: 200 }}
 
-                        placeholder="Content of survey..."
-                        autoSize={{ minRows: 3, maxRows: 5 }}
-                        showCount
-                        onChange={e => {
-                            this.setState({ content: e.target.value })
-                        }}
-                    />
-                </Col>
+    return (<>
+        <div style={{
+            fontStyle: "italic",
+            color: "#cacaca"
+        }}>
+            {t('setting_survey')}
+        </div>
+        <Form
+            {...formItemLayout}
+            onFinish={onFinish}
+            form={form}
+        >
+            <Form.Item
+                label={t('timeline')}
+                name="idTimeline"
+                rules={[
+                    {
+                        required: true,
+                        message: "Vui lòng chọn tuần"
+                    }
+                ]}
+                hasFeedback>
+                <Select >
+                    {
+                        lstTimelines.map(tl => (<Option value={tl._id} key={tl._id}>{tl.name}</Option>))
+                    }
+                </Select>
+            </Form.Item>
 
-            </Row>
-            <Row style={{ margin: '10px 0' }}>
-                <Col span={6} style={{ fontWeight: 700 }}>
-                    <span>{t('expireTime')}</span>
-                </Col>
-                <Col>
-                    {/* <DayPickerInputCustomize value={get(this.props.quiz, 'expireTime')} onDayChange={e => this.handleSelectExpireTimeQuiz(e)} style={{ width: 200 }} /> */}
-                    <input type="datetime-local" id="expire-time"
-                        name="expire-time" value={this.state.expireTime}
-                        min="2001-06-07T00:00" max="2050-06-14T00:00" onChange={e => this.handleSelectExpireTime(e.target.value)} />
-                </Col>
-            </Row>
+            <Form.Item
+                label={t('name')}
+                name={['survey', 'name']}
+                rules={[
+                    {
+                        required: true,
+                        message: "Vui lòng nhập tiêu đề bài khảo sát"
+                    }
+                ]}
+                hasFeedback>
+                <Input placeholder="Name of survey..." />
+            </Form.Item>
 
-            <Row style={{ margin: '10px 0' }}>
-                <Col span={6} style={{ fontWeight: 700 }}>
-                    {t('code')}
-                </Col>
-                <Col>
-                    <Select defaultValue={this.state.code} style={{ width: 200 }} onChange={e => this.setState({code:e})}>
-                        {
-                            this.props.lstSurveys.map(survey => (<Option value={survey._id} key={survey._id}>{survey.name}</Option>))
-                        }
-                    </Select>
-                </Col>
-            </Row>
+            <Form.Item
+                label={t('content')}
+                name={['survey', 'description']}>
+                <TextArea
+                    placeholder="Description of survey..."
+                    autoSize={{ minRows: 3, maxRows: 5 }}
+                />
+            </Form.Item>
 
-            <Row style={{ textAlign: 'center', paddingTop: "20px" }}>
-                <div>
-                    <Button type="primary" loading={this.props.isLoading} onClick={this.handleSubmit} style={{ borderRadius: 20 }}>{t('submit')}</Button>
-                </div>
-            </Row>
-        </>
-    }
+            <Form.Item
+                dependencies={['exam', 'startTime']}
+                label={t('expireTime')}
+                name={['survey', 'expireTime']}
+                hasFeedback
+                rules={[
+                    {
+                        required: true,
+                        message: 'Vui lòng chọn thời gian kết thúc',
+                    }
+                ]}
+            >
+                <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />
+            </Form.Item>
+
+            <Form.Item
+                label={t('code')}
+                name={['survey', 'code']}
+                rules={[
+                    {
+                        required: true,
+                        message: 'Vui lòng chọn đề',
+                    }
+                ]}
+                hasFeedback
+            >
+                <Select>
+                    {
+                        lstSurveys.map(q => (<Option value={q._id} key={q._id}>{q.name}</Option>))
+                    }
+                </Select>
+            </Form.Item>
+
+            <Form.Item wrapperCol={{ ...formItemLayout.wrapperCol, offset: 6 }}>
+                <Button type="primary" loading={isLoading} htmlType="submit">
+                    {t('submit')}</Button>
+            </Form.Item>
+
+        </Form>
+    </>
+    )
 }
 
 

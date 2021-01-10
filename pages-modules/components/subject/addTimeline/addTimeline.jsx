@@ -1,76 +1,81 @@
 import { get, head } from 'lodash';
+import { useState, useEffect } from 'react';
 import { withTranslation } from 'react-i18next';
-import { Row, Col, Input, Select, Button, notification } from 'antd'
+import { Row, Col, Input, Select, Button, notification, Form } from 'antd'
 const { Option } = Select;
 const { TextArea } = Input;
 
-class AddTimeline extends React.Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            name: '',
-            description: '',
-        }
-    }
+const AddTimeline = ({ t, createTimeline, isLoading }) => {
 
-    handleSubmit = () => {
+    const [form] = Form.useForm();
+    const formItemLayout = {
+        labelCol: {
+            span: 8,
+
+        },
+        wrapperCol: {
+            span: 16,
+        },
+    };
+
+    const onFinish = (values) => {
         let timeline = {
-            name: this.state.name,
-            description: this.state.description
+            name: values.name,
+            description: values.description
         }
         console.log('timeline', timeline)
-        this.props.createTimeline(timeline);
+        createTimeline(timeline);
     }
 
-    render() {
-        const { t } = this.props;
-
-        return <>
+    return (
+        <>
             <div style={{
                 fontStyle: "italic",
                 color: "#cacaca"
             }}>
                 {t('setting_timeline')}
             </div>
-            <Row style={{ margin: '10px 0' }}>
-                <Col span={6} style={{ fontWeight: 700 }}>
-                    {t('name')}
-                </Col>
-                <Col>
-                    <Input placeholder="Name timeline" style={{ width: 200 }}
-                        value={get(this.state.timeLine, 'name')}
-                        onChange={e => {
-                            this.setState({
-                                name: e.target.value
-                            })
-                        }} />
-                </Col>
-            </Row>
-            <Row style={{ margin: '10px 0' }}>
-                <Col span={6} style={{ fontWeight: 700 }}>
-                    {t('description')}
-                </Col>
-                <Col>
-                    <TextArea style={{ width: 200 }}
+            <Form
+                {...formItemLayout}
+                onFinish={onFinish}
+                form={form}
+            >
+                <Form.Item
+                    label={t('name')}
+                    name={'name'}
+                    rules={[
+                        {
+                            required: true,
+                            message: "Vui lòng nhập tiêu đề của tuần"
+                        }
+                    ]}
+                    hasFeedback>
+                    <Input placeholder="Name of timeline..." />
+                </Form.Item>
 
-                        placeholder="Description timeline"
+                <Form.Item
+                    label={t('content')}
+                    name={'description'}
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Vui lòng nhập mô tả của tuần',
+                        }
+                    ]}
+                    hasFeedback>
+                    <TextArea
+                        placeholder="Description of timeline..."
                         autoSize={{ minRows: 3, maxRows: 5 }}
-                        showCount
-                        onChange={e => {
-                            this.setState({
-                                description: e.target.value
-                            })
-                        }}
                     />
-                </Col>
-            </Row>
-            <Row style={{ textAlign: 'center', paddingTop: "20px" }}>
-                <div>
-                    <Button loading={this.props.isLoading} type="primary" onClick={this.handleSubmit} style={{ borderRadius: 20 }}>{t('submit')}</Button>
-                </div>
-            </Row>
+                </Form.Item>
+
+                <Form.Item wrapperCol={{ ...formItemLayout.wrapperCol, offset: 6 }}>
+                    <Button type="primary" loading={isLoading} htmlType="submit">
+                        {t('submit')}</Button>
+                </Form.Item>
+            </Form>
         </>
-    }
+    )
 }
 
 
