@@ -611,14 +611,7 @@ class Student extends React.Component {
                 }}>
                     <ToastContainer />
                     <Row style={{ width: '100%' }}>
-                        <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject}</Col>
-                        <Col span={4} style={{ padding: '25px 0' }}>
-                            <Popover placement="bottom" title="Tùy chọn" content={content} visible={this.state.isHover} onVisibleChange={this.handleHoverChange}>
-                                <i>
-                                    <img src={options} style={{ width: '50px' }} />
-                                </i>
-                            </Popover>
-                        </Col>
+                        <Col span={24} style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject.toUpperCase()}</Col>
                     </Row>
 
                     <Row style={{ width: '90%', marginBottom: 30 }}>
@@ -764,23 +757,6 @@ class Student extends React.Component {
                     visible={this.state.visibleDrawer}
                 >
                     <label>Mã số sinh viên</label>
-                    {/* <Select
-                        showSearch
-                        style={{ width: 200 }}
-                        placeholder="Select a person"
-                        optionFilterProp="children"
-                        onChange={e => this.onChangeSelectCodeStudent(e)}
-                        onFocus={this.onFocus}
-                        onBlur={this.onBlur}
-                        onSearch={this.onSearch}
-                        filterOption={(input, option) =>
-                            option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                        }
-                    >
-                        <Option value="jack">Jack</Option>
-                        <Option value="lucy">Lucy</Option>
-                        <Option value="tom">Tom</Option>
-                    </Select> */}
                     <Input type="text" onChange={(e) => this.setState({ codeStudent: e.target.value.trim() })} placeholder="Student code..." style={{
                         marginBottom: 10
                     }} />
