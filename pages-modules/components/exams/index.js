@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row, Col, Button, Radio, Checkbox, notification } from 'antd'
+import { Row, Col, Button, Radio, Checkbox, notification,Tooltip } from 'antd'
 
 import survey from '../../../assets/images/contents/surveylogo.png'
 import { get } from 'lodash'
@@ -7,6 +7,9 @@ import './overwrite.css'
 import Countdown from "react-countdown";
 import restClient from '../../../assets/common/core/restClient';
 import Router from 'next/router'
+import CountDownTest from '../countDown';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import '../fontAwesomeIcon'
 
 class Exams extends React.Component {
 
@@ -105,14 +108,15 @@ class Exams extends React.Component {
                 return <div>Hello</div>;
             } else {
                 // Render a countdown
-                return <span>{hours} hours {minutes} minutes {seconds} seconds</span>;
+                return <CountDownTest hours={hours} minutes={minutes} seconds={seconds} />
+                // return <span>{hours} hours {minutes} minutes {seconds} seconds</span>;
             }
         };
 
         return <>
 
             <Row id="lms-ws-exam-component" style={{
-                width: '80%',
+                width: '85%',
                 textAlign: 'center',
                 background: '#fff',
                 minHeight: '20px', margin: '0 auto',
@@ -120,17 +124,21 @@ class Exams extends React.Component {
             }}>
 
                 <Row style={{ width: '100%' }}>
-                    <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject}</Col>
+                    <Col span={24} style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject.toUpperCase()}</Col>
                 </Row>
-                <Row style={{width: '100%'}}>
+                <Row style={{
+                    width: '100%', position: 'fixed',
+                    top: 0,
+                    left: '42%'
+                }}>
                     <Countdown date={Date.now() + get(examQuestion, 'timeToDo')} renderer={renderer} />
                 </Row>
                 <div style={{ width: '90%' }}>
                     <div style={{ textAlign: 'left', width: '100%', padding: '10px 0' }}>
                         <span>
-                            <img src={survey} width="80px" />
+                            <FontAwesomeIcon icon="spell-check" style={{ width: 60, height: 60, color: '#F79F1F' }}/>
                         </span>
-                        <span style={{ fontWeight: '700' }}>[ EXAM ] {get(examQuestion, 'name')}</span>
+                        <span style={{ fontWeight: '700' }}>{get(examQuestion, 'name').toUpperCase()}</span>
                     </div>
                     <div style={{ width: '100%', minHeight: '150px' }}>
                         <div style={{
@@ -156,7 +164,7 @@ class Exams extends React.Component {
                                                                         {
                                                                             q.answers.map(a => (
                                                                                 <div>
-                                                                                    <Checkbox value={a._id}>{a.answer}</Checkbox>
+                                                                                    <Tooltip title={a.answer}><Checkbox value={a._id}>{a.answer}</Checkbox></Tooltip>
                                                                                 </div>
                                                                             ))
                                                                         }
@@ -181,7 +189,7 @@ class Exams extends React.Component {
                                                         {
                                                             q.answers.map(a => (
                                                                 <Radio style={radioStyle} value={a._id}>
-                                                                    {a.answer}
+                                                                    <Tooltip title={a.answer}>{a.answer.length > 150 ? a.answer.slice(0, 150) + '...': a.answer}</Tooltip>
                                                                 </Radio>
                                                             ))
                                                         }
@@ -194,8 +202,8 @@ class Exams extends React.Component {
                                 ))
                             }
                         </div>
-                        <div style={{ marginBottom: 10 }}>
-                            <Button type="primary" style={{ borderRadius: 20 }} loading={this.state.loading} onClick={() => this.submitExam()}>Submit</Button>
+                        <div style={{ marginBottom: 20 }}>
+                            <Button type="primary" loading={this.state.loading} onClick={() => this.submitExam()}>Submit</Button>
                         </div>
                     </div>
                 </div>

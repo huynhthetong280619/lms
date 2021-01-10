@@ -62,6 +62,12 @@
   background: #B32977;
 }
 
+.container a:nth-child(3),
+.container a:nth-child(3) span,
+.container a:nth-child(3) span:before{
+  background: #4cd137;
+}
+
 .container a:hover span{
   margin-left: 75px;
   opacity: 1;

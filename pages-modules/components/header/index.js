@@ -160,11 +160,12 @@ class Headers extends React.Component {
     }
 
     logout = (e) => {
-        this.setState({ isLoadingPage: true, isLogin: false })
+        this.setState({ isLoadingPage: true })
 
         removeCookie('token');
         localStorage.removeItem('user')
         Router.push({ pathname: "/" });
+        this.setState({ isLogin: true })
     }
 
     render() {

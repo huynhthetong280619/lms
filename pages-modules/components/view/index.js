@@ -32,13 +32,14 @@ class ViewOnline extends React.Component {
         console.log('detailFile', this.props.detailFile)
         return (
             <Row style={{
-                width: '80%',
+                width: '85%',
                 textAlign: 'center',
                 background: '#fff',
                 minHeight: '20px',
                 paddingBottom: 50,
                 paddingTop: 50,
-                margin: '0 auto'
+                margin: '0 auto',
+                justifyContent: 'center'
             }}>
                 <h1 style={{width: "100%"}}>{this.props.detailFile.name}</h1>
                 <div style={{
@@ -47,6 +48,7 @@ class ViewOnline extends React.Component {
                 }}>
                     <FileViewer fileType={this.state.fileType} filePath={this.state.filePath} onError={this.onError} />
                 </div>
+                
             </Row>
 
         )

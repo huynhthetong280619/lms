@@ -1,12 +1,12 @@
 import React from 'react'
-import { Row, Col, Modal, Input, Card, notification } from 'antd'
+import { Row, Col, Modal, Input, Card, notification, Button, Tooltip, Badge } from 'antd'
 
 import discussion from '../../../assets/images/contents/discussion.jpg'
-import discusad from '../../../assets/images/contents/discusad.png'
 import { withTranslation } from 'react-i18next'
 import restClient from '../../../assets/common/core/restClient'
 import { get } from 'lodash'
-import { AppstoreAddOutlined } from '@ant-design/icons'
+
+import './overwrite.css'
 
 const { Meta } = Card;
 
@@ -114,10 +114,11 @@ class Forum extends React.Component {
 
         return (<>
             <Row style={{
-                width: '80%',
+                width: '85%',
                 textAlign: 'center',
                 background: '#fff',
-                minHeight: '20px'
+                minHeight: '20px', justifyContent: 'center',
+                margin: '0 auto'
             }}>
                 <Modal
                     title={t('new_topic')}
@@ -144,15 +145,24 @@ class Forum extends React.Component {
                     </Row>
                 </Modal>
                 <Row style={{ width: '100%' }}>
-                    <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject}</Col>
+                    <Col span={24} style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject.toUpperCase()}</Col>
                 </Row>
                 <div style={{ width: '90%' }}>
-                    <div style={{ textAlign: 'left', width: '100%', padding: '10px 0' }}>
-                        <span>
-                            <img src={discussion} width="80px" />
-                        </span>
-                        <span style={{ fontWeight: '700' }}>[ {t('discussion_forum')} ] {get(forum, 'name')}</span>
-                    </div>
+                    <Row style={{ textAlign: 'left', padding: '10px 0' }}>
+                        <Col span={12}>
+                            <span>
+                                <img src={discussion} width="80px" />
+                            </span>
+                            <span style={{ fontWeight: '700' }}>[ {t('discussion_forum')} ] {get(forum, 'name')}</span>
+                        </Col>
+                        <Col span={12} style={{ textAlign: 'end', alignSelf: 'center' }}>
+                            <Button type="primary" onClick={() => this.setState({
+                                isModalCreateTopic: true
+                            })}>Tạo topic</Button>
+                        </Col>
+                    </Row>
+
+
                     <div style={{ width: '100%', minHeight: '150px' }}>
                         <div style={{
                             textAlign: 'center',
@@ -165,40 +175,35 @@ class Forum extends React.Component {
                             justifyContent: ' center'
                         }}>
                             {
-                                this.state.detailForum.map(({ _id, create, name, description }) => {
+                                this.state.detailForum.map(({ _id, create, name, description, replies }) => {
                                     return (
                                         <a href={`/forums/disscuss/${_id}?idSubject=${this.props.idSubject}&idTimeline=${this.props.idTimeline}&idForum=${this.props.idForum}`} key={_id}>
-                                            <Card
-
-                                                hoverable
-                                                style={{
-                                                    width: 240, margin: '10px',
-                                                    borderRadius: '25px'
-                                                }}
-                                                cover={<img alt="example" src={get(create, 'urlAvatar')} />}
+                                            <Badge.Ribbon text={`Replies in topic: ${replies}`}
                                             >
-                                                <Meta title={name} description={description} />
-                                            </Card>
+
+                                                <Card
+
+                                                    hoverable
+                                                    style={{
+                                                        width: 150, margin: '10px',
+                                                        borderRadius: '25px'
+                                                    }}
+                                                    cover={<img alt="example" src={get(create, 'urlAvatar')} />}
+                                                >
+
+                                                    <Tooltip title={name}>
+                                                        <Meta title={name} description={description} />
+                                                    </Tooltip>
+                                                </Card>
+                                            </Badge.Ribbon>
+
                                         </a>
                                     )
                                 })
                             }
-
-                            <Card
-                                hoverable
-                                style={{
-                                    width: 240, margin: '10px',
-                                    borderRadius: '25px'
-                                }}
-                                onClick={() => this.setState({
-                                    isModalCreateTopic: true
-                                })}
-                            >
-                                ADD MORE TOPIC
-                                    </Card>
-
                         </div>
                     </div>
+
                 </div>
             </Row>
         </>)

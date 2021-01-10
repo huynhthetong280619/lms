@@ -81,7 +81,9 @@ class Subject extends React.Component {
             isTeacherPrivilege: false,
             isOpenDrawerCreate: false,
             isOpenDrawerContent: false,
-            titleDrawCreate: "NỘI DUNG"
+            titleDrawCreate: "NỘI DUNG",
+            isOnMovement: false,
+            isOnEdit: false
         }
     }
 
@@ -158,28 +160,20 @@ class Subject extends React.Component {
         console.log('items', items, cv);
     }
 
-    updateTimelines = async () => {
+    updateTimelinesIndex = async () => {
         await restClient.asyncPost(`/subject/${this.props.idSubject}/index`, this.state.updateTimelines, this.props.token)
             .then(res => {
                 if (!res.hasError) {
                     this.notifySuccess('Thành công!', get(res, 'data').message);
-                    console.log('updateTimeline', res)
                     this.setState({
                         timelines: get(res, 'data').timelines
                     })
+                    return true;
                 }
+                return false
             })
-    }
 
-    onOrderTimeLine = (status) => {
-        this.setState({
-            isTeacher: !this.state.isTeacher
-        })
 
-        if (status === false) {
-            this.updateTimelines();
-            return;
-        }
     }
 
     deleteExercise = async () => {
@@ -704,6 +698,12 @@ class Subject extends React.Component {
         })
     }
 
+    turnOnOffEditMode = () => {
+        this.setState({
+            isOnEdit: !this.state.isOnEdit
+        })
+    }
+
     edit = (id) => {
         console.log('Edit', id)
     }
@@ -756,55 +756,56 @@ class Subject extends React.Component {
 
         const { t } = this.props;
 
-        const content = (
-            <div>
-                <span style={{ margin: '0 10px' }} onClick={() => this.addFileWord()}>
-                    <i>
-                        <Tooltip title="Add file word">
-                            <img src={file} style={{ width: '50px' }} />
-                        </Tooltip>
-                    </i>
-                </span>
-                <span style={{ margin: '0 10px' }} onClick={() => this.addInformation()}>
-                    <i>
-                        <Tooltip title="Add file information">
-                            <img src={loudspeaker} style={{ width: '50px' }} />
-                        </Tooltip>
-                    </i>
-                </span>
-                <span style={{ margin: '0 10px' }} onClick={() => this.addTimeline()}>
-                    <i>
-                        <Tooltip title="Add file timeline">
-                            <img src={timeline} style={{ width: '50px' }} />
-                        </Tooltip>
-                    </i>
-                </span>
+        console.log(this.state.isTeacherPrivilege)
+        // const content = (
+        //     <div>
+        //         <span style={{ margin: '0 10px' }} onClick={() => this.addFileWord()}>
+        //             <i>
+        //                 <Tooltip title="Add file word">
+        //                     <img src={file} style={{ width: '50px' }} />
+        //                 </Tooltip>
+        //             </i>
+        //         </span>
+        //         <span style={{ margin: '0 10px' }} onClick={() => this.addInformation()}>
+        //             <i>
+        //                 <Tooltip title="Add file information">
+        //                     <img src={loudspeaker} style={{ width: '50px' }} />
+        //                 </Tooltip>
+        //             </i>
+        //         </span>
+        //         <span style={{ margin: '0 10px' }} onClick={() => this.addTimeline()}>
+        //             <i>
+        //                 <Tooltip title="Add file timeline">
+        //                     <img src={timeline} style={{ width: '50px' }} />
+        //                 </Tooltip>
+        //             </i>
+        //         </span>
 
-                <span style={{ margin: '0 10px' }} onClick={() => this.addAssignment()}>
-                    <i>
-                        <Tooltip title="Add assignment">
-                            <img src={assignment} style={{ width: '50px' }} />
-                        </Tooltip>
-                    </i>
-                </span>
+        //         <span style={{ margin: '0 10px' }} onClick={() => this.addAssignment()}>
+        //             <i>
+        //                 <Tooltip title="Add assignment">
+        //                     <img src={assignment} style={{ width: '50px' }} />
+        //                 </Tooltip>
+        //             </i>
+        //         </span>
 
-                <span style={{ margin: '0 10px' }} onClick={() => this.addQuiz()}>
-                    <i>
-                        <Tooltip title="Add quiz">
-                            <img src={quiz} style={{ width: '50px' }} />
-                        </Tooltip>
-                    </i>
-                </span>
+        //         <span style={{ margin: '0 10px' }} onClick={() => this.addQuiz()}>
+        //             <i>
+        //                 <Tooltip title="Add quiz">
+        //                     <img src={quiz} style={{ width: '50px' }} />
+        //                 </Tooltip>
+        //             </i>
+        //         </span>
 
-                <span style={{ margin: '0 10px' }} onClick={() => this.addSurvey()}>
-                    <i>
-                        <Tooltip title="Add survey">
-                            <img src={surveyIcon} style={{ width: '50px' }} />
-                        </Tooltip>
-                    </i>
-                </span>
-            </div>
-        );
+        //         <span style={{ margin: '0 10px' }} onClick={() => this.addSurvey()}>
+        //             <i>
+        //                 <Tooltip title="Add survey">
+        //                     <img src={surveyIcon} style={{ width: '50px' }} />
+        //                 </Tooltip>
+        //             </i>
+        //         </span>
+        //     </div>
+        // );
 
         const contentCRUD = (Id, isDeleted, type, timelineId) => {
 
@@ -842,8 +843,8 @@ class Subject extends React.Component {
 
         }
 
-        const template = (id, name, description, assignments, exams, forums, information, files, surveys) => (
-            <div style={{ margin: '0 10px 10px 10px', border: "2px solid #cacaca" }}>
+        const timelineTemplate = (id, name, description, assignments, exams, forums, information, files, surveys, flagMove) => (
+            <div style={{ margin: '0 10px 10px 10px', border: `${flagMove ? '1px dashed #d9d9d9' : '2px solid #cacaca'}` }}>
                 <div style={{ position: 'relative' }}>
                     {/* {this.state.isLoadingRequirement && <Spin style={{position: 'absolute', top: '50%', left: '50%', zIndex: 100}}/>} */}
                     <Row
@@ -861,7 +862,7 @@ class Subject extends React.Component {
                                 name
                             }
                         </Col>
-                        <Col span={6}>
+                        <Col span={10}>
                             {
                                 // description.toUpperCase()
                                 description
@@ -919,18 +920,22 @@ class Subject extends React.Component {
                                                 <FontAwesomeIcon icon="poll" style={{ width: 40, height: 40, color: '#ff4000' }} />
                                             </i>
                                         </Col>
-                                        <Col span={20} style={{
+                                        <Col span={18} style={{
                                             fontSize: '20px',
                                             alignSelf: 'center',
                                             marginLeft: '10px'
                                         }}>
                                             <a style={{ display: 'inline-block', cursor: 'pointer', color: '#000' }} href={`/surveys/${f._id}?idSubject=${this.props.idSubject}&idTimeline=${id}`}>{f.name}</a>
 
-                                            {(this.state.isExe && f.isDeleted) && <img src={lock} width={20} />}
+                                        </Col>
+                                        <Col span={2} style={{
+                                            fontSize: '20px',
+                                            alignSelf: 'center',
+                                            marginLeft: '10px'
+                                        }}>
 
-                                            {this.state.isExe && <Popover content={contentCRUD(f._id, f.isDeleted, 'survey', id)} title="Thao tác">
-                                                <img src={opts} width={20} />
-                                            </Popover>}
+                                            {this.state.isOnEdit && <FontAwesomeIcon icon="edit" />}
+                                            {this.state.isOnEdit && <FontAwesomeIcon icon="lock-open" />}
                                         </Col>
                                     </Row>
                                 )
@@ -952,14 +957,30 @@ class Subject extends React.Component {
                                                 <FontAwesomeIcon icon={`${f.type == 'webm' ? 'file-video' : 'file-alt'}`} style={{ width: 40, height: 40, color: '#273c75' }} />
                                             </i>
                                         </Col>
-                                        <Col span={20} style={{
+                                        <Col span={18} style={{
                                             fontSize: '20px',
                                             alignSelf: 'center',
                                             marginLeft: '10px',
                                             display: 'flex',
                                             justifyContent: 'space-between'
                                         }}>
-                                            <a style={{ display: 'inline-block', cursor: 'pointer', color: '#000' }} href={f.path}>{f.name}</a> <Tooltip title="View online"><a href={`/view?idSubject=${this.props.idSubject}&idTimeline=${id}&idFile=${f._id}`} target='_blank'><img width={20} src={external} /></a></Tooltip>
+                                            <a style={{ display: 'inline-block', cursor: 'pointer', color: '#000' }} href={f.path}>{f.name}</a>
+
+                                        </Col>
+                                        <Col span={2} style={{
+                                            fontSize: '20px',
+                                            alignSelf: 'center',
+                                            marginLeft: '10px',
+                                            display: 'flex',
+                                            justifyContent: 'space-between'
+                                        }}>
+                                            <Tooltip title="View online">
+                                                <a href={`/view?idSubject=${this.props.idSubject}&idTimeline=${id}&idFile=${f._id}`} target='_blank'>
+                                                    <FontAwesomeIcon icon="external-link-alt" />
+                                                </a>
+                                            </Tooltip>
+                                            {this.state.isOnEdit && <FontAwesomeIcon icon="edit" />}
+                                            {this.state.isOnEdit && <FontAwesomeIcon icon="lock-open" />}
                                         </Col>
                                     </Row>
                                 )
@@ -1005,19 +1026,27 @@ class Subject extends React.Component {
                                                 <FontAwesomeIcon icon="tasks" style={{ width: 40, height: 40, color: '#009432' }} />
                                             </i>
                                         </Col>
-                                        <Col span={20} style={{
+                                        <Col span={18} style={{
                                             fontSize: '20px',
                                             alignSelf: 'center',
                                             marginLeft: '10px'
                                         }}>
                                             <a style={{ display: 'inline-block', cursor: 'pointer', color: '#000' }} href={`/manage/${assign._id}?idSubject=${this.props.idSubject}&idTimeline=${id}`}>{assign.name}</a>
 
+                                        </Col>
+                                        <Col span={2} style={{
+                                            fontSize: '20px',
+                                            alignSelf: 'center',
+                                            marginLeft: '10px'
+                                        }}>
+
                                             {(this.state.isExe && assign.isDeleted) && <img src={lock} width={20} />}
 
                                             {this.state.isExe && <Popover content={contentCRUD(assign._id, assign.isDeleted, 'assignment', id)} title="Thao tác">
                                                 <img src={opts} width={20} />
                                             </Popover>}
-
+                                            {this.state.isOnEdit && <FontAwesomeIcon icon="edit" />}
+                                            {this.state.isOnEdit && <FontAwesomeIcon icon="lock-open" />}
                                         </Col>
                                     </Row>
                             ))
@@ -1037,12 +1066,21 @@ class Subject extends React.Component {
                                             <img src={forum} width={36} />
                                         </i>
                                     </Col>
-                                    <Col span={20} style={{
+                                    <Col span={18} style={{
                                         fontSize: '20px',
                                         alignSelf: 'center',
                                         marginLeft: '10px'
                                     }}>
                                         <a style={{ display: 'inline-block', cursor: 'pointer', color: '#000' }} href={`/forums/${fr._id}?idSubject=${this.props.idSubject}&idTimeline=${id}`}>{fr.name}</a>
+
+                                    </Col>
+                                    <Col span={2} style={{
+                                        fontSize: '20px',
+                                        alignSelf: 'center',
+                                        marginLeft: '10px'
+                                    }}>
+                                        {this.state.isOnEdit && <FontAwesomeIcon icon="edit" />}
+                                        {this.state.isOnEdit && <FontAwesomeIcon icon="lock-open" />}
                                     </Col>
 
                                 </Row>
@@ -1081,11 +1119,11 @@ class Subject extends React.Component {
             </div>
         );
 
-        const contentTeacher = (
+        const contentMovement = (
             <DragDropContext onDragEnd={this.handleOnDragEnd}>
                 <Droppable droppableId="characters">
                     {(provided) => (
-                        <Col span={this.state.isTeacherPriviledge ? 21 : 12}
+                        <Col span={this.state.isTeacherPrivilege ? 21 : 12}
                             {...provided.droppableProps}
                             ref={provided.innerRef}
                             style={{
@@ -1114,7 +1152,7 @@ class Subject extends React.Component {
                                         <Draggable key={_id} draggableId={_id} index={index} >
                                             {(provided) => (
                                                 <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                                                    {template(_id, name, description, assignments, exams, forums, information, files, surveys)}
+                                                    {timelineTemplate(_id, name, description, assignments, exams, forums, information, files, surveys, true)}
                                                 </div>
                                             )}
                                         </Draggable>)
@@ -1128,7 +1166,7 @@ class Subject extends React.Component {
         )
 
         const contentNormal = (
-            <Col span={this.state.isTeacherPriviledge ? 21 : 12}
+            <Col span={this.state.isTeacherPrivilege ? 21 : 12}
                 style={{
                     margin: '10px',
                     background: '#fff',
@@ -1147,7 +1185,7 @@ class Subject extends React.Component {
 
                 </div>
                 {
-                    this.state.isTeacherPriviledge ? <Row style={{ marginBottom: 10, marginLeft: 10 }} >
+                    this.state.isTeacherPrivilege ? <Row style={{ marginBottom: 10, marginLeft: 10 }} >
                         <Col span={6} style={{
                             fontSize: '20px',
                         }}>
@@ -1182,7 +1220,7 @@ class Subject extends React.Component {
                 {
                     this.state.timelines.map(({ _id, name, description, assignments, exams, forums, information, files, surveys }) => (
                         <div key={_id}>
-                            {template(_id, name, description, assignments, exams, forums, information, files, surveys)}
+                            {timelineTemplate(_id, name, description, assignments, exams, forums, information, files, surveys, false)}
                         </div>
                     )
                     )
@@ -1302,6 +1340,28 @@ class Subject extends React.Component {
                             }}>Tạo các bài khảo sát ý kiến sau mỗi buổi học theo mỗi chủ đề</p>
                         </div>
                     </Row>
+                    <Row>
+                        <Col span={12} className="action-select-add-content" style={{
+                            height: '50px',
+                            border: '2px solid #cacaca',
+                            background: '#7f8fa6',
+                            color: '#fff',
+                            lineHeight: '50px',
+                            cursor: 'pointer'
+                        }} onClick={() => this.openDrawerCreate('TẠO BÀI KIỂM TRA')}>
+                            IMPORT
+                       </Col>
+                        <Col span={12} className="action-select-add-content" style={{
+                            height: '50px',
+                            border: '2px solid #cacaca',
+                            background: '#3c40c6',
+                            color: '#fff',
+                            lineHeight: '50px',
+                            cursor: 'pointer'
+                        }} onClick={() => this.openDrawerCreate('TẠO BÀI KHẢO SÁT')}>
+                            EXPORT
+                       </Col>
+                    </Row>
 
 
 
@@ -1318,13 +1378,26 @@ class Subject extends React.Component {
                 >
                     <AddQuiz isLoading={this.state.isLoading} lstQuizzes={this.state.lstQuizzes} lstTimelines={this.state.lstTimelines} createQuiz={this.createQuiz} />
                 </Drawer>
-                <Widget openDrawerContent={() => this.openDrawerContent()} />
+                {
+                    this.state.isTeacherPrivilege &&
+                    <Widget
+                        openDrawerContent={() => this.openDrawerContent()}
+                        turnOnOffEditMode={() => this.turnOnOffEditMode()}
+                        isOnMovement={this.state.isOnMovement}
+                        setIsOnMovement={() => {
+                            if (!this.state.isOnMovement) {
+                                this.notifySuccess("Turn on mode arrange timelines", "Bật chế độ sắp xếp chủ đề đã bật !");
+                            }
+                            this.setState({ isOnMovement: !this.state.isOnMovement })
+                        }}
+                        updateTimelinesIndex={() => this.updateTimelinesIndex()} />
+                }
                 <AssignmentModal visible={this.state.visible} isSubmitAssignment={this.state.isSubmitAssignment} isCommentAssignment={this.state.isCommentAssignment} commentAssignmentGrade={this.commentAssignmentGrade} assignment={this.state.assignmentRequirement} handleCancelModal={this.handleCancelModal} submitAssignment={this.submissionFile} onSubmitAssignment={this.onSubmitAssignment} onCancelSubmitAssignment={this.onCancelSubmitAssignment} />
 
 
                 <Row className={styles.background} style={{ justifyContent: 'center' }}>
                     {
-                        this.state.isTeacher ? contentTeacher : contentNormal
+                        this.state.isOnMovement ? contentMovement : contentNormal
                     }
 
 
@@ -1332,124 +1405,126 @@ class Subject extends React.Component {
                         this.state.isTeacherPrivilege
 
                             ?
-                            <Col span={8}
-                                style={{
-                                    margin: '10px',
-                                    background: '#fff',
-                                    minHeight: '200px',
-                                    maxHeight: 726
-                                }}>
+                            null
+                            // <Col span={8}
+                            //     style={{
+                            //         margin: '10px',
+                            //         background: '#fff',
+                            //         minHeight: '200px',
+                            //         maxHeight: 726
+                            //     }}>
 
-                                <div
-                                    style={{
-                                        textAlign: 'center',
-                                        padding: 10
-                                    }}>
+                            //     <div
+                            //         style={{
+                            //             textAlign: 'center',
+                            //             padding: 10
+                            //         }}>
 
-                                    <Tabs defaultActiveKey="1">
-                                        <TabPane
-                                            tab={
-                                                <span>
-                                                    <SettingOutlined />
-                                                    {t('setting')}
-                                                </span>
-                                            }
-                                            key="1"
-                                            style={{ height: 'auto' }}
-                                        >
-                                            <Row>
-                                                <Col span={10}>
-                                                    <span style={{ fontWeight: 600 }}>Sắp xếp mốc thời gian</span>
-                                                </Col>
-                                                <Col span={10}>
-                                                    <Switch defaultChecked={false} onChange={e => this.onOrderTimeLine(e)} />
-                                                </Col>
-                                            </Row>
-                                            <Row>
-                                                <Col span={10}>
-                                                    <span style={{ fontWeight: 600 }}>Nghiệp vụ thao tác</span>
-                                                </Col>
-                                                <Col span={10}>
-                                                    <Switch defaultChecked={false} onChange={e => this.onExe(e)} />
-                                                </Col>
-                                            </Row>
-                                        </TabPane>
-                                        <TabPane
-                                            tab={
-                                                <span>
-                                                    <AndroidOutlined />
-                                                    {t('add_content')}
-                                                </span>
-                                            }
-                                            key="2"
-                                            style={{ height: 'auto' }}
-                                        >
+                            //         <Tabs defaultActiveKey="1">
+                            //             <TabPane
+                            //                 tab={
+                            //                     <span>
+                            //                         <SettingOutlined />
+                            //                         {t('setting')}
+                            //                     </span>
+                            //                 }
+                            //                 key="1"
+                            //                 style={{ height: 'auto' }}
+                            //             >
+                            //                 <Row>
+                            //                     <Col span={10}>
+                            //                         <span style={{ fontWeight: 600 }}>Sắp xếp mốc thời gian</span>
+                            //                     </Col>
+                            //                     <Col span={10}>
+                            //                         <Switch defaultChecked={false} onChange={e => this.onOrderTimeLine(e)} />
+                            //                     </Col>
+                            //                 </Row>
+                            //                 <Row>
+                            //                     <Col span={10}>
+                            //                         <span style={{ fontWeight: 600 }}>Nghiệp vụ thao tác</span>
+                            //                     </Col>
+                            //                     <Col span={10}>
+                            //                         <Switch defaultChecked={false} onChange={e => this.onExe(e)} />
+                            //                     </Col>
+                            //                 </Row>
+                            //             </TabPane>
+                            //             <TabPane
+                            //                 tab={
+                            //                     <span>
+                            //                         <AndroidOutlined />
+                            //                         {t('add_content')}
+                            //                     </span>
+                            //                 }
+                            //                 key="2"
+                            //                 style={{ height: 'auto' }}
+                            //             >
 
-                                            <Row style={{
-                                                background: '#cacaca',
-                                                borderRadius: '30px',
-                                                padding: '10px 0',
-                                                width: '47px',
-                                                marginBottom: "15px"
-                                            }}>
-                                                <Popover content={content} title="Thêm nội dung">
-                                                    <div>
-                                                        <i>
-                                                            <img src={add} style={{ width: '25px' }} />
-                                                        </i>
-                                                    </div>
-                                                </Popover>
-                                            </Row>
+                            //                 <Row style={{
+                            //                     background: '#cacaca',
+                            //                     borderRadius: '30px',
+                            //                     padding: '10px 0',
+                            //                     width: '47px',
+                            //                     marginBottom: "15px"
+                            //                 }}>
+                            //                     <Popover content={content} title="Thêm nội dung">
+                            //                         <div>
+                            //                             <i>
+                            //                                 <img src={add} style={{ width: '25px' }} />
+                            //                             </i>
+                            //                         </div>
+                            //                     </Popover>
+                            //                 </Row>
 
-                                            <div style={{
-                                                border: "2px solid #cacaca",
-                                                padding: "20px 0",
-                                                borderRadius: "11px",
-                                                position: 'relative'
+                            //                 <div style={{
+                            //                     border: "2px solid #cacaca",
+                            //                     padding: "20px 0",
+                            //                     borderRadius: "11px",
+                            //                     position: 'relative'
 
-                                            }}>
-                                                {this.state.isLoading && <Spin style={{ position: 'absolute', top: '50%', left: '50%', zIndex: 100 }} />}
-                                                {
-                                                    this.state.isOpenSetting && <div style={{
-                                                        fontStyle: "italic",
-                                                        color: "#cacaca"
-                                                    }}>
-                                                        {t('setting_title')}
-                                                    </div>
-                                                }
+                            //                 }}>
+                            //                     {this.state.isLoading && <Spin style={{ position: 'absolute', top: '50%', left: '50%', zIndex: 100 }} />}
+                            //                     {
+                            //                         this.state.isOpenSetting && <div style={{
+                            //                             fontStyle: "italic",
+                            //                             color: "#cacaca"
+                            //                         }}>
+                            //                             {t('setting_title')}
+                            //                         </div>
+                            //                     }
 
-                                                {
-                                                    this.state.isAddQuiz && (
-                                                        <AddQuiz isLoading={this.state.isLoading} lstQuizzes={this.state.lstQuizzes} lstTimelines={this.state.lstTimelines} createQuiz={this.createQuiz} />
-                                                    )
-                                                }
+                            //                     {
+                            //                         this.state.isAddQuiz && (
+                            //                             <AddQuiz isLoading={this.state.isLoading} lstQuizzes={this.state.lstQuizzes} lstTimelines={this.state.lstTimelines} createQuiz={this.createQuiz} />
+                            //                         )
+                            //                     }
 
-                                                {
-                                                    this.state.isAddSurvey && (
-                                                        <AddSurvey isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} lstSurveys={this.state.lstSurveys} createSurvey={this.createSurvey} />
-                                                    )
-                                                }
+                            //                     {
+                            //                         this.state.isAddSurvey && (
+                            //                             <AddSurvey isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} lstSurveys={this.state.lstSurveys} createSurvey={this.createSurvey} />
+                            //                         )
+                            //                     }
 
-                                                {
-                                                    this.state.isAddAssignment && (
-                                                        <AddAssignment isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} onUploadFile={this.onUploadFile} createAssignment={this.createAssignment} notifyError={this.notifyError} />
-                                                    )}
-                                                {this.state.isAddFile && <>
-                                                    <AddFile isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} onUploadFile={this.onUploadFile} createFile={this.createFile} />
-                                                </>}
-                                                {this.state.isAddInformation && <>
-                                                    <AddInformation lstTimelines={this.state.lstTimelines} isLoading={this.state.isLoading} createInformation={this.createInformation} />
-                                                </>}
+                            //                     {
+                            //                         this.state.isAddAssignment && (
+                            //                             <AddAssignment isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} onUploadFile={this.onUploadFile} createAssignment={this.createAssignment} notifyError={this.notifyError} />
+                            //                         )}
+                            //                     {this.state.isAddFile && <>
+                            //                         <AddFile isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} onUploadFile={this.onUploadFile} createFile={this.createFile} />
+                            //                     </>}
+                            //                     {this.state.isAddInformation && <>
+                            //                         <AddInformation lstTimelines={this.state.lstTimelines} isLoading={this.state.isLoading} createInformation={this.createInformation} />
+                            //                     </>}
 
-                                                {this.state.isAddTimeline && <>
-                                                    <AddTimeline createTimeline={this.createTimeline} isLoading={this.state.isLoading} />
-                                                </>}
+                            //                     {this.state.isAddTimeline && <>
+                            //                         <AddTimeline createTimeline={this.createTimeline} isLoading={this.state.isLoading} />
+                            //                     </>}
 
-                                            </div>
-                                        </TabPane>
-                                    </Tabs>
-                                </div>
-                            </Col>
+                            //                 </div>
+                            //             </TabPane>
+                            //         </Tabs>
+                            //     </div>
+                            // </Col>
+
                             :
                             <Col span={8}
                                 style={{

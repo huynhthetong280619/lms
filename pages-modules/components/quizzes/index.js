@@ -1,6 +1,6 @@
 import React from 'react'
-import { Row, Col, Button, Table } from 'antd'
-
+import { Row, Col, Button, Table, Tag } from 'antd'
+import {SyncOutlined} from '@ant-design/icons'
 import quizTime from '../../../assets/images/contents/quiz-time.png'
 import { get } from 'lodash'
 import moment from 'moment'
@@ -24,12 +24,12 @@ class Quiz extends React.Component {
         return moment(time, 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
     }
 
-    joinExam = async () => {
-        await restClient.asyncGet(`/exam/${this.props.idExam}/attempt?idSubject=lthdt01&idTimeline=${this.props.idTimeline}`, this.props.token)
-            .then(res => {
-                console.log(res)
-            })
-    }
+    // joinExam = async () => {
+    //     await restClient.asyncGet(`/exam/${this.props.idExam}/attempt?idSubject=lthdt01&idTimeline=${this.props.idTimeline}`, this.props.token)
+    //         .then(res => {
+    //             console.log(res)
+    //         })
+    // }
     componentDidMount() {
         const user = JSON.parse(localStorage.getItem('user'));
         if (user?.idPrivilege == 'student') {
@@ -91,11 +91,17 @@ class Quiz extends React.Component {
                         key: 'grade',
                     },
                     {
-                        title: 'Review',
-                        dataIndex: 'review',
-                        key: 'review',
-                        render: () => <a>Review</a>
+                        title: 'Status',
+                        dataIndex: 'isContinue',
+                        key: 'isContinue',
+                        render: (data) => data ?<Tag icon={<SyncOutlined spin />} color="processing" >Continue</Tag> : <Tag color="success">Completed</Tag>
                     },
+                    {
+                        title: 'Tiếp tục',
+                        dataIndex: 'isContinue',
+                        key: 'isContinue',
+                        render: (data) => data ? <a href={`/exams/${this.props.idExam}?idSubject=${this.props.idSubject}&idTimeline=${this.props.idTimeline}`}>Continue</a> : null
+                    }
                 ]
             })
         }
@@ -109,7 +115,7 @@ class Quiz extends React.Component {
 
         return (<div className="lms-ws-quizzes-page">
             <Row style={{
-                width: '80%',
+                width: '85%',
                 textAlign: 'center',
                 background: '#fff',
                 minHeight: '20px',
@@ -117,7 +123,7 @@ class Quiz extends React.Component {
                 justifyContent: 'center'
             }}>
                 <Row style={{ width: '100%' }}>
-                    <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject}</Col>
+                    <Col span={24} style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject.toUpperCase()}</Col>
                 </Row>
                 <div style={{ width: '90%' }}>
                     <div style={{ width: '100%', minHeight: '150px' }}>
@@ -143,7 +149,7 @@ class Quiz extends React.Component {
                                 <div><span style={{ fontWeight: 700 }}>Grading method: </span>Highest grade</div>
                             </div>
                             {!this.state.isTeacherPrivilege && (<div>
-                                {(get(requirementExam, 'attemptAvailable') > 0 && get(requirementExam, 'isAttempt') == true) && <Button type="primary" href={`/exams/${this.props.idExam}?idSubject=${this.props.idSubject}&idTimeline=${this.props.idTimeline}`} style={{ borderRadius: 20 }} onClick={() => this.joinExam()}>Take quiz</Button>}
+                                {(get(requirementExam, 'attemptAvailable') > 0 && get(requirementExam, 'isAttempt') == true) && <Button type="primary" href={`/exams/${this.props.idExam}?idSubject=${this.props.idSubject}&idTimeline=${this.props.idTimeline}`} style={{ marginTop: 25 }}>Take quiz</Button>}
                                 {(get(requirementExam, 'attemptAvailable') == 0) && <div style={{ color: '#ff4000', fontStyle: 'italic', fontWeight: 900 }}>Hết số lần cho phép làm bài quiz</div>}
                                 {(!get(requirementExam, 'isOpen')) && (get(requirementExam, 'isRemain')) && <div style={{ color: '#ff4000', fontStyle: 'italic', fontWeight: 900 }}>Chưa đến thời gian làm bài quiz</div>}
                             </div>)}

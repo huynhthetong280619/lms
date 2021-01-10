@@ -24,7 +24,7 @@ const data = parseCookies(ctx.req);
 
   return {
     lstSubmissionCore: get(lstSubmissionCore, 'data'),
-    subject: get(subject, 'data'),
+    subject: get(subject, 'data').subject,
     token
   }
 }

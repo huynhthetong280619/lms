@@ -28,20 +28,16 @@ const data = parseCookies(ctx.req);
     const {params, idTimeline, idSubject} = ctx.query
     const [idExam ] = params
 
-    console.log('aaaa', idExam, idTimeline)
     const [exams, subject] = await Promise.all([restClient.asyncGet(`/exam/${idExam}/attempt?idSubject=${idSubject}&idTimeline=${idTimeline}`, token), restClient.asyncGet(`/subject/${idSubject}`, token)])
     
     if(exams.hasError){
-        return {
-            examQuestion: null
-        };
+        ctx.res.writeHead(301, `/quizzis/${idExam}?idSubject=${idSubject}&idTimeline=${idTimeline}`);
+        return;
     }
-
-    console.log('examQuestion', exams)
 
     return {
         examQuestion: get(exams, 'data').quiz,
-        subject: get(subject, 'data'),
+        subject: get(subject, 'data').subject,
         idSubject,
         idTimeline,
         idExam,

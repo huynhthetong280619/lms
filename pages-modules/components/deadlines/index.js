@@ -3,11 +3,11 @@ import deadlineCalcular from '../../../assets/images/courses/deadlineCalcular.pn
 import fastTime from '../../../assets/images/courses/fastTime.png'
 import { AlertOutlined, CheckCircleTwoTone } from '@ant-design/icons'
 import { withTranslation } from 'react-i18next'
-import { Row, Col, Tabs } from 'antd'
+import { Row, Col, Tabs, Badge } from 'antd'
 const { TabPane } = Tabs
 import { get } from 'lodash';
 import moment from 'moment';
-
+import './overwrite.css'
 
 const transTime = (time) => {
     return moment(time).format('MMM DD h:mm A')
@@ -26,30 +26,45 @@ const getType = (type) => {
     }
 }
 
-const DeadlineItem = ({ deadline }) => (
-    <Row key={deadline._id}
-        style={{
-            marginBottom: 5,
-            border: "2px solid #cacaca",
-            padding: "10px 0"
-        }}
-    >
-        <Col span={10} style={{ textAlign: "center", alignSelf: "center" }}>
-            <i>
-                <img src={fastTime} width="36px" />
-            </i>
-        </Col >
-        <Col span={10} >
-            <div> [{getType(deadline.type)}] {deadline.name} </div>
-            <div>
-                <span style={
-                    { fontWeight: 600 }} > Due to: </span>{transTime(get(deadline, 'expireTime'))} </div>
-            <div>
-                <span style={{ fontWeight: 600 }} > Time remaining: </span> {moment.utc(get(deadline, 'expireTime')).fromNow()} </div>
-            {deadline.subject && (<a href={`/subject/${deadline.subject._id}`} ><span > {deadline.subject.name} </span></a>)}
-        </Col>
+const checkUrgentDay = (end) => {
+    const startDate = moment.utc();
+    const endDate = moment.utc(end);
 
-    </Row>
+    const duration = moment.duration(endDate.diff(startDate));
+
+    if(duration.days() < 2){
+        return true
+    }
+    return false
+}
+
+const DeadlineItem = ({ deadline, flag }) => (
+    <Badge.Ribbon placement="left" text={flag ? 'Completed' : checkUrgentDay(get(deadline, 'expireTime')) ? "Urgent upcoming deadline !" : 'Not done !'} color={flag ? '#4cd137' : checkUrgentDay(get(deadline, 'expireTime')) ? '#e84118' : '#00a8ff'}
+    >
+        <Row key={deadline._id}
+            style={{
+                marginBottom: 5,
+                border: "2px solid #cacaca",
+                padding: "10px 0"
+            }}
+        >
+            <Col span={10} style={{ textAlign: "center", alignSelf: "center" }}>
+                <i>
+                    <img src={fastTime} width="36px" />
+                </i>
+            </Col >
+            <Col span={10} >
+                <div> [{getType(deadline.type)}] {deadline.name} </div>
+                <div>
+                    <span style={
+                        { fontWeight: 600 }} > Due to: </span>{transTime(get(deadline, 'expireTime'))} </div>
+                <div>
+                    <span style={{ fontWeight: 600 }} > Time remaining: </span> {moment.utc(get(deadline, 'expireTime')).fromNow()} </div>
+                {deadline.subject && (<a href={`/subject/${deadline.subject._id}`} ><span > {deadline.subject.name} </span></a>)}
+            </Col>
+
+        </Row>
+    </Badge.Ribbon>
 );
 
 class Deadline extends React.Component {
@@ -65,7 +80,7 @@ class Deadline extends React.Component {
                         overflowX: 'hidden'
                     }} >
                         {deadlines.length > 0
-                            ? deadlines.map(dl => (<DeadlineItem deadline={dl} />))
+                            ? deadlines.map(dl => (<DeadlineItem deadline={dl} flag={false}/>))
                             : <Row >
                                 <img src={deadlineCalcular} />
                                 < div style={{ width: "100%", color: '#cacaca', textAlign: 'center' }} > No upcoming deadline </div>
@@ -81,7 +96,7 @@ class Deadline extends React.Component {
                             overflowX: 'hidden'
                         }}
                     >
-                        {dueTo.map(dt => (<DeadlineItem deadline={dt} />))}
+                        {dueTo.map(dt => (<DeadlineItem deadline={dt} flag={true}/>))}
                     </div>
                 </TabPane>
             </Tabs>

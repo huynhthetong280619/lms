@@ -160,18 +160,6 @@ class Courses extends React.Component {
                                     </div>
                                 </div>
                                 <div>
-                                    {/* Empty */}
-                                    {/* <div style={{
-                                                textAlign: 'center',
-                                                padding: '45px'
-                                            }}>
-                                                <i>
-                                                    <img src={deadlineCalcular} />
-                                                </i>
-                                                <div style={{ color: '#c4c4c4', fontStyle: 'italic' }}>No upcoming deadline</div>
-                                            </div> */}
-                                    {/* Deadline */}
-
                                     <Deadline deadlines={this.state.deadlines} dueTo={this.state.dueTo} />
                                 </div>
                             </Col>

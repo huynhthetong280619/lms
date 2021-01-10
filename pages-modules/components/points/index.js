@@ -42,10 +42,11 @@ class Points extends React.Component {
                 width: '80%',
                 textAlign: 'center',
                 background: '#fff',
-                minHeight: '20px'
+                minHeight: '20px',justifyContent: 'center',
+                margin: '0 auto'
             }}>
                 <Row style={{ width: '100%' }}>
-                    <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject}</Col>
+                    <Col span={24} style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject.toUpperCase()}</Col>
                 </Row>
                 <div style={{ width: '90%' }}>
                     <div style={{ textAlign: 'left', width: '100%', padding: '10px 0' }}>

@@ -9,6 +9,7 @@
 
 .lms-ws-survey-page .ant-tabs-tab {
     width: 50%;
+    justify-content: center;
 }
 
 .ant-tabs-content-holder {

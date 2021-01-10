@@ -25,10 +25,20 @@ faPoll,
 faFileAlt,
 faTasks,
 faSpellCheck,
-faFileVideo
+faFileVideo,
+faWrench,
+faEdit,
+faSave,
+faLockOpen,
+faExternalLinkAlt
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
+  faExternalLinkAlt,
+  faLockOpen,
+  faSave,
+  faEdit,
+  faWrench,
   faFileVideo,
     faSpellCheck,
     faTasks,

@@ -18,7 +18,7 @@ const CommentList = ({ comments }) => (
         dataSource={comments}
         header={`${comments.length} ${comments.length > 1 ? 'replies' : 'reply'}`}
         itemLayout="horizontal"
-        renderItem={props => <Comment author={<a>{get(get(props, 'create'), 'surName') + get(get(props, 'create'), 'firstName')}</a>}
+        renderItem={props => <Comment author={<a>{get(get(props, 'create'), 'surName') + " " + get(get(props, 'create'), 'firstName')}</a>}
             avatar={
                 <Avatar
                     src={get(get(props, 'create'), 'urlAvatar')}
@@ -67,7 +67,6 @@ class Discussion extends React.Component {
 
 
     componentDidMount() {
-        console.log('detailTopic', this.props.detailTopic)
         this.setState({
             comments: this.props.lstDiscussion,
             profile: JSON.parse(localStorage.getItem('user'))
@@ -103,10 +102,10 @@ class Discussion extends React.Component {
                         this.setState({
                             submitting: false,
                             value: '',
-                            comments: [
+                            comments: [...[
                                 get(res, 'data').discussion,
-                                ...this.state.comments,
-                            ],
+
+                            ], ...this.state.comments.reverse()].reverse(),
                         });
                     }
                 })
@@ -123,17 +122,18 @@ class Discussion extends React.Component {
     render() {
         const { comments, submitting, value, lstDiscussion } = this.state;
 
-        console.log('lstDiscussion', lstDiscussion)
         return (
             <>
                 <Row id="lms-ws-discussion-page" style={{
-                    width: '80%',
+                    width: '85%',
                     textAlign: 'center',
                     background: '#fff',
-                    minHeight: '20px'
+                    minHeight: '20px',
+                    justifyContent: 'center',
+                    margin: '0 auto'
                 }}>
                     <Row style={{ width: '100%' }}>
-                        <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject}</Col>
+                        <Col span={24} style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject.toUpperCase()}</Col>
                     </Row>
                     <div style={{ width: '90%' }}>
                         <div style={{ textAlign: 'left', width: '100%', padding: '10px 0' }}>
