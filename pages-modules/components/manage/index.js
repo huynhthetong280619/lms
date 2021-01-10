@@ -1,9 +1,7 @@
 import { Row, Col, Table, Input, Popconfirm, Button, Form, notification } from 'antd';
 import React, { useState } from 'react'
 import { get } from 'lodash'
-import restClient from '../../../assets/common/core/restClient';
-import fetch from 'node-fetch';
-import fileDownload from 'js-file-download';
+import downloadFile from '../../../assets/common/core/downloadFile.js';
 import 'antd/dist/antd.css';
 
 const Manage = ({ assignment, idAssign, idSubject, idTimeline, token }) => {
@@ -58,16 +56,7 @@ const Manage = ({ assignment, idAssign, idSubject, idTimeline, token }) => {
                 }
             })
     }
-
-    const downloadFile = async (file) => {
-        fetch(file.path, { method: 'GET' })
-            .then(res => {
-                return res.blob();
-            })
-            .then((blob) => {
-                fileDownload(blob, `${file.name}.${file.type}`);
-            })
-    }
+    
     const columns = [
         {
             title: 'MSSV',

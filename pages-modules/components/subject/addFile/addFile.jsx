@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { withTranslation } from 'react-i18next';
 import { Input, Select, Button, Form, notification } from 'antd'
+import restClient from '../../../../assets/common/core/restClient';
 const { Option } = Select;
 
-const AddFile = ({ t, isLoading, lstTimelines, onUploadFile, createFile }) => {
+const AddFile = ({ t, isLoading, lstTimelines, onUploadFile, onCancelUploadFile, createFile }) => {
 
     const [form] = Form.useForm();
     const [fileAttach, setFileAttach] = useState(null);
@@ -28,50 +29,16 @@ const AddFile = ({ t, isLoading, lstTimelines, onUploadFile, createFile }) => {
             span: 16,
         },
     };
-    const handleUpload = async () => {
-        onUploadFile();
-        const formData = new FormData();
-        formData.append('file', fileAttach)
-        // replace this with your upload preset name
-        formData.append('upload_preset', 'gmttm4bo');
-        const options = {
-            method: 'POST',
-            body: formData,
-            header: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Accept',
-                mode: 'no-cors'
-            }
-        };
-
-        // replace cloudname with your Cloudinary cloud_name
-        return await fetch('https://api.Cloudinary.com/v1_1/dkepvw2rz/upload', options)
-            .then(res => res.json())
-            .then(res => {
-
-                console.log('Response', res)
-                return {
-                    name: res.original_filename,
-                    path: res.url,
-                    type: res.format || res.public_id.split('.')[1]
-                }
-            })
-            .catch(err => {
-                console.log('Upload attachment', err);
-                return null;
-            });
-    }
-
-
 
     const onFinish = async (values) => {
         console.log('fileAttach', fileAttach);
-
         if (fileAttach) {
-            const objectFile = await handleUpload();
+            onUploadFile();
+            const objectFile = await restClient.asyncUploadFile(fileAttach);
             if (objectFile) {
                 createFile({ file: objectFile, idTimeline: values.idTimeline });
             } else {
+                onCancelUploadFile();
                 notification.error({ message: "Thất bại", description: 'Gặp lỗi khi tải file vui lòng thử lại' });
             }
         } else {

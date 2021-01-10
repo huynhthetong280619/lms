@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import {get, isEmpty, split, includes, omit } from 'lodash';
+import { get, isEmpty, split, includes, omit } from 'lodash';
 import { GLOBAL_CONFIG } from '../../config/index'
 import urljoin from 'url-join';
 require('isomorphic-fetch')
@@ -22,7 +22,7 @@ const parseReponse = async response => {
 };
 
 class RestClient {
-    constructor(props) {}
+    constructor(props) { }
 
     setExceptionHandler(exceptionHandler) {
         this.exceptionHandler = exceptionHandler;
@@ -82,18 +82,18 @@ class RestClient {
 
         try {
             await fetch(this.getUrl(path), {
-                    headers,
-                })
+                headers,
+            })
                 .then(res => res.blob())
                 .then(blob => {
 
                     console.log('blob', blob)
-                        // var file = window.URL.createObjectURL(blob);
-                        // window.location.assign(file)
+                    // var file = window.URL.createObjectURL(blob);
+                    // window.location.assign(file)
                 }).
-            catch(err => {
-                console.log('edxxxx')
-            })
+                catch(err => {
+                    console.log('edxxxx')
+                })
 
         } catch (ex) {
             return {
@@ -221,7 +221,7 @@ class RestClient {
         try {
             const response = await fetch(this.getUrl(path), {
                 method: 'PATCH',
-                headers: isFormData ? {...omit(this.createHeaders(), 'Content-Type') } : this.createHeaders(),
+                headers: isFormData ? { ...omit(this.createHeaders(), 'Content-Type') } : this.createHeaders(),
                 body: isFormData ? data : JSON.stringify(data),
             });
 
@@ -244,8 +244,38 @@ class RestClient {
     }
 
 
+    async asyncUploadFile(file) {
+        const formData = new FormData();
+        formData.append('file', file)
+        // replace this with your upload preset name
+        formData.append('upload_preset', 'gmttm4bo');
+        const options = {
+            method: 'POST',
+            body: formData,
+            header: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Accept',
+                mode: 'no-cors'
+            }
+        };
 
+        // replace cloudname with your Cloudinary cloud_name
+        return await fetch('https://api.Cloudinary.com/v1_1/dkepvw2rz/upload', options)
+            .then(res => res.json())
+            .then(res => {
 
+                console.log('Response', res)
+                return {
+                    name: res.original_filename,
+                    path: res.url,
+                    type: res.format || res.public_id.split('.')[1]
+                }
+            })
+            .catch(err => {
+                console.log('Upload attachment', err);
+                return null;
+            });
+    }
 }
 
 export default new RestClient();

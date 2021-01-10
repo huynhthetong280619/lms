@@ -1,5 +1,5 @@
 import React from 'react'
-import { Row, Col, Popover, Tooltip, Tabs, Input, Timeline, Select, notification, Spin, Drawer, Modal } from 'antd'
+import { Row, Col, Popover, Tooltip, Tabs, Input, Timeline, Select, notification, Spin, Drawer, Modal, Button } from 'antd'
 import { Switch } from 'antd';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
@@ -42,7 +42,15 @@ import AddAssignment from './addAssignment/addAssignment.jsx';
 import AddInformation from './addInformation/addInformation.jsx';
 import AddTimeline from './addTimeline/addTimeline.jsx'
 import AddFile from './addFile/addFile.jsx'
+import AddForum from './addForum/addForum.jsx'
 import AssignmentModal from './assignmentModal/assignmentModal.jsx';
+import ImportSubject from './importSubject/importSubject.jsx';
+import downloadFile from '../../../assets/common/core/downloadFile.js';
+import {
+    ExportOutlined,
+    UploadOutlined,
+} from '@ant-design/icons';
+import fileDownload from 'js-file-download';
 
 const { TabPane } = Tabs;
 
@@ -67,7 +75,8 @@ class Subject extends React.Component {
             isAddAssignment: false,
             isAddQuiz: false,
             isAddSurvey: false,
-            isOpenSetting: true,
+            isAddForum: false,
+            isImportSubject: false,
             deadlines: [],
             dueTo: [],
             idTimelineRequired: null,
@@ -81,7 +90,8 @@ class Subject extends React.Component {
             isOpenDrawerContent: false,
             titleDrawCreate: "NỘI DUNG",
             isOnMovement: false,
-            isOnEdit: false
+            isOnEdit: false,
+            isExporting: false,
         }
     }
 
@@ -339,6 +349,11 @@ class Subject extends React.Component {
             isLoading: true
         })
     }
+    onCancelUploadFile = () => {
+        this.setState({
+            isLoading: false
+        })
+    }
 
     createAssignment = async ({ assignment, idTimeline }) => {
         const data = {
@@ -482,6 +497,32 @@ class Subject extends React.Component {
             })
     }
 
+    createForum = async ({ forum, idTimeline }) => {
+        this.setState({ isLoading: true });
+        const data = {
+            idSubject: this.props.idSubject,
+            idTimeline: idTimeline,
+            data: forum
+        }
+        console.log('createForum', data);
+        await restClient.asyncPost('/forum', data, this.props.token)
+            .then(res => {
+                this.setState({ isLoading: false });
+                if (!res.hasError) {
+                    this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công forum')
+                    console.log('information', res)
+                    let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === data.idTimeline)
+                    head(timelineUpdate).forums.push(res.data.forum)
+                    this.setState({
+                        timelines: [...this.state.timelines],
+                        isOpenDrawerCreate: false
+                    })
+                } else {
+                    this.notifyError('Thất bại!', res.data.message);
+                }
+            })
+    }
+
     createTimeline = async (timeline) => {
         this.setState({
             isLoading: true
@@ -518,13 +559,7 @@ class Subject extends React.Component {
 
     addFile = () => {
         this.setState({
-            isAddInformation: false,
             isAddFile: true,
-            isAddTimeline: false,
-            isAddAssignment: false,
-            isAddQuiz: false,
-            isOpenSetting: false,
-            isSurvey: false
         })
     }
 
@@ -532,61 +567,42 @@ class Subject extends React.Component {
         console.log('Add information')
         this.setState({
             isAddInformation: true,
-            isAddFile: false,
-            isAddTimeline: false,
-            isAddAssignment: false,
-            isAddQuiz: false,
-            isOpenSetting: false,
-            isAddSurvey: false
-
         })
     }
 
     addTimeline = () => {
         this.setState({
-            isAddInformation: false,
-            isAddFile: false,
             isAddTimeline: true,
-            isAddAssignment: false,
-            isAddQuiz: false,
-            isOpenSetting: false,
-            isAddSurvey: false
         })
     }
 
     addAssignment = () => {
         this.setState({
             isAddAssignment: true,
-            isAddInformation: false,
-            isAddFile: false,
-            isAddTimeline: false,
-            isAddQuiz: false,
-            isOpenSetting: false,
-            isAddSurvey: false
         })
     }
 
     addQuiz = () => {
         this.setState({
-            isAddQuiz: false,
-            isAddInformation: false,
-            isAddFile: false,
-            isAddTimeline: false,
             isAddQuiz: true,
-            isOpenSetting: false,
-            isAddSurvey: false
         })
     }
 
     addSurvey = () => {
         this.setState({
-            isAddQuiz: false,
-            isAddInformation: false,
-            isAddFile: false,
-            isAddTimeline: false,
-            isAddQuiz: false,
-            isOpenSetting: false,
             isAddSurvey: true
+        })
+    }
+
+    addForum = () => {
+        this.setState({
+            isAddForum: true
+        })
+    }
+
+    importSubject = () => {
+        this.setState({
+            isImportSubject: true
         })
     }
 
@@ -674,9 +690,44 @@ class Subject extends React.Component {
             isAddTimeline: false,
             isAddAssignment: false,
             isAddQuiz: false,
-            isOpenSetting: false,
-            isSurvey: false
+            isAddSurvey: false,
+            isAddForum: false,
+            isImportSubject: false,
+            isLoading: false,
         })
+    }
+
+    handleExportSubject = async () => {
+        this.setState({ isExporting: true });
+        await restClient.asyncGet(`/subject/${this.props.idSubject}/export-teacher`, this.props.token)
+            .then(res => {
+                this.setState({ isExporting: false });
+                if (!res.hasError) {
+                    console.log('res', res);
+                    fileDownload(JSON.stringify(res.data), `${this.props.subject.name}.json`);
+                } else {
+                    this.notifyError('Error', res.data.message);
+                }
+            });
+    }
+    handleImportSubject = async (data) => {
+        this.setState({ isLoading: true });
+        await restClient.asyncPost(`/subject/${this.props.idSubject}/import-teacher`, data, this.props.token)
+            .then(res => {
+                this.setState({ isLoading: false });
+                console.log('res', res);
+                if (!res.hasError) {
+                    this.setState({
+                        isOpenDrawerCreate: false,
+                        lstTimelines: res.data.timelines,
+                        lstSurveys: res.data.surveyBank,
+                        lstQuizzes: res.data.quizBank
+                    });
+                    this.notifySuccess('Thành công!', res.data.message);
+                } else {
+                    this.notifyError('Error', res.data.message);
+                }
+            });
     }
 
     render() {
@@ -891,7 +942,9 @@ class Subject extends React.Component {
                                             display: 'flex',
                                             justifyContent: 'space-between'
                                         }}>
-                                            <a style={{ display: 'inline-block', cursor: 'pointer', color: '#000' }} href={f.path}>{f.name}</a>
+                                            <a style={{ display: 'inline-block', cursor: 'pointer', color: '#000' }} >
+                                                <span onClick={() => downloadFile(f)}>{f.name}.{f.type}</span>
+                                            </a>
 
                                         </Col>
                                         <Col span={2} style={{
@@ -1251,6 +1304,24 @@ class Subject extends React.Component {
                         }}>
                             TUẦN
                        </Col>
+
+
+                    </Row>
+
+                    <Row style={{ justifyContent: 'space-around', marginTop: '10px' }}>
+                        <Col span={6} className="action-select-add-content" style={{
+                            height: '50px',
+                            border: '2px solid #cacaca',
+                            background: '#ffa801',
+                            color: '#fff',
+                            lineHeight: '50px',
+                            cursor: 'pointer'
+                        }} onClick={() => {
+                            this.openDrawerCreate('TẠO DIỄN ĐÀN MỚI MỚI');
+                            this.addForum();
+                        }}>
+                            DIỄN ĐÀN
+                       </Col>
                     </Row>
 
                     <Row>
@@ -1286,26 +1357,27 @@ class Subject extends React.Component {
                         </div>
                     </Row>
                     <Row>
-                        <Col span={12} className="action-select-add-content" style={{
-                            height: '50px',
-                            border: '2px solid #cacaca',
-                            background: '#7f8fa6',
-                            color: '#fff',
-                            lineHeight: '50px',
-                            cursor: 'pointer'
-                        }} onClick={() => this.openDrawerCreate('TẠO BÀI KIỂM TRA')}>
-                            IMPORT
-                       </Col>
-                        <Col span={12} className="action-select-add-content" style={{
-                            height: '50px',
-                            border: '2px solid #cacaca',
-                            background: '#3c40c6',
-                            color: '#fff',
-                            lineHeight: '50px',
-                            cursor: 'pointer'
-                        }} onClick={() => this.openDrawerCreate('TẠO BÀI KHẢO SÁT')}>
-                            EXPORT
-                       </Col>
+                        <Col span={12} className="action-select-add-content" >
+                            <Button
+                                type='primary'
+                                size='large'
+                                icon={<UploadOutlined />}
+                                onClick={() => {
+                                    this.openDrawerCreate('IMPORT DỮ LIỆU');
+                                    this.importSubject()
+                                }}
+                            > IMPORT</Button>
+
+                        </Col>
+                        <Col span={12} className="action-select-add-content" >
+                            <Button
+                                loading={this.state.isExporting}
+                                onClick={this.handleExportSubject}
+                                type='primary'
+                                size='large'
+                                icon={<ExportOutlined />}
+                            > EXPORT</Button>
+                        </Col>
                     </Row>
 
 
@@ -1322,10 +1394,12 @@ class Subject extends React.Component {
                 >
                     {this.state.isAddQuiz && (<AddQuiz isLoading={this.state.isLoading} lstQuizzes={this.state.lstQuizzes} lstTimelines={this.state.lstTimelines} createQuiz={this.createQuiz} />)}
                     {this.state.isAddSurvey && (<AddSurvey isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} lstSurveys={this.state.lstSurveys} createSurvey={this.createSurvey} />)}
-                    {this.state.isAddAssignment && (<AddAssignment isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} onUploadFile={this.onUploadFile} createAssignment={this.createAssignment} notifyError={this.notifyError} />)}
-                    {this.state.isAddFile && (<AddFile isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} onUploadFile={this.onUploadFile} createFile={this.createFile} />)}
+                    {this.state.isAddAssignment && (<AddAssignment isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} onUploadFile={this.onUploadFile} onCancelUploadFile={this.onCancelUploadFile} createAssignment={this.createAssignment} notifyError={this.notifyError} />)}
+                    {this.state.isAddFile && (<AddFile isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} onUploadFile={this.onUploadFile} onCancelUploadFile={this.onCancelUploadFile} createFile={this.createFile} />)}
                     {this.state.isAddInformation && (<AddInformation lstTimelines={this.state.lstTimelines} isLoading={this.state.isLoading} createInformation={this.createInformation} />)}
                     {this.state.isAddTimeline && (<AddTimeline createTimeline={this.createTimeline} isLoading={this.state.isLoading} />)}
+                    {this.state.isImportSubject && (<ImportSubject isLoading={this.state.isLoading} handleImportSubject={this.handleImportSubject} />)}
+                    {this.state.isAddForum && (<AddForum isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} createForum={this.createForum} />)}
 
                 </Drawer>
                 {

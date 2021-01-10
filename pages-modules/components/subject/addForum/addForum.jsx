@@ -4,7 +4,7 @@ import { Input, Select, Button, Form } from 'antd'
 const { Option } = Select;
 const { TextArea } = Input;
 
-const AddInformation = ({ t, lstTimelines, isLoading, createInformation }) => {
+const AddForum = ({ t, lstTimelines, isLoading, createForum }) => {
 
     const [form] = Form.useForm();
 
@@ -15,12 +15,12 @@ const AddInformation = ({ t, lstTimelines, isLoading, createInformation }) => {
     }, []);
 
     const onFinish = (values) => {
-        let information = {
-            name: values.information.name,
-            content: values.information.content
+        let forum = {
+            name: values.forum.name,
+            description: values.forum.description
         }
-        console.log('information', information)
-        createInformation({ idTimeline: values.idTimeline, information: information });
+        console.log('forum', forum)
+        createForum({ idTimeline: values.idTimeline, forum: forum });
     }
 
     const formItemLayout = {
@@ -66,29 +66,29 @@ const AddInformation = ({ t, lstTimelines, isLoading, createInformation }) => {
 
                 <Form.Item
                     label={t('name')}
-                    name={['information', 'name']}
+                    name={['forum', 'name']}
                     rules={[
                         {
                             required: true,
-                            message: "Vui lòng nhập tiêu đề thông báo"
+                            message: "Vui lòng nhập tiêu đề diễn đàn"
                         }
                     ]}
                     hasFeedback>
-                    <Input placeholder="Name of announcement..." />
+                    <Input placeholder="Name of forum..." />
                 </Form.Item>
 
                 <Form.Item
                     label={t('content')}
-                    name={['information', 'content']}
+                    name={['forum', 'description']}
                     rules={[
                         {
                             required: true,
-                            message: 'Vui lòng nhập nội dung thông báo',
+                            message: 'Vui lòng nhập mô tả về diễn đàn',
                         }
                     ]}
                     hasFeedback>
                     <TextArea
-                        placeholder="Content of announcement..."
+                        placeholder="Description of forum..."
                         autoSize={{ minRows: 3, maxRows: 5 }}
                     />
                 </Form.Item>
@@ -103,4 +103,4 @@ const AddInformation = ({ t, lstTimelines, isLoading, createInformation }) => {
 }
 
 
-export default withTranslation('translations')(AddInformation)
+export default withTranslation('translations')(AddForum)

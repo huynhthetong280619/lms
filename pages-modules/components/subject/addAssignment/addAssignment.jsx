@@ -1,11 +1,11 @@
-import { get, head } from 'lodash';
 import { useState, useEffect } from 'react';
 import { withTranslation } from 'react-i18next';
+import restClient from '../../../../assets/common/core/restClient';
 import { Row, Col, Input, Select, Button, Checkbox, Form, DatePicker } from 'antd'
 const { Option } = Select;
 const { TextArea } = Input;
 
-const AddAssignment = ({ lstTimelines, onUploadFile, t, isLoading, createAssignment, notifyError }) => {
+const AddAssignment = ({ lstTimelines, onUploadFile, onCancelUploadFile, t, isLoading, createAssignment, notifyError }) => {
 
     const [form] = Form.useForm();
     const [isOverDue, setIsOverDue] = useState(false);
@@ -33,41 +33,6 @@ const AddAssignment = ({ lstTimelines, onUploadFile, t, isLoading, createAssignm
 
     }
 
-    const handleAttachmentUpload = async () => {
-        onUploadFile();
-        const formData = new FormData();
-        formData.append('file', fileAttach)
-        // replace this with your upload preset name
-        formData.append('upload_preset', 'gmttm4bo');
-        const options = {
-            method: 'POST',
-            body: formData,
-            header: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Accept',
-                mode: 'no-cors'
-            }
-        };
-
-        // replace cloudname with your Cloudinary cloud_name
-        return await fetch('https://api.Cloudinary.com/v1_1/dkepvw2rz/upload', options)
-            .then(res => res.json())
-            .then(res => {
-
-                console.log('Response', res)
-                return {
-                    name: res.original_filename,
-                    path: res.url,
-                    type: res.format || res.public_id.split('.')[1]
-                }
-            })
-            .catch(err => {
-                console.log('Upload attachment', err);
-                return null;
-            });
-    }
-
-
     const onFinish = async (fieldsValue) => {
         console.log('fileAttach', fileAttach);
         const idTimeline = fieldsValue.idTimeline;
@@ -82,7 +47,8 @@ const AddAssignment = ({ lstTimelines, onUploadFile, t, isLoading, createAssignm
         let file = []
         let data = null;
         if (fileAttach) {
-            const objectFile = await handleAttachmentUpload();
+            onUploadFile();
+            const objectFile = await restClient.asyncUploadFile(fileAttach);
             if (objectFile) {
                 file.push(objectFile);
                 data = {
@@ -93,6 +59,7 @@ const AddAssignment = ({ lstTimelines, onUploadFile, t, isLoading, createAssignm
                 }
                 createAssignment({ assignment: data, idTimeline: idTimeline });
             } else {
+                onCancelUploadFile();
                 notifyError("Thất bại", 'Gặp lỗi khi tải file vui lòng thử lại');
             }
 
