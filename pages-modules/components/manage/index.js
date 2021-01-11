@@ -148,14 +148,16 @@ const Manage = ({ assignment, idAssign, idSubject, idTimeline, token }) => {
 
     return (
         <Row id="lms-ws-exam-component" style={{
-            width: '80%',
+            width: '85%',
             textAlign: 'center',
             background: '#fff',
-            minHeight: '20px'
+            minHeight: '20px',
+            justifyContent: 'center',
+            margin:'0 auto'
         }}>
 
             <Row style={{ width: '100%' }}>
-                <Col span={20} style={{ padding: '25px', fontSize: '2em' }}>{get(state.assignment, 'name')}</Col>
+                <Col span={24} style={{ padding: '25px', fontSize: '2em' }}>{get(state.assignment, 'name')}</Col>
             </Row>
             <Row style={{ width: '100%', padding: 10 }}>
                 <div style={{ width: '100%', border: '1px solid #cacaca' }}>

@@ -52,15 +52,15 @@ class Survey extends React.Component {
                                     <i>
                                     <FontAwesomeIcon icon="poll" style={{ width: 105, height: 105, color: '#ff4000' }} />
                                     </i>
-                                    <div style={{ fontSize: '2em' }}>[SURVEY] {get(survey, 'name')}</div>
+                                    <div style={{ fontSize: '2em' }}>[{t('survey').toUpperCase()}] {get(survey, 'name')}</div>
                                     <div>
-                                        <div><span style={{ fontWeight: 700 }}>Closed: </span> {this.transTime(get(survey, 'expireTime'))}</div>
-                                        <div><span style={{ fontWeight: 700 }}>Time remaining: </span> {moment.utc(get(survey, 'expireTime')).fromNow()}</div>
-                                        <div><span style={{ fontWeight: 700 }}>Status: </span>{get(survey, 'isRemain') ? <span style={{ color: '#44bd32', fontWeight: 900 }}>Opening</span> : <span style={{ color: '#e84118', fontWeight: 900 }}>Closed</span>}</div>
+                                        <div><span style={{ fontWeight: 700 }}>{t('close')}: </span> {this.transTime(get(survey, 'expireTime'))}</div>
+                                        <div><span style={{ fontWeight: 700 }}>{t('time_remain')}: </span> {moment.utc(get(survey, 'expireTime')).fromNow()}</div>
+                                        <div><span style={{ fontWeight: 700 }}>{t('status')}: </span>{get(survey, 'isRemain') ? <span style={{ color: '#44bd32', fontWeight: 900 }}>Opening</span> : <span style={{ color: '#e84118', fontWeight: 900 }}>Closed</span>}</div>
                                     </div>
                                     <div>
-                                        {(get(survey, 'isRemain') && get(survey, 'canAttempt')) && <Button type="primary" href={`/surveysTake/${this.props.idSurvey}?idSubject=${this.props.idSubject}&idTimeline=${this.props.idTimeline}`} style={{ marginTop: 25 }}>Take survey</Button>}
-                                        {(get(survey, 'isRemain') == false) && <div style={{ color: '#ff4000', fontStyle: 'italic', fontWeight: 900 }}>Hết hạn làm khảo sát</div>}
+                                        {(get(survey, 'isRemain') && get(survey, 'canAttempt')) && <Button type="primary" href={`/surveysTake/${this.props.idSurvey}?idSubject=${this.props.idSubject}&idTimeline=${this.props.idTimeline}`} style={{ marginTop: 25 }}>{t('take_survey')}</Button>}
+                                        {(get(survey, 'isRemain') == false) && <div style={{ color: '#ff4000', fontStyle: 'italic', fontWeight: 900 }}>{t('msg_timeup_survey')}</div>}
                                     </div>
                                 </div>
                             </div>
@@ -84,7 +84,7 @@ class Survey extends React.Component {
                                         (this.props.replyCurrent.questionnaire).map((q, index) => (
                                             q.typeQuestion == 'choice' ?
                                                 (<div style={{ marginBottom: '20px', textAlign: 'left' }} key={q._id}>
-                                                    <div style={{ fontWeight: 600 }}><span>Question {index}: </span>{q.question}</div>
+                                                    <div style={{ fontWeight: 600 }}><span>{t('question')} {index}: </span>{q.question}</div>
                                                     <div>
                                                         <Radio.Group disabled value={this.props.replyCurrent.response.answerSheet[index].answer}>
                                                             {
@@ -100,7 +100,7 @@ class Survey extends React.Component {
                                                 (
                                                     q.typeQuestion == 'multiple' ? (<div style={{ textAlign: 'left' }} key={q._id}>
                                                         <div style={{ fontWeight: 600 }}>
-                                                            <span>Question {index}: </span>{q.question}
+                                                            <span>{t('question')} {index}: </span>{q.question}
                                                         </div>
                                                         <div>
                                                             <Checkbox.Group style={{ width: '100%' }} disabled value={this.props.replyCurrent.response.answerSheet[index].answer}>
@@ -126,7 +126,7 @@ class Survey extends React.Component {
 
                                                         : <div style={{ textAlign: 'left' }} key={q._id}>
                                                             <div style={{ fontWeight: 600 }}>
-                                                                <span>Question {index}: </span>{q.question}
+                                                                <span>{t('question')} {index}: </span>{q.question}
                                                             </div>
                                                             <div>
                                                                 <input type="text" value={this.props.replyCurrent.response.answerSheet[index].answer} disabled />
@@ -174,7 +174,7 @@ class Survey extends React.Component {
                                         </div>) :
                                         (
                                             q.typeQuestion == 'multiple' ? (<div style={{ marginBottom: '20px', textAlign: 'left' }} key={q._id}>
-                                                <div style={{ fontWeight: 600 }}><span>Question {index}: </span>{q.question}</div>
+                                                <div style={{ fontWeight: 600 }}><span>{t('question')} {index}: </span>{q.question}</div>
                                                 <Row>
                                                     <Col span={12} >
                                                         <Radio.Group style={{ width: "50%" }} disabled>
@@ -206,7 +206,7 @@ class Survey extends React.Component {
 
                                                 : <div style={{ textAlign: 'left' }} key={q._id}>
                                                     <div style={{ fontWeight: 600 }}>
-                                                        <span>Question {index}: </span>{q.question}
+                                                        <span>{t('question')} {index}: </span>{q.question}
                                                     </div>
                                                     <div>
                                                         <span>{q.answer[0]}</span>

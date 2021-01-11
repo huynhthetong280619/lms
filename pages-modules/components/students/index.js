@@ -1,6 +1,6 @@
 import React from 'react'
 import { InboxOutlined } from '@ant-design/icons'
-import { Drawer, Checkbox, Row, Table, Tag, Space, Col, Popover, Modal, Tabs, Input, DatePicker, Upload, message, Button, Select, InputNumber } from 'antd'
+import { Drawer, Checkbox, Row, Table, Tag, Space, Col, Form, Modal, Tabs, Input, DatePicker, Upload, message, Button, Select, InputNumber } from 'antd'
 
 import options from '../../../assets/images/contents/option.png'
 import add from '../../../assets/images/contents/add.png'
@@ -246,22 +246,20 @@ class Student extends React.Component {
         })
     }
 
-    addStudentToClass = async () => {
+    addStudentToClass = async (codeStudent) => {
 
-        if (!this.state.codeStudent) {
-            console.log('log warning')
-            toast.warning('Please fill into code student...');
-            return;
-        }
-
-        await restClient.asyncGet(`/subject/${this.props.idSubject}/add-student`, { idStudent: this.state.codeStudent })
+        await restClient.asyncGet(`/subject/${this.props.idSubject}/add-student`, { idStudent: codeStudent })
             .then(res => {
                 if (!res.hasError) {
-                    toast.success(`Add student with code ${this.state.codeStudent} has added into class`);
+                    toast.success(`Add student with code ${codeStudent} has added into class`);
                 }
             })
     }
 
+
+    onFinish = (value) => {
+        addStudentToClass(valude)
+    }
     render() {
 
         const { t } = this.props;
@@ -373,7 +371,7 @@ class Student extends React.Component {
         console.log(this.state.lstSubmissionCore)
 
         const headersCSV = [
-            { label: t('code_student'), key: 'student._id' },
+            { label: t('code_student'), key: 'student.code' },
             { label: t('grade'), key: 'grade' }
         ]
 
@@ -390,224 +388,18 @@ class Student extends React.Component {
                 key: c
             }
         })
+
+        
         return (
             <div class="lms-ws-student-page">
-                <Modal  
-                    title="ADD STUDENTS"
-                    centered
-                    visible={this.state.visibleAddStudent}
-                    onOk={() => this.setState({ visibleAddStudent: false })}
-                    onCancel={() => this.setState({ visibleAddStudent: false })}
-                    width={1000}
-                >
-                    <Tabs defaultActiveKey="1" centered>
-                        <TabPane tab="Add student" key="1">
-                            <Row style={{ marginBottom: 10 }}>
-                                <Col span={4} style={{ textAlign: 'center' }}>Subject</Col>
-                                <Col span={16}>
-                                    <Input placeholder="Basic usage" />
-                                </Col>
-                            </Row>
-                            <Row style={{ marginBottom: 10 }}>
-                                <Col span={4} style={{ textAlign: 'center' }}>Content</Col>
-                                <Col span={16}>
-                                    <TextArea rows={4} />
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Row>Customize<Checkbox onChange={this.onChange} /></Row>
-                                <Row>
-                                    <div><span>Begin day</span>
-                                        <DatePicker onChange={this.onChange} />
-                                    </div>
-                                    <div><span>End day</span>
-                                        <DatePicker onChange={this.onChange} />
-                                    </div>
-                                </Row>
-                                <Row>
-                                    <span>Attachment</span>
-                                    <Dragger {...props}>
-                                        <p className="ant-upload-drag-icon">
-                                            <InboxOutlined />
-                                        </p>
-                                    </Dragger>
-                                </Row>
-
-                            </Row>
-                            <Row>
-                                <div>
-                                    <Button>Create</Button>
-                                </div>
-                            </Row>
-                        </TabPane>
-                        <TabPane tab="Notifications" key="2">
-                            <Row>
-                                <div style={{
-                                    textAlign: 'center',
-                                    padding: '45px'
-                                }}>
-                                    <i>
-                                        <img src={notificationEmpty} />
-                                    </i>
-                                    <div style={{ color: '#c4c4c4', fontStyle: 'italic' }}>Empty notification</div>
-                                </div>
-
-                            </Row>
-                        </TabPane>
-                        <TabPane tab="History" key="3">
-                            Content of Tab Pane 3
-            </TabPane>
-                    </Tabs>
-                </Modal>
-
-                <Modal
-                    title="NOTIFICATIONS"
-                    centered
-                    visible={this.state.visibleNotification}
-                    onOk={() => this.setState({ visibleNotification: false })}
-                    onCancel={() => this.setState({ visibleNotification: false })}
-                    width={1000}
-                >
-                    <Tabs defaultActiveKey="1" centered>
-                        <TabPane tab="Create notification" key="1">
-                            <Row style={{ marginBottom: 10 }}>
-                                <Col span={4} style={{ textAlign: 'center' }}>Subject</Col>
-                                <Col span={16}>
-                                    <Input placeholder="Basic usage" />
-                                </Col>
-                            </Row>
-                            <Row style={{ marginBottom: 10 }}>
-                                <Col span={4} style={{ textAlign: 'center' }}>Content</Col>
-                                <Col span={16}>
-                                    <TextArea rows={4} />
-                                </Col>
-                            </Row>
-                            <Row style={{ marginBottom: 10 }}>
-                                <Row style={{ width: '100%' }}>
-                                    <Col span={4} style={{ textAlign: 'center' }}>Customize <Checkbox onChange={this.onChange} /></Col>
-                                    <Col span={16}></Col>
-                                </Row>
-                                <Row style={{ width: "100%", marginTop: 10, marginBottom: 10 }}>
-                                    <Col span={6}>
-                                        <span>Begin day</span>
-                                        <DatePicker onChange={this.onChange} />
-                                    </Col>
-                                    <Col span={10}><span>End day</span>
-                                        <DatePicker onChange={this.onChange} />
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <span>Attachment</span>
-                                    <Dragger {...props}>
-                                        <p className="ant-upload-drag-icon">
-                                            <InboxOutlined />
-                                        </p>
-                                    </Dragger>
-                                </Row>
-
-                            </Row>
-                            <Row>
-                                <div>
-                                    <Button>Create</Button>
-                                </div>
-                            </Row>
-                        </TabPane>
-                        <TabPane tab="Notifications" key="2">
-                            <Row>
-                                <div style={{
-                                    textAlign: 'center',
-                                    padding: '45px'
-                                }}>
-                                    <i>
-                                        <img src={notificationEmpty} />
-                                    </i>
-                                    <div style={{ color: '#c4c4c4', fontStyle: 'italic' }}>Empty notification</div>
-                                </div>
-
-                            </Row>
-                        </TabPane>
-                        <TabPane tab="History" key="3">
-                            Content of Tab Pane 3
-            </TabPane>
-                    </Tabs>
-                </Modal>
-
-                <Modal
-                    title="ASSIGNMENTS"
-                    centered
-                    visible={this.state.visibleAssignment}
-                    onOk={() => this.setState({ visibleAssignment: false })}
-                    onCancel={() => this.setState({ visibleAssignment: false })}
-                    width={1000}
-                >
-                    <Tabs defaultActiveKey="1" centered>
-                        <TabPane tab="Submission" key="1">
-                            <div style={{ fontWeight: 600 }}>Submission status</div>
-                            <div style={{ fontWeight: 600 }}><span>Due date:</span> <span>Tuesday, 20/10/2020</span></div>
-                            <div style={{ fontWeight: 600 }}><span>Time remaining: </span><span>Remaining 20 hours</span></div>
-                            <div style={{ fontWeight: 600 }}><span>Last modified </span><span>Remaining 20 hours</span></div>
-                            <div style={{ fontWeight: 600 }}>File submission</div>
-                            <div style={{ marginBottom: 10, fontWeight: 600 }}>
-                                <div>Submission comments</div>
-                                <TextArea rows={4} />
-                            </div>
-                            <div style={{
-                                textAlign: 'center'
-                            }}>
-
-                                <Button style={{
-                                    borderRadius: 20
-                                }} type="primary">Submit</Button>
-                            </div>
-                        </TabPane>
-                        <TabPane tab="Requirement" key="2">
-                            <div style={{ fontWeight: 600 }}>[Content requirement]</div>
-                            <div>
-                                - Completeness of certain preceding tasks;
-                                - The level of employee competence required to complete the work successfully;
-                                - The level of creativity required from performers to reach the goals of a task;
-                    </div>
-                            <div style={{ fontWeight: 600 }}>File Attachment</div>
-                        </TabPane>
-                        <TabPane tab="Grade" key="3">
-                            Content of Tab Pane 3
-            </TabPane>
-                    </Tabs>
-                </Modal>
-
-                <Modal
-                    title="SURVEYS"
-                    centered
-                    visible={this.state.visibleSurvey}
-                    onOk={() => this.setState({ visibleSurvey: false })}
-                    onCancel={() => this.setState({ visibleSurvey: false })}
-                    width={1000}
-                >
-                    <Tabs defaultActiveKey="1" centered>
-                        <TabPane tab="Surveys" key="1">
-                            <div style={{ width: '90%' }}>
-                                <Row style={{ textAlign: 'left', width: '100%', padding: '10px 0' }}>
-                                    <Checkbox onChange={this.onChange} style={{ color: '#ff0000' }}>Bulk Delete</Checkbox>
-                                </Row>
-                                <Row style={{ width: '100%' }}>
-                                    <Table columns={columnsSurvey} dataSource={dataSurvey} style={{ width: '100%' }} />
-                                </Row>
-                            </div>
-                        </TabPane>
-                        <TabPane tab="Surveys" key="2">
-
-                        </TabPane>
-                        <TabPane tab="History" key="3">
-                            Content of Tab Pane 3
-            </TabPane>
-                    </Tabs>
-                </Modal>
-
+             
                 <Row style={{
-                    width: '80%',
+                    width: '85%',
                     textAlign: 'center',
                     background: '#fff',
-                    minHeight: '20px'
+                    minHeight: '20px',
+                    justifyContent: 'center',
+                    margin: '0 auto'
                 }}>
                     <ToastContainer />
                     <Row style={{ width: '100%' }}>
@@ -625,31 +417,31 @@ class Student extends React.Component {
                                     </Row>
                                     <Row style={{ marginBottom: 10 }}>
                                         <div style={{ width: "100%", textAlign: 'left' }}>
-                                        <div style={{
-                                            display: 'inline',
-                                            padding: '5px 10px',
-                                            border: '1px solid #cacaca',
-                                            borderRadius: '20px',
-                                        }}>
-                                            <span>Xuất file excel</span>
-                                            <CSVLink
-                                                filename={"Danh Sách lớp.csv"}
-                                                data={this.state.lstStdnt}
-                                                headers={headersCSVClass}
-                                                target="_blank"
-                                                style={{ color: "inherit", marginLeft: 5 }}
-                                            >
-                                                <span
-                                                    id="Tooltip_history_csv"
-                                                    className="left5"
-                                                    placement="top"
-                                                    style={{ padding: 0, marginTop: 3 }}
+                                            <div style={{
+                                                display: 'inline',
+                                                padding: '5px 10px',
+                                                border: '1px solid #cacaca',
+                                                borderRadius: '20px',
+                                            }}>
+                                                <span>{t('export_excel')}</span>
+                                                <CSVLink
+                                                    filename={"Danh Sách lớp.csv"}
+                                                    data={this.state.lstStdnt}
+                                                    headers={headersCSVClass}
+                                                    target="_blank"
+                                                    style={{ color: "inherit", marginLeft: 5 }}
                                                 >
-                                                    <img src={excel} width={20} />
-                                                </span>
-                                            </CSVLink>
+                                                    <span
+                                                        id="Tooltip_history_csv"
+                                                        className="left5"
+                                                        placement="top"
+                                                        style={{ padding: 0, marginTop: 3 }}
+                                                    >
+                                                        <img src={excel} width={20} />
+                                                    </span>
+                                                </CSVLink>
                                             </div>
-                                            <Button type="primary" style={{ marginLeft: 10 }} onClick={() => this.showDrawer()}>Thêm sinh viên</Button>
+                                            <Button type="primary" style={{ marginLeft: 10 }} onClick={() => this.showDrawer()}>{t('add_student')}</Button>
                                         </div>
 
                                     </Row>
@@ -675,7 +467,7 @@ class Student extends React.Component {
                                             border: '1px solid #cacaca',
                                             borderRadius: '20px',
                                         }}>
-                                            <span>Xuất file excel</span>
+                                            <span>{t('export_excel')}</span>
                                             <CSVLink
                                                 filename={this.state.nameTestId + ".csv"}
                                                 data={this.state.lstStudentCoreTest}
@@ -703,29 +495,29 @@ class Student extends React.Component {
                             <TabPane tab="Bảng điểm" key="3">
                                 <Row style={{ marginBottom: 10 }}>
                                     <div style={{ width: "100%", textAlign: 'left' }}>
-                                    <div style={{
+                                        <div style={{
                                             display: 'inline',
                                             padding: '5px 10px',
                                             border: '1px solid #cacaca',
                                             borderRadius: '20px',
                                         }}>
-                                        <span>Xuất file excel</span>
-                                        <CSVLink
-                                            filename={"Bảng điểm lớp học.csv"}
-                                            data={this.props.lstClassScore.data}
-                                            headers={headersClassScoreCSV}
-                                            target="_blank"
-                                            style={{ color: "inherit", marginLeft: 5 }}
-                                        >
-                                            <span
-                                                id="Tooltip_history_csv"
-                                                className="left5"
-                                                placement="top"
-                                                style={{ padding: 0, marginTop: 3 }}
+                                            <span>{t('export_excel')}</span>
+                                            <CSVLink
+                                                filename={"Bảng điểm lớp học.csv"}
+                                                data={this.props.lstClassScore.data}
+                                                headers={headersClassScoreCSV}
+                                                target="_blank"
+                                                style={{ color: "inherit", marginLeft: 5 }}
                                             >
-                                                <img src={excel} width={20} />
-                                            </span>
-                                        </CSVLink>
+                                                <span
+                                                    id="Tooltip_history_csv"
+                                                    className="left5"
+                                                    placement="top"
+                                                    style={{ padding: 0, marginTop: 3 }}
+                                                >
+                                                    <img src={excel} width={20} />
+                                                </span>
+                                            </CSVLink>
                                         </div>
                                     </div>
                                 </Row>
@@ -736,31 +528,38 @@ class Student extends React.Component {
                                         border: 0,
                                         color: '#fff',
                                         borderRadius: '20px'
-                                    }} onClick={() => this.putTotalScore()}>Confirm points</Button>
+                                    }} onClick={() => this.putTotalScore()}>{t('cfrm_table_points')}</Button>
                                     <Table pagination={false} columns={columnsClassScore} dataSource={this.props.lstClassScore.data} style={{ width: '100%' }} scroll={{ y: 240, x: 700 }} />
-                                </Row>
-                            </TabPane>
-                            <TabPane tab="Khảo sát" key="4">
-                                <Row style={{ marginBottom: 10 }}>
-
                                 </Row>
                             </TabPane>
                         </Tabs>
                     </Row>
-               
+
                 </Row>
                 <Drawer
-                    title="Thêm sinh viên"
+                    title={t('add_student')}
                     placement="right"
                     closable={false}
                     onClose={() => this.onClose()}
+                    width={440}
                     visible={this.state.visibleDrawer}
                 >
-                    <label>Mã số sinh viên</label>
-                    <Input type="text" onChange={(e) => this.setState({ codeStudent: e.target.value.trim() })} placeholder="Student code..." style={{
-                        marginBottom: 10
-                    }} />
-                    <Button onClick={() => this.addStudentToClass()}> Thêm sinh viên </Button>
+                    <Form onFinish={this.onFinish}>
+                        <Form.Item label={t('code_student')} name="codeStudent" rules={[
+                            {
+                                required: true,
+                                message: this.props.t('req_code_student'),
+                            },
+                        ]}>
+                            <Input type="text" onChange={(e) => this.setState({ codeStudent: e.target.value.trim() })} placeholder="Student code..." style={{
+                                marginBottom: 10
+                            }} />
+                        </Form.Item>
+                        <Form.Item>
+                            <Button type="primary" htmlType="submit" /*onClick={() => this.addStudentToClass()}*/> {t('add_student')} </Button>
+                        </Form.Item>
+                    </Form>
+
                 </Drawer>
             </div>
         )

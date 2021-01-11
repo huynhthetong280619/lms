@@ -6,6 +6,8 @@ import { Modal, Button } from 'antd'
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 const { confirm } = Modal;
 
+import { withTranslation } from 'react-i18next';
+
 class Widget extends React.Component {
 
 
@@ -13,7 +15,7 @@ class Widget extends React.Component {
         const { setIsOnMovement, updateTimelinesIndex } = this.props;
         confirm({
             icon: <ExclamationCircleOutlined />,
-            content: "Vị trí timeline sẽ được cập nhật sau khi thay đổi.Bạn có chắc chắn không ?",
+            content: this.props.t('msg_confrm_update_index'),
             onOk() {
                 let status = updateTimelinesIndex()
 
@@ -30,31 +32,30 @@ class Widget extends React.Component {
 
     render() {
 
-        const { openDrawerContent, isOnMovement, setIsOnMovement, turnOnOffEditMode } = this.props
+        const { openDrawerContent, isOnMovement, setIsOnMovement, turnOnOffEditMode, t } = this.props
 
-        console.log('isOnMovement', isOnMovement)
         return (
             <div class="container">
                 <a onClick={() => openDrawerContent()} disabled={isOnMovement}>
                     <i><FontAwesomeIcon icon="wrench" /></i>
-                    <span>Setting</span>
+                    <span>{t('setting')}</span>
                 </a>
                 {
                     !isOnMovement
 
                         ? <a>
                             <i><FontAwesomeIcon icon="sort-amount-up" onClick={() => setIsOnMovement()} /> </i>
-                            <span>Arrange</span>
+                            <span>{t('arrange')}</span>
                         </a> :
                         <a>
                             <i><FontAwesomeIcon icon="save" onClick={() => this.showConfirm()} /></i>
-                            <span>Arrange</span>
+                            <span>{t('arrange')}</span>
                         </a>
                 }
 
                 <a onClick={() => turnOnOffEditMode()} disabled={isOnMovement}>
                     <i><FontAwesomeIcon icon="edit" /></i>
-                    <span>Update</span>
+                    <span>{t('update')}</span>
                 </a>
             </div>
         )
@@ -62,4 +63,4 @@ class Widget extends React.Component {
 
 }
 
-export default Widget
+export default withTranslation('translations')(Widget)

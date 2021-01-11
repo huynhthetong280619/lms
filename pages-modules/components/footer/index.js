@@ -14,7 +14,27 @@ class Footers extends Component {
         super(props)
         this.state = {
             langFlag: vn,
-            lang: glb_sv.lang
+            lang: 'vi'
+        }
+    }
+
+    componentDidMount(){
+        localStorage.getItem('LANGUAGE_KEY') ? this.setState({
+            lang: localStorage.getItem('LANGUAGE_KEY')
+        }) : this.setState({lang: 'vi'})
+
+        i18n.changeLanguage(localStorage.getItem('LANGUAGE_KEY'))
+
+        if(localStorage.getItem('LANGUAGE_KEY') == 'vi'){
+            this.setState({
+                langFlag: vn
+            })
+        }
+
+        if(localStorage.getItem('LANGUAGE_KEY') == 'en'){
+            this.setState({
+                langFlag: en
+            })
         }
     }
 
@@ -22,11 +42,11 @@ class Footers extends Component {
         this.setState({
             lang
         });
-        glb_sv.lang = lang
+
         lang == 'vi' ? this.setState({ langFlag: vn }) : this.setState({ langFlag: en });
         if (lang) i18n.changeLanguage(lang)
         if (typeof (Storage) !== 'undefined') {
-            localStorage.setItem('langNewUser', lang);
+            localStorage.setItem('LANGUAGE_KEY', lang);
         }
     }
 
@@ -48,7 +68,7 @@ class Footers extends Component {
                     <div>{t('policy')}</div>
                     <div>{t('social_ntw')}</div>
                     <img src={this.state.langFlag} alt="" style={{ width: 22.5, height: 22.5, marginBottom: 4 }} />
-                    <select style={{ marginLeft: 5, color: '#000' }} value={glb_sv.lang} onChange={e => this.handleChangeLanguage(e.target.value)} className="form-control cursor_ponter form-control-sm acntTopDiv disabled">
+                    <select style={{ marginLeft: 5, color: '#000' }} value={this.state.lang} onChange={e => this.handleChangeLanguage(e.target.value)} className="form-control cursor_ponter form-control-sm acntTopDiv disabled">
                         <option value="vi">Tiếng Việt</option>
                         <option value="en">English</option>
                     </select>

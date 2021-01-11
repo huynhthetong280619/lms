@@ -29,7 +29,6 @@ class ViewOnline extends React.Component {
     }
     render() {
 
-        console.log('detailFile', this.props.detailFile)
         return (
             <Row style={{
                 width: '85%',

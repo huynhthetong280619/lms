@@ -34,12 +34,12 @@
 .DayPickerInput input{
     width: 200px;
 }
-.subject-lms-ws
 
 .ant-timeline-item-content{
-    padding-left: 30px;
+    margin: 0 0 0 57px !important;
 }
 
+.subject-lms-ws
 .ant-timeline-item{
     padding-bottom: 0 !important;
 }

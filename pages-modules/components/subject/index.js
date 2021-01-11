@@ -79,7 +79,7 @@ class Subject extends React.Component {
             isTeacherPrivilege: false,
             isOpenDrawerCreate: false,
             isOpenDrawerContent: false,
-            titleDrawCreate: "NỘI DUNG",
+            titleDrawCreate: this.props.t('add_content').toUpperCase(),
             isOnMovement: false,
             isOnEdit: false
         }
@@ -162,7 +162,7 @@ class Subject extends React.Component {
         await restClient.asyncPost(`/subject/${this.props.idSubject}/index`, this.state.updateTimelines, this.props.token)
             .then(res => {
                 if (!res.hasError) {
-                    this.notifySuccess('Thành công!', get(res, 'data').message);
+                    this.notifySuccess(this.props.t('success'), get(res, 'data').message);
                     this.setState({
                         timelines: get(res, 'data').timelines
                     })
@@ -213,7 +213,7 @@ class Subject extends React.Component {
                         idTimelineRequired: idTimeline
                     });
                 } else {
-                    this.notifyError('Thất bại!', res.data.message);
+                    this.notifyError(this.props.t('failure'), res.data.message);
                 }
             })
 
@@ -224,7 +224,7 @@ class Subject extends React.Component {
             .then(res => {
                 this.setState({ isSubmitAssignment: false });
                 if (!res.hasError) {
-                    this.notifySuccess('Thành công!', 'Nộp bài thành công')
+                    this.notifySuccess(this.props.t('success'), this.props.t('submit_success'))
                     console.log('Notification', res)
                     let submission = res.data.submission;
                     console.log('OLD-ASSIGNMENT', this.state.assignmentRequirement);
@@ -244,7 +244,7 @@ class Subject extends React.Component {
             .then(res => {
                 this.setState({ isCommentAssignment: false });
                 if (!res.hasError) {
-                    this.notifySuccess('Thành công!', res.data.message)
+                    this.notifySuccess(this.props.t('success'), res.data.message)
                     console.log('Notification', res)
                     let submission = res.data.submission;
                     console.log('OLD-ASSIGNMENT', this.state.assignmentRequirement);
@@ -253,13 +253,12 @@ class Subject extends React.Component {
                             console.log('New-ASSIGNMENT', this.state.assignmentRequirement);
                         });
                 } else {
-                    this.notifyError("Thất bại!", res.data.message);
+                    this.notifyError(this.props.t('failure'), res.data.message);
                 }
             })
     }
 
     createFile = async ({ file, idTimeline }) => {
-
         this.setState({
             isLoading: true
         })
@@ -273,7 +272,7 @@ class Subject extends React.Component {
                     isLoading: false
                 })
                 if (!res.hasError) {
-                    this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công document')
+                    this.notifySuccess(this.props.t('success'), this.props.t('add_document_success'))
 
                     let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
 
@@ -289,13 +288,12 @@ class Subject extends React.Component {
                         console.log(this.state.timelines)
                     })
                 } else {
-                    this.notifyError('Thất bại!', res.data.message);
+                    this.notifyError(this.props.t('failure'), res.data.message);
                 }
             })
     }
 
     createQuiz = async ({ quiz, idTimeline }) => {
-        console.log('createQuiz', quiz)
         const data = {
             idSubject: this.props.idSubject,
             idTimeline: idTimeline,
@@ -312,7 +310,7 @@ class Subject extends React.Component {
                     isLoading: false
                 })
                 if (!res.hasError) {
-                    this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công quiz')
+                    this.notifySuccess(this.props.t('success'), this.props.t('add_quiz_success'))
                     let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === data.idTimeline)
 
                     console.log('timelineUpdate', timelineUpdate)
@@ -357,7 +355,7 @@ class Subject extends React.Component {
                     isLoading: false
                 })
                 if (!res.hasError) {
-                    this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công assignment')
+                    this.notifySuccess(this.props.t('success'), this.props.t('add_quiz_asign'))
                     let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === data.idTimeline)
 
                     head(timelineUpdate).assignments.push(res.data.assignment)
@@ -387,7 +385,7 @@ class Subject extends React.Component {
                         }
                     })
                 } else {
-                    this.notifyError("Thất bại", res.data.message);
+                    this.notifyError(this.props.t('failure'), res.data.message);
                 }
             })
     }
@@ -410,7 +408,7 @@ class Subject extends React.Component {
                     isLoading: false
                 })
                 if (!res.hasError) {
-                    this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công survey')
+                    this.notifySuccess(this.props.t('success'), this.props.t('add_quiz_survey'))
                     let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === data.idTimeline)
 
                     console.log('timelineUpdate', timelineUpdate)
@@ -426,7 +424,7 @@ class Subject extends React.Component {
                         console.log(this.state.timelines)
                     })
                 } else {
-                    this.notifyError("Thất bại", res.data.message);
+                    this.notifyError(this.props.t('failure'), res.data.message);
                 }
             })
     }
@@ -468,7 +466,7 @@ class Subject extends React.Component {
             .then(res => {
                 this.setState({ isLoading: false });
                 if (!res.hasError) {
-                    this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công information')
+                    this.notifySuccess(this.props.t('success'), this.props.t('add_quiz_information'))
                     console.log('information', res)
                     let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === data.idTimeline)
                     head(timelineUpdate).information.push(res.data.information)
@@ -477,7 +475,7 @@ class Subject extends React.Component {
                         isOpenDrawerCreate: false
                     })
                 } else {
-                    this.notifyError('Thất bại!', res.data.message);
+                    this.notifyError(this.props.t('failure'), res.data.message);
                 }
             })
     }
@@ -497,7 +495,7 @@ class Subject extends React.Component {
                 console.log('Timeline', res)
                 this.setState({ isLoading: false });
                 if (!res.hasError) {
-                    this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công timeline')
+                    this.notifySuccess(this.props.t('success'), this.props.t('add_quiz_timeline'))
                     this.setState({
                         timelines: [...this.state.timelines, get(res, 'data').timeline],
                         lstTimelines: [...this.state.lstTimelines, {
@@ -510,7 +508,7 @@ class Subject extends React.Component {
                     })
 
                 } else {
-                    this.notifyError('Thất bại!', res.data.message);
+                    this.notifyError(this.props.t('failure'), res.data.message);
                 }
             })
     }
@@ -529,7 +527,6 @@ class Subject extends React.Component {
     }
 
     addInformation = () => {
-        console.log('Add information')
         this.setState({
             isAddInformation: true,
             isAddFile: false,
@@ -683,56 +680,6 @@ class Subject extends React.Component {
 
         const { t } = this.props;
 
-        console.log(this.state.isTeacherPrivilege)
-        // const content = (
-        //     <div>
-        //         <span style={{ margin: '0 10px' }} onClick={() => this.addFileWord()}>
-        //             <i>
-        //                 <Tooltip title="Add file word">
-        //                     <img src={file} style={{ width: '50px' }} />
-        //                 </Tooltip>
-        //             </i>
-        //         </span>
-        //         <span style={{ margin: '0 10px' }} onClick={() => this.addInformation()}>
-        //             <i>
-        //                 <Tooltip title="Add file information">
-        //                     <img src={loudspeaker} style={{ width: '50px' }} />
-        //                 </Tooltip>
-        //             </i>
-        //         </span>
-        //         <span style={{ margin: '0 10px' }} onClick={() => this.addTimeline()}>
-        //             <i>
-        //                 <Tooltip title="Add file timeline">
-        //                     <img src={timeline} style={{ width: '50px' }} />
-        //                 </Tooltip>
-        //             </i>
-        //         </span>
-
-        //         <span style={{ margin: '0 10px' }} onClick={() => this.addAssignment()}>
-        //             <i>
-        //                 <Tooltip title="Add assignment">
-        //                     <img src={assignment} style={{ width: '50px' }} />
-        //                 </Tooltip>
-        //             </i>
-        //         </span>
-
-        //         <span style={{ margin: '0 10px' }} onClick={() => this.addQuiz()}>
-        //             <i>
-        //                 <Tooltip title="Add quiz">
-        //                     <img src={quiz} style={{ width: '50px' }} />
-        //                 </Tooltip>
-        //             </i>
-        //         </span>
-
-        //         <span style={{ margin: '0 10px' }} onClick={() => this.addSurvey()}>
-        //             <i>
-        //                 <Tooltip title="Add survey">
-        //                     <img src={surveyIcon} style={{ width: '50px' }} />
-        //                 </Tooltip>
-        //             </i>
-        //         </span>
-        //     </div>
-        // );
 
         const contentCRUD = (Id, isDeleted, type, timelineId) => {
 
@@ -773,7 +720,6 @@ class Subject extends React.Component {
         const timelineTemplate = (id, name, description, assignments, exams, forums, information, files, surveys, flagMove) => (
             <div style={{ margin: '0 10px 10px 10px', border: `${flagMove ? '1px dashed #d9d9d9' : '2px solid #cacaca'}` }}>
                 <div style={{ position: 'relative' }}>
-                    {/* {this.state.isLoadingRequirement && <Spin style={{position: 'absolute', top: '50%', left: '50%', zIndex: 100}}/>} */}
                     <Row
                         style={{
                             padding: 10,
@@ -804,7 +750,7 @@ class Subject extends React.Component {
                     {
 
                         information != null ? (
-                            <Row style={{ paddingLeft: 25 }}>
+                            <Row style={{ paddingLeft: 47 }}>
                                 <Timeline>
                                     {information.map(info => {
                                         return (
@@ -834,7 +780,6 @@ class Subject extends React.Component {
                     }
 
                     {
-
                         surveys != null ? (
                             surveys.map(f => {
                                 return (
@@ -858,11 +803,12 @@ class Subject extends React.Component {
                                         <Col span={2} style={{
                                             fontSize: '20px',
                                             alignSelf: 'center',
-                                            marginLeft: '10px'
+                                            marginLeft: '10px',
+                                            display: 'flex',
+                                            justifyContent: 'space-between'
                                         }}>
-
-                                            {this.state.isOnEdit && <FontAwesomeIcon icon="edit" />}
-                                            {this.state.isOnEdit && <FontAwesomeIcon icon="lock-open" />}
+                                            {this.state.isOnEdit && <FontAwesomeIcon icon="edit" style={{ color: '#3498db' }} />}
+                                            {this.state.isOnEdit && <FontAwesomeIcon icon="lock-open" style={{ color: '#e84118' }} />}
                                         </Col>
                                     </Row>
                                 )
@@ -870,7 +816,6 @@ class Subject extends React.Component {
 
                         ) : null
                     }
-
                     {
                         files != null ? (
                             files.map(f => {
@@ -892,7 +837,6 @@ class Subject extends React.Component {
                                             justifyContent: 'space-between'
                                         }}>
                                             <a style={{ display: 'inline-block', cursor: 'pointer', color: '#000' }} href={f.path}>{f.name}</a>
-
                                         </Col>
                                         <Col span={2} style={{
                                             fontSize: '20px',
@@ -902,12 +846,10 @@ class Subject extends React.Component {
                                             justifyContent: 'space-between'
                                         }}>
                                             <Tooltip title="View online">
-                                                <a href={`/view?idSubject=${this.props.idSubject}&idTimeline=${id}&idFile=${f._id}`} target='_blank'>
-                                                    <FontAwesomeIcon icon="external-link-alt" />
-                                                </a>
+                                                <FontAwesomeIcon icon="external-link-alt" href={`/view?idSubject=${this.props.idSubject}&idTimeline=${id}&idFile=${f._id}`} target='_blank' />
                                             </Tooltip>
-                                            {this.state.isOnEdit && <FontAwesomeIcon icon="edit" />}
-                                            {this.state.isOnEdit && <FontAwesomeIcon icon="lock-open" />}
+                                            {this.state.isOnEdit && <Tooltip title="Edit Mode"><FontAwesomeIcon icon="edit" style={{ color: '#3498db' }} /></Tooltip>}
+                                            {this.state.isOnEdit && <Tooltip title="Lock Mode"><FontAwesomeIcon icon="lock-open" style={{ color: '#e84118' }} /></Tooltip>}
                                         </Col>
                                     </Row>
                                 )
@@ -959,12 +901,13 @@ class Subject extends React.Component {
                                             marginLeft: '10px'
                                         }}>
                                             <a style={{ display: 'inline-block', cursor: 'pointer', color: '#000' }} href={`/manage/${assign._id}?idSubject=${this.props.idSubject}&idTimeline=${id}`}>{assign.name}</a>
-
                                         </Col>
                                         <Col span={2} style={{
                                             fontSize: '20px',
                                             alignSelf: 'center',
-                                            marginLeft: '10px'
+                                            marginLeft: '10px',
+                                            display: 'flex',
+                                            justifyContent: 'space-between'
                                         }}>
 
                                             {(this.state.isExe && assign.isDeleted) && <img src={lock} width={20} />}
@@ -972,8 +915,8 @@ class Subject extends React.Component {
                                             {this.state.isExe && <Popover content={contentCRUD(assign._id, assign.isDeleted, 'assignment', id)} title="Thao tác">
                                                 <img src={opts} width={20} />
                                             </Popover>}
-                                            {this.state.isOnEdit && <FontAwesomeIcon icon="edit" />}
-                                            {this.state.isOnEdit && <FontAwesomeIcon icon="lock-open" />}
+                                            {this.state.isOnEdit && <Tooltip title="Edit Mode"><FontAwesomeIcon icon="edit" style={{ color: '#3498db' }} /></Tooltip>}
+                                            {this.state.isOnEdit && <Tooltip title="Lock Mode"><FontAwesomeIcon icon="lock-open" style={{ color: '#e84118' }} /></Tooltip>}
                                         </Col>
                                     </Row>
                             ))
@@ -1004,10 +947,12 @@ class Subject extends React.Component {
                                     <Col span={2} style={{
                                         fontSize: '20px',
                                         alignSelf: 'center',
-                                        marginLeft: '10px'
+                                        marginLeft: '10px',
+                                        display: 'flex',
+                                        justifyContent: 'space-between'
                                     }}>
-                                        {this.state.isOnEdit && <FontAwesomeIcon icon="edit" />}
-                                        {this.state.isOnEdit && <FontAwesomeIcon icon="lock-open" />}
+                                        {this.state.isOnEdit && <Tooltip title="Edit Mode"><FontAwesomeIcon icon="edit" style={{ color: '#3498db' }} /></Tooltip>}
+                                        {this.state.isOnEdit && <Tooltip title="Lock Mode"><FontAwesomeIcon icon="lock-open" style={{ color: '#e84118' }} /></Tooltip>}
                                     </Col>
 
                                 </Row>
@@ -1028,13 +973,24 @@ class Subject extends React.Component {
                                             <FontAwesomeIcon icon="spell-check" style={{ width: 40, height: 40, color: '#F79F1F' }} />
                                         </i>
                                     </Col>
-                                    <Col span={20} style={{
+                                    <Col span={18} style={{
                                         fontSize: '20px',
                                         alignSelf: 'center',
-                                        marginLeft: '10px'
+                                        marginLeft: '10px',
+                                        display: 'flex',
+                                        justifyContent: 'space-between'
                                     }}>
                                         <a style={{ display: 'inline-block', cursor: 'pointer', color: '#000' }} href={`/quizzis/${ex._id}?idSubject=${this.props.idSubject}&idTimeline=${id}`}>{ex.name}</a>
                                     </Col>
+                                    <Col span={2} style={{
+                                        fontSize: '20px',
+                                        alignSelf: 'center',
+                                        marginLeft: '10px',
+                                        display: 'flex',
+                                        justifyContent: 'space-between'
+                                    }}>
+                                        {this.state.isOnEdit && <Tooltip title="Edit Mode"><FontAwesomeIcon icon="edit" style={{ color: '#3498db' }} /></Tooltip>}
+                                        {this.state.isOnEdit && <Tooltip title="Lock Mode"><FontAwesomeIcon icon="lock-open" style={{ color: '#e84118' }} /></Tooltip>}</Col>
                                 </Row>
                             ))
 
@@ -1118,7 +1074,7 @@ class Subject extends React.Component {
                         }}>
                             <a href={`/students?idSubject=${this.props.idSubject}`}><i style={{ marginRight: 10 }}>
                                 <FontAwesomeIcon icon="user-secret" style={{ width: 40, height: 40 }} />
-                            </i>Quản lý sinh viên</a>
+                            </i>{t('manage_student')}</a>
                         </Col>
                     </Row>
 
@@ -1138,7 +1094,7 @@ class Subject extends React.Component {
                                 alignSelf: 'center',
                                 marginLeft: '10px'
                             }}>
-                                <a href={`/points/${this.props.idSubject}`}>Quản lý điểm số</a>
+                                <a href={`/points/${this.props.idSubject}`}>{t('manage_point')}</a>
                             </Col>
                         </Row>
 
@@ -1159,7 +1115,7 @@ class Subject extends React.Component {
         return (
             <>
                 <Drawer
-                    title="QUẢN LÝ NỘI DUNG"
+                    title={t('manage_content')}
                     placement="right"
                     closable={false}
                     onClose={this.closeDrawerContent}
@@ -1178,11 +1134,11 @@ class Subject extends React.Component {
                             lineHeight: '50px',
                             cursor: 'pointer'
                         }} onClick={() => {
-                            this.openDrawerCreate('TẠO THÔNG BÁO');
+                            this.openDrawerCreate(this.props.t('create_information'));
                             this.addInformation()
                         }}>
-                            THÔNG BÁO
-                       </Col>
+                            {t('information')}
+                        </Col>
                         <Col span={6} className="action-select-add-content" style={{
                             height: '50px',
                             border: '2px solid #cacaca',
@@ -1192,11 +1148,11 @@ class Subject extends React.Component {
                             cursor: 'pointer'
                         }}
                             onClick={() => {
-                                this.openDrawerCreate('TẠO TÀI LIỆU');
+                                this.openDrawerCreate(this.props.t('create_document'));
                                 this.addFile()
                             }}>
-                            TÀI LIỆU
-                       </Col>
+                            {t('document')}
+                        </Col>
                         <Col span={6} className="action-select-add-content" style={{
                             height: '50px',
                             border: '2px solid #cacaca',
@@ -1205,11 +1161,11 @@ class Subject extends React.Component {
                             lineHeight: '50px',
                             cursor: 'pointer'
                         }} onClick={() => {
-                            this.openDrawerCreate('TẠO BÀI TẬP');
+                            this.openDrawerCreate(this.props.t('create_assign'));
                             this.addAssignment();
                         }}>
-                            BÀI TẬP
-                       </Col>
+                            {t('exercise')}
+                        </Col>
                     </Row>
                     <Row style={{ justifyContent: 'space-around', marginTop: '10px' }}>
                         <Col span={6} className="action-select-add-content" style={{
@@ -1220,11 +1176,11 @@ class Subject extends React.Component {
                             lineHeight: '50px',
                             cursor: 'pointer'
                         }} onClick={() => {
-                            this.openDrawerCreate('TẠO BÀI KIỂM TRA');
+                            this.openDrawerCreate(this.props.t('create_quiz'));
                             this.addQuiz();
                         }}>
-                            KIỂM TRA
-                       </Col>
+                            {t('quiz')}
+                        </Col>
                         <Col span={6} className="action-select-add-content" style={{
                             height: '50px',
                             border: '2px solid #cacaca',
@@ -1233,11 +1189,11 @@ class Subject extends React.Component {
                             lineHeight: '50px',
                             cursor: 'pointer'
                         }} onClick={() => {
-                            this.openDrawerCreate('TẠO BÀI KHẢO SÁT');
+                            this.openDrawerCreate(this.props.t('create_survey'));
                             this.addSurvey();
                         }}>
-                            KHẢO SÁT
-                       </Col>
+                            {t('survey')}
+                        </Col>
                         <Col span={6} className="action-select-add-content" style={{
                             height: '50px',
                             border: '2px solid #cacaca',
@@ -1246,11 +1202,11 @@ class Subject extends React.Component {
                             lineHeight: '50px',
                             cursor: 'pointer'
                         }} onClick={() => {
-                            this.openDrawerCreate('TẠO TUẦN MỚI');
+                            this.openDrawerCreate(this.props.t('create_timeline'));
                             this.addTimeline()
                         }}>
-                            TUẦN
-                       </Col>
+                            {t('timeline')}
+                        </Col>
                     </Row>
 
                     <Row>
@@ -1262,27 +1218,27 @@ class Subject extends React.Component {
                             margin: '20px',
                             width: '100%'
                         }}>
-                            <h2>Chỉ định tạo chức năng cho một lớp học</h2>
+                            <h2>{t('h1')}</h2>
                             <p style={{
                                 fontStyle: 'italic',
                                 color: '#9d9393'
-                            }}>Tạo chủ đề</p>
+                            }}>{t('h2')}</p>
                             <p style={{
                                 fontStyle: 'italic',
                                 color: '#9d9393'
-                            }}>Tạo thông báo cho lớp học theo mỗi chủ để </p>
+                            }}>{t('h3')} </p>
                             <p style={{
                                 fontStyle: 'italic',
                                 color: '#9d9393'
-                            }}>Đính kèm tài liệu cho sinh viên theo mỗi chủ để</p>
+                            }}>{t('h4')}</p>
                             <p style={{
                                 fontStyle: 'italic',
                                 color: '#9d9393'
-                            }}>Tạo bài tập và các câu hỏi</p>
+                            }}>{t('h5')}</p>
                             <p style={{
                                 fontStyle: 'italic',
                                 color: '#9d9393'
-                            }}>Tạo các bài khảo sát ý kiến sau mỗi buổi học theo mỗi chủ đề</p>
+                            }}>{t('h6')}</p>
                         </div>
                     </Row>
                     <Row>
@@ -1294,7 +1250,7 @@ class Subject extends React.Component {
                             lineHeight: '50px',
                             cursor: 'pointer'
                         }} onClick={() => this.openDrawerCreate('TẠO BÀI KIỂM TRA')}>
-                            IMPORT
+                            {t('import')}
                        </Col>
                         <Col span={12} className="action-select-add-content" style={{
                             height: '50px',
@@ -1304,7 +1260,7 @@ class Subject extends React.Component {
                             lineHeight: '50px',
                             cursor: 'pointer'
                         }} onClick={() => this.openDrawerCreate('TẠO BÀI KHẢO SÁT')}>
-                            EXPORT
+                            {t('export')}
                        </Col>
                     </Row>
 
@@ -1336,7 +1292,7 @@ class Subject extends React.Component {
                         isOnMovement={this.state.isOnMovement}
                         setIsOnMovement={() => {
                             if (!this.state.isOnMovement) {
-                                this.notifySuccess("Turn on mode arrange timelines", "Bật chế độ sắp xếp chủ đề đã bật !");
+                                this.notifySuccess(this.props.t('mode'), this.props.t('mode_arrange_index'));
                             }
                             this.setState({ isOnMovement: !this.state.isOnMovement })
                         }}
@@ -1356,125 +1312,6 @@ class Subject extends React.Component {
 
                             ?
                             null
-                            // <Col span={8}
-                            //     style={{
-                            //         margin: '10px',
-                            //         background: '#fff',
-                            //         minHeight: '200px',
-                            //         maxHeight: 726
-                            //     }}>
-
-                            //     <div
-                            //         style={{
-                            //             textAlign: 'center',
-                            //             padding: 10
-                            //         }}>
-
-                            //         <Tabs defaultActiveKey="1">
-                            //             <TabPane
-                            //                 tab={
-                            //                     <span>
-                            //                         <SettingOutlined />
-                            //                         {t('setting')}
-                            //                     </span>
-                            //                 }
-                            //                 key="1"
-                            //                 style={{ height: 'auto' }}
-                            //             >
-                            //                 <Row>
-                            //                     <Col span={10}>
-                            //                         <span style={{ fontWeight: 600 }}>Sắp xếp mốc thời gian</span>
-                            //                     </Col>
-                            //                     <Col span={10}>
-                            //                         <Switch defaultChecked={false} onChange={e => this.onOrderTimeLine(e)} />
-                            //                     </Col>
-                            //                 </Row>
-                            //                 <Row>
-                            //                     <Col span={10}>
-                            //                         <span style={{ fontWeight: 600 }}>Nghiệp vụ thao tác</span>
-                            //                     </Col>
-                            //                     <Col span={10}>
-                            //                         <Switch defaultChecked={false} onChange={e => this.onExe(e)} />
-                            //                     </Col>
-                            //                 </Row>
-                            //             </TabPane>
-                            //             <TabPane
-                            //                 tab={
-                            //                     <span>
-                            //                         <AndroidOutlined />
-                            //                         {t('add_content')}
-                            //                     </span>
-                            //                 }
-                            //                 key="2"
-                            //                 style={{ height: 'auto' }}
-                            //             >
-
-                            //                 <Row style={{
-                            //                     background: '#cacaca',
-                            //                     borderRadius: '30px',
-                            //                     padding: '10px 0',
-                            //                     width: '47px',
-                            //                     marginBottom: "15px"
-                            //                 }}>
-                            //                     <Popover content={content} title="Thêm nội dung">
-                            //                         <div>
-                            //                             <i>
-                            //                                 <img src={add} style={{ width: '25px' }} />
-                            //                             </i>
-                            //                         </div>
-                            //                     </Popover>
-                            //                 </Row>
-
-                            //                 <div style={{
-                            //                     border: "2px solid #cacaca",
-                            //                     padding: "20px 0",
-                            //                     borderRadius: "11px",
-                            //                     position: 'relative'
-
-                            //                 }}>
-                            //                     {this.state.isLoading && <Spin style={{ position: 'absolute', top: '50%', left: '50%', zIndex: 100 }} />}
-                            //                     {
-                            //                         this.state.isOpenSetting && <div style={{
-                            //                             fontStyle: "italic",
-                            //                             color: "#cacaca"
-                            //                         }}>
-                            //                             {t('setting_title')}
-                            //                         </div>
-                            //                     }
-
-                            //                     {
-                            //                         this.state.isAddQuiz && (
-                            //                             <AddQuiz isLoading={this.state.isLoading} lstQuizzes={this.state.lstQuizzes} lstTimelines={this.state.lstTimelines} createQuiz={this.createQuiz} />
-                            //                         )
-                            //                     }
-
-                            //                     {
-                            //                         this.state.isAddSurvey && (
-                            //                             <AddSurvey isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} lstSurveys={this.state.lstSurveys} createSurvey={this.createSurvey} />
-                            //                         )
-                            //                     }
-
-                            //                     {
-                            //                         this.state.isAddAssignment && (
-                            //                             <AddAssignment isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} onUploadFile={this.onUploadFile} createAssignment={this.createAssignment} notifyError={this.notifyError} />
-                            //                         )}
-                            //                     {this.state.isAddFile && <>
-                            //                         <AddFile isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} onUploadFile={this.onUploadFile} createFile={this.createFile} />
-                            //                     </>}
-                            //                     {this.state.isAddInformation && <>
-                            //                         <AddInformation lstTimelines={this.state.lstTimelines} isLoading={this.state.isLoading} createInformation={this.createInformation} />
-                            //                     </>}
-
-                            //                     {this.state.isAddTimeline && <>
-                            //                         <AddTimeline createTimeline={this.createTimeline} isLoading={this.state.isLoading} />
-                            //                     </>}
-
-                            //                 </div>
-                            //             </TabPane>
-                            //         </Tabs>
-                            //     </div>
-                            // </Col>
-
                             :
                             <Col span={8}
                                 style={{
@@ -1502,7 +1339,6 @@ class Subject extends React.Component {
                                 </div>
                             </Col>
                     }
-
                 </Row>
 
             </>

@@ -60,7 +60,7 @@ const AddSurvey = ({ lstTimelines, lstSurveys, t, isLoading, createSurvey }) => 
                 rules={[
                     {
                         required: true,
-                        message: "Vui lòng chọn tuần"
+                        message: this.props.t('req_select_week')
                     }
                 ]}
                 hasFeedback>
@@ -77,18 +77,18 @@ const AddSurvey = ({ lstTimelines, lstSurveys, t, isLoading, createSurvey }) => 
                 rules={[
                     {
                         required: true,
-                        message: "Vui lòng nhập tiêu đề bài khảo sát"
+                        message: this.props.t('req_title_survey')
                     }
                 ]}
                 hasFeedback>
-                <Input placeholder="Name of survey..." />
+                <Input placeholder={t('name_of_survey')} />
             </Form.Item>
 
             <Form.Item
                 label={t('content')}
                 name={['survey', 'description']}>
                 <TextArea
-                    placeholder="Description of survey..."
+                    placeholder={t('desc_of_survey')}
                     autoSize={{ minRows: 3, maxRows: 5 }}
                 />
             </Form.Item>
@@ -101,7 +101,7 @@ const AddSurvey = ({ lstTimelines, lstSurveys, t, isLoading, createSurvey }) => 
                 rules={[
                     {
                         required: true,
-                        message: 'Vui lòng chọn thời gian kết thúc',
+                        message: this.props.t('req_end_time_survey'),
                     }
                 ]}
             >
@@ -114,7 +114,7 @@ const AddSurvey = ({ lstTimelines, lstSurveys, t, isLoading, createSurvey }) => 
                 rules={[
                     {
                         required: true,
-                        message: 'Vui lòng chọn đề',
+                        message: this.props.t('req_code_survey'),
                     }
                 ]}
                 hasFeedback

@@ -4,6 +4,7 @@
 
 .lms-ws-student-page .ant-tabs-tab{
     width: 33%;
+    justify-content: center;
 }
 
 .lms-ws-student-page .ant-tabs-content-holder{

@@ -72,10 +72,10 @@ const AddFile = ({ t, isLoading, lstTimelines, onUploadFile, createFile }) => {
             if (objectFile) {
                 createFile({ file: objectFile, idTimeline: values.idTimeline });
             } else {
-                notification.error({ message: "Thất bại", description: 'Gặp lỗi khi tải file vui lòng thử lại' });
+                notification.error({ message: this.props.t('failure'), description: this.props.t('err_download_file') });
             }
         } else {
-            notification.warning({ message: "Chú ý", description: 'Vui lòng chọn file trước khi upload' });
+            notification.warning({ message: this.props.t('warning'), description: this.props.t('select_file_before_update') });
         }
     }
 
@@ -100,7 +100,7 @@ const AddFile = ({ t, isLoading, lstTimelines, onUploadFile, createFile }) => {
                     rules={[
                         {
                             required: true,
-                            message: "Vui lòng chọn tuần"
+                            message: this.props.t('req_select_week')
                         }
                     ]}
                     hasFeedback>

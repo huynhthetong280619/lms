@@ -46,7 +46,7 @@ const AddInformation = ({ t, lstTimelines, isLoading, createInformation }) => {
                     rules={[
                         {
                             required: true,
-                            message: "Vui lòng chọn tuần"
+                            message: this.props.t('req_select_week')
                         }
                     ]}
                     hasFeedback>
@@ -63,11 +63,11 @@ const AddInformation = ({ t, lstTimelines, isLoading, createInformation }) => {
                     rules={[
                         {
                             required: true,
-                            message: "Vui lòng nhập tiêu đề thông báo"
+                            message: this.props.t('req_title_announce')
                         }
                     ]}
                     hasFeedback>
-                    <Input placeholder="Name of announcement..." />
+                    <Input placeholder={t('name_of_announce')} />
                 </Form.Item>
 
                 <Form.Item
@@ -76,12 +76,12 @@ const AddInformation = ({ t, lstTimelines, isLoading, createInformation }) => {
                     rules={[
                         {
                             required: true,
-                            message: 'Vui lòng nhập nội dung thông báo',
+                            message: this.props.t('req_content_announce'),
                         }
                     ]}
                     hasFeedback>
                     <TextArea
-                        placeholder="Content of announcement..."
+                        placeholder={t('content_announce')}
                         autoSize={{ minRows: 3, maxRows: 5 }}
                     />
                 </Form.Item>

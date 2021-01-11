@@ -72,11 +72,11 @@ class AssignmentModal extends React.Component {
                 this.props.submitAssignment({ file: objectFile, idAssignment: idAssignment });
             } else {
                 this.props.onCancelSubmitAssignment();
-                notification.error({ message: "Thất bại", description: 'Gặp lỗi khi tải file vui lòng thử lại' });
+                notification.error({ message: this.props.t('failure'), description: this.props.t('err_download_file') });
             }
         } else {
             this.props.onCancelSubmitAssignment();
-            notification.warning({ message: "Chú ý", description: 'Vui lòng chọn file trước khi nộp bài' });
+            notification.warning({ message: this.props.t("warrning"), description: this.props.t('warning_choose_file') });
         }
 
     }
@@ -95,7 +95,7 @@ class AssignmentModal extends React.Component {
     render() {
         const { t } = this.props;
         return <Modal
-            title={`[ Assignment ] ${this.props.assignment ? this.props.assignment.name : ' '}`}
+            title={`[ ${this.props.t('exercise')} ] ${this.props.assignment ? this.props.assignment.name : ' '}`}
             visible={this.props.visible}
             onCancel={()=>this.handleCancel()}
             footer={null}
@@ -103,23 +103,23 @@ class AssignmentModal extends React.Component {
             {this.props.assignment ?
                 (
                     <Tabs defaultActiveKey="1" centered>
-                        <TabPane tab="Submission" key="1">
+                        <TabPane tab={`${t('submission')}`} key="1">
                             <div>
                                 <div>{t('sbmit_stat')}</div>
                                 <div style={{ margin: '10px 0' }}>
-                                    <span style={{ fontWeight: 600 }}>Due date: </span>
+                                    <span style={{ fontWeight: 600 }}>{t('dueTo')}: </span>
                                     <span>{this.transTime(get(this.props.assignment, 'setting')?.expireTime)}</span>
                                 </div>
                                 <div style={{ margin: '10px 0' }}>
-                                    <span style={{ fontWeight: 600 }}>Time remaining: </span>
+                                    <span style={{ fontWeight: 600 }}>{t('time_remain')}: </span>
                                     <span>{get(this.props.assignment, 'timingRemain')}</span>
                                 </div>
                                 {this.props.assignment.submission && (<div style={{ margin: '10px 0' }}>
-                                    <span style={{ fontWeight: 600 }}>Last modified: </span>
+                                    <span style={{ fontWeight: 600 }}>{t('last_modified')}: </span>
                                     <span>{this.transTime(get(this.props.assignment, 'submission').submitTime)}</span>
                                 </div>)}
                                 {get(this.props.assignment, 'isCanSubmit') && (<div style={{ margin: '10px 0' }} >
-                                    <span style={{ fontWeight: 600 }}>File submissions: </span>
+                                    <span style={{ fontWeight: 600 }}>{t('file_submit')}: </span>
                                     <Input type="file" onChange={e => this.handleProcessFile(e)} style={{ width: 200, borderRadius: 20, overflow: 'hidden' }} />
                                 </div>)}
                                 {
@@ -148,12 +148,12 @@ class AssignmentModal extends React.Component {
 
                         </TabPane>
                         <TabPane tab="Requirement" key="2">
-                            <div style={{ fontWeight: "700" }}>[Content requirement]</div>
+                            <div style={{ fontWeight: "700" }}>[{t('require_content')}]</div>
                             <div dangerouslySetInnerHTML={{ __html: get(this.props.assignment, 'content') }} />
                             {/* <div>
                     {get(this.props.assignment, 'content')}
                 </div> */}
-                            <div style={{ fontWeight: "700" }}>File attachment</div>
+                            <div style={{ fontWeight: "700" }}>{t('file_submit')}</div>
                             <div style={{ height: 50 }}>
                                 {
                                     (get(this.props.assignment, 'attachments') || []).map(f => {
@@ -172,27 +172,27 @@ class AssignmentModal extends React.Component {
                         <TabPane tab="Grade" key="3">
                             {
                                 get(this.props.assignment, 'gradeStatus') ? (<>
-                                    <div>Grade status</div>
+                                    <div>{t('status_review')}</div>
                                     <div>
-                                        <span style={{ fontWeight: 600 }}>Grade: </span>
+                                        <span style={{ fontWeight: 600 }}>{t('grade')}: </span>
                                         <span>{get(get(this.props.assignment, 'submission')?.feedBack, 'grade')}</span>
                                     </div>
                                     <div>
-                                        <span style={{ fontWeight: 600 }}>Grade on: </span>
+                                        <span style={{ fontWeight: 600 }}>{t('grade_on')}: </span>
                                         <span>{this.transTime(get(get(this.props.assignment, 'submission')?.feedBack, 'gradeOn'))}</span>
                                     </div>
                                     {
                                         (this.props.assignment.submission.feedBack.comment) ?
                                             (
                                                 <div>
-                                                    <span style={{ fontWeight: 600 }}>Comment: </span>
+                                                    <span style={{ fontWeight: 600 }}>{t('comment')}: </span>
                                                     <span>{this.props.assignment.submission.feedBack.comment}</span>
                                                 </div>
                                             )
                                             : (
                                                 <>
                                                     <div>
-                                                        <div style={{ marginBottom: 10 }}>Feedback comment</div>
+                                                        <div style={{ marginBottom: 10 }}>{t('fback_comt')}</div>
                                                         <TextArea rows={2}
                                                             placeholder="Comment about grade..."
                                                             autoSize={{ minRows: 2, maxRows: 5 }}
@@ -204,7 +204,7 @@ class AssignmentModal extends React.Component {
                                                     </div>
                                                     <Row style={{ marginTop: 10 }}>
                                                         <div>
-                                                            <Button type="primary" loading={this.props.isCommentAssignment} onClick={this.commentFeedback} style={{ borderRadius: 20 }}>Send</Button>
+                                                            <Button type="primary" loading={this.props.isCommentAssignment} onClick={this.commentFeedback} style={{ borderRadius: 20 }}>{t('send')}</Button>
                                                         </div>
                                                     </Row>
                                                 </>
@@ -214,7 +214,7 @@ class AssignmentModal extends React.Component {
                                 )
                                     :
                                     (
-                                        <div style={{ color: '#ff4000', fontStyle: 'italic' }}>Chưa chấm điểm</div>
+                                        <div style={{ color: '#ff4000', fontStyle: 'italic' }}>{t('not_review')}</div>
                                     )
                             }
                         </TabPane>
@@ -222,8 +222,8 @@ class AssignmentModal extends React.Component {
                 ) :
                 <Spin spinning>
                     <Alert
-                        message="Lấy dữ liệu từ server"
-                        description="Hoạt động có thể chậm do mạng..."
+                        message={t('get_data_server')}
+                        description={t('reason_get_server')}
                         type="info"
                     />
                 </Spin>

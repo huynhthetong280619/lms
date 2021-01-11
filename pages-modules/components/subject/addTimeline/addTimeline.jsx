@@ -23,7 +23,6 @@ const AddTimeline = ({ t, createTimeline, isLoading }) => {
             name: values.name,
             description: values.description
         }
-        console.log('timeline', timeline)
         createTimeline(timeline);
     }
 
@@ -46,11 +45,11 @@ const AddTimeline = ({ t, createTimeline, isLoading }) => {
                     rules={[
                         {
                             required: true,
-                            message: "Vui lòng nhập tiêu đề của tuần"
+                            message: this.props.t('require_title_week')
                         }
                     ]}
                     hasFeedback>
-                    <Input placeholder="Name of timeline..." />
+                    <Input placeholder={t('name_of_timeline')} />
                 </Form.Item>
 
                 <Form.Item
@@ -59,12 +58,12 @@ const AddTimeline = ({ t, createTimeline, isLoading }) => {
                     rules={[
                         {
                             required: true,
-                            message: 'Vui lòng nhập mô tả của tuần',
+                            message: this.props.t('require_desc_week'),
                         }
                     ]}
                     hasFeedback>
                     <TextArea
-                        placeholder="Description of timeline..."
+                        placeholder={t('desc_of_timeline')}
                         autoSize={{ minRows: 3, maxRows: 5 }}
                     />
                 </Form.Item>

@@ -69,7 +69,7 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, isLoading, createQuiz }) => {
                     rules={[
                         {
                             required: true,
-                            message: "Vui lòng chọn tuần"
+                            message: this.props.t('req_select_week')
                         }
                     ]}
                     hasFeedback>
@@ -86,11 +86,11 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, isLoading, createQuiz }) => {
                     rules={[
                         {
                             required: true,
-                            message: "Vui lòng nhập tiêu đề bài kiểm tra"
+                            message: this.props.t('req_title_quiz')
                         }
                     ]}
                     hasFeedback>
-                    <Input placeholder="Name of exam..." />
+                    <Input placeholder={t('name_of_quiz')} />
                 </Form.Item>
 
                 <Form.Item
@@ -99,7 +99,7 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, isLoading, createQuiz }) => {
                     rules={[
                         {
                             required: true,
-                            message: 'Vui lòng nhập yêu cầu bài kiểm tra',
+                            message: this.props.t('req_quiz'),
                         }
                     ]}
                     hasFeedback>
@@ -115,7 +115,7 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, isLoading, createQuiz }) => {
                     rules={[
                         {
                             required: true,
-                            message: 'Vui lòng chọn thời gian bắt đầu',
+                            message: this.props.t('req_begin_time'),
                         }
                     ]}
                     hasFeedback>
@@ -130,7 +130,7 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, isLoading, createQuiz }) => {
                     rules={[
                         {
                             required: true,
-                            message: 'Vui lòng chọn thời gian kết thúc',
+                            message: this.props.t('req_end_time'),
                         },
                         ({ getFieldValue }) => ({
                             validator(rule, value) {
@@ -138,7 +138,7 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, isLoading, createQuiz }) => {
                                     return Promise.resolve();
                                 }
 
-                                return Promise.reject('Thời gian kết thúc phải lớn hơn thời gian bắt đầu!');
+                                return Promise.reject(this.props.t('condition_start_end'));
                             },
                         }),
                     ]}
@@ -152,7 +152,7 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, isLoading, createQuiz }) => {
                     rules={[
                         {
                             required: true,
-                            message: 'Vui lòng chọn đề',
+                            message: this.props.t('req_code_quiz'),
                         }
                     ]}
                     hasFeedback
@@ -170,7 +170,7 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, isLoading, createQuiz }) => {
                     rules={[
                         {
                             required: true,
-                            message: 'Vui lòng chọn số lượng câu hỏi',
+                            message: this.props.t('qty_question'),
                         }
                     ]}
                     hasFeedback>
@@ -183,7 +183,7 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, isLoading, createQuiz }) => {
                     rules={[
                         {
                             required: true,
-                            message: 'Vui lòng chọn thời gian làm bài',
+                            message: this.props.t('time_take_quiz'),
                         }
                     ]}
                     hasFeedback>
@@ -199,7 +199,7 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, isLoading, createQuiz }) => {
                     rules={[
                         {
                             required: true,
-                            message: 'Vui lòng chọn số lần tham gia',
+                            message: this.props.t('count_attempt'),
                         }
                     ]}
                     hasFeedback>

@@ -41,6 +41,9 @@
   visibility: hidden;
   font-family: 'Open Sans', sans-serif;
   box-shadow: 2px 2px 8px 0 rgba(0,0,0,.4);
+
+  min-width: 150px;
+display: block;
 }
 .container a span:before{
   position: absolute;

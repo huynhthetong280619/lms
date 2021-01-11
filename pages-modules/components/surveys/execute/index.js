@@ -16,9 +16,6 @@ class SurveyExecute extends React.Component {
     componentDidMount() {
         console.log('this.props.surveyQ.questionnaire', this.props.surveyQ.questionnaire)
 
-        // if (!this.props.questionnaire.questions) {
-        //     Router.push({ pathname: "/courses" })
-        // }
         console.log('componentDidMount', this.props.questionnaire.questions)
         this.setState({
             questions: this.props.questionnaire.questions || []
@@ -76,10 +73,10 @@ class SurveyExecute extends React.Component {
 
 
         // Push up to server
-        console.log(convert)
         const data = {
             data: convert
         }
+        
         await restClient.asyncPost(`/survey/${this.props.idSurvey}/submit?idSubject=${this.props.idSubject}&idTimeline=${this.props.idTimeline}`, data, this.props.token)
             .then(res => {
                 if (!res.hasError) {
@@ -120,7 +117,7 @@ class SurveyExecute extends React.Component {
                         <span>
                             <img src={survey} width="80px" />
                         </span>
-                        <span style={{ fontWeight: '700' }}>[ SURVEY ] {this.props.survey.name}</span>
+                        <span style={{ fontWeight: '700' }}>[ {t('survey')} ] {this.props.survey.name}</span>
                     </div>
                     <div style={{ width: '100%', minHeight: '150px' }}>
                         <div style={{
@@ -135,7 +132,7 @@ class SurveyExecute extends React.Component {
                                 (this.state.questions).map((q, index) => (
                                     q.typeQuestion == 'choice' ?
                                         (<div style={{ marginBottom: '20px', textAlign: 'left' }} key={q._id}>
-                                            <div style={{ fontWeight: 600 }}><span>Question {index}: </span>{q.question}</div>
+                                            <div style={{ fontWeight: 600 }}><span>{t('question')} {index}: </span>{q.question}</div>
                                             <div>
                                                 <Radio.Group onChange={e => this.onChoice(e, q._id)} value={get(this.state.answer, q._id)}>
                                                     {
@@ -151,7 +148,7 @@ class SurveyExecute extends React.Component {
                                         (
                                             q.typeQuestion == 'multiple' ? (<div style={{ textAlign: 'left' }} key={q._id}>
                                                 <div style={{ fontWeight: 600 }}>
-                                                    <span>Question {index}: </span>{q.question}
+                                                    <span>{t('question')} {index}: </span>{q.question}
                                                 </div>
                                                 <div>
                                                     <Checkbox.Group style={{ width: '100%' }} onChange={e => this.onChangeMultipleChoice(e, q._id)}>
@@ -177,7 +174,7 @@ class SurveyExecute extends React.Component {
 
                                                 : <div style={{ textAlign: 'left' }} key={q._id}>
                                                     <div style={{ fontWeight: 600 }}>
-                                                        <span>Question {index}: </span>{q.question}
+                                                        <span>{t('question')} {index}: </span>{q.question}
                                                     </div>
                                                     <div>
                                                         <input type="text" onChange={(e) => this.onFill(e, q._id)} />
@@ -188,77 +185,10 @@ class SurveyExecute extends React.Component {
                                 )
                             }
 
-                            {/* 
-                            <div style={{ marginBottom: '20px' }}>
-                                <div style={{ textAlign: 'left' }}>
-                                    <Badge count={2} className="site-badge-count-4" />
-                                    <div style={{
-                                        display: "inline-block",
-                                        marginLeft: "5px"
-                                    }}>Mức độ của nội dung video, slide, tài liệu tham khảo của giáo viên cung cấp?</div>
-                                </div>
-                                <div className="ant-row">
-                                    <Radio.Group name="radiogroup" defaultValue={1} style={{
-                                        width: "100%",
-                                        display: "flex",
-                                        justifyContent: "space-around"
-                                    }}>
-                                        <Radio value={1}>Đầy đủ và rất tốt</Radio>
-                                        <Radio value={2}>Đầy đủ và tốt</Radio>
-                                        <Radio value={3}>Bình thường</Radio>
-                                        <Radio value={4}>Không đầy đủ </Radio>
-                                    </Radio.Group>
-                                </div>
-                            </div>
-
-                            <div style={{ marginBottom: '20px' }}>
-                                <div style={{ textAlign: 'left' }}>
-                                    <Badge count={3} className="site-badge-count-4" />
-                                    <div style={{
-                                        display: "inline-block",
-                                        marginLeft: "5px"
-                                    }}>Mức độ của nội dung video, slide, tài liệu tham khảo của giáo viên cung cấp?</div>
-                                </div>
-                                <div className="ant-row">
-                                    <Radio.Group name="radiogroup" defaultValue={1} style={{
-                                        width: "100%",
-                                        display: "flex",
-                                        justifyContent: "space-around"
-                                    }}>
-                                        <Radio value={1}>Đầy đủ và rất tốt</Radio>
-                                        <Radio value={2}>Đầy đủ và tốt</Radio>
-                                        <Radio value={3}>Bình thường</Radio>
-                                        <Radio value={4}>Không đầy đủ </Radio>
-                                    </Radio.Group>
-                                </div>
-                            </div>
-
-                            <div style={{ marginBottom: '20px' }}>
-                                <div style={{ textAlign: 'left' }}>
-                                    <Badge count={4} className="site-badge-count-4" />
-                                    <div style={{
-                                        display: "inline-block",
-                                        marginLeft: "5px"
-                                    }}>Mức độ của nội dung video, slide, tài liệu tham khảo của giáo viên cung cấp?</div>
-                                </div>
-                                <div className="ant-row">
-                                    <Radio.Group name="radiogroup" defaultValue={1} style={{
-                                        width: "100%",
-                                        display: "flex",
-                                        justifyContent: "space-around"
-                                    }}>
-                                        <Radio value={1}>Đầy đủ và rất tốt</Radio>
-                                        <Radio value={2}>Đầy đủ và tốt</Radio>
-                                        <Radio value={3}>Bình thường</Radio>
-                                        <Radio value={4}>Không đầy đủ </Radio>
-                                    </Radio.Group>
-                                </div>
-                            </div> */}
-
                         </div>
                         <Row style={{ padding: "25px" }}>
                             <div>
-                                <Button type="primary" loading={this.state.loading} style={{ borderRadius: 20 }} onClick={() => this.submitSurvey()}>Submit survey</Button>
+                                <Button type="primary" loading={this.state.loading} style={{ borderRadius: 20 }} onClick={() => this.submitSurvey()}>{t('submit_survey')}</Button>
                             </div>
                         </Row>
                     </div>

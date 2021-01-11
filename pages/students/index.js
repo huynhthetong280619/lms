@@ -19,14 +19,14 @@ const data = parseCookies(ctx.req);
     const token = data.token
     const {idSubject} = ctx.query;
 
-    const [listStudent, lstSubmissionCore, subject, lstClassScore]= await Promise.all([restClient.asyncGet(`/subject/${idSubject}/students`, token), restClient.asyncGet(`/subject/${idSubject}/score`, token), restClient.asyncGet(`/subject/${idSubject}`), restClient.asyncGet(`/subject/${idSubject}/transcript`, token)])
+    const [listStudent, lstSubmissionCore, subject, lstClassScore]= await Promise.all([restClient.asyncGet(`/subject/${idSubject}/students`, token), restClient.asyncGet(`/subject/${idSubject}/score`, token), restClient.asyncGet(`/subject/${idSubject}`, token), restClient.asyncGet(`/subject/${idSubject}/transcript`, token)])
     
-    console.log('getInitial', lstSubmissionCore)
+    console.log('getInitial', subject)
     return {
         listStudent: get(listStudent, 'data').students,
         lstSubmissionCore: get(lstSubmissionCore, 'data'),
         idSubject,
-        subject,
+        subject: get(subject, 'data').subject,
         lstClassScore: get(lstClassScore, 'data'),
         token
     }

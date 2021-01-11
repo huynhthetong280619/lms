@@ -62,7 +62,6 @@ const AddAssignment = ({ lstTimelines, onUploadFile, t, isLoading, createAssignm
                 }
             })
             .catch(err => {
-                console.log('Upload attachment', err);
                 return null;
             });
     }
@@ -93,7 +92,7 @@ const AddAssignment = ({ lstTimelines, onUploadFile, t, isLoading, createAssignm
                 }
                 createAssignment({ assignment: data, idTimeline: idTimeline });
             } else {
-                notifyError("Thất bại", 'Gặp lỗi khi tải file vui lòng thử lại');
+                notifyError(this.props.t('failure'), this.props.t('err_download_file'));
             }
 
         } else {
@@ -137,7 +136,7 @@ const AddAssignment = ({ lstTimelines, onUploadFile, t, isLoading, createAssignm
                     rules={[
                         {
                             required: true,
-                            message: "Vui lòng chọn tuần"
+                            message: this.props.t('req_select_week')
                         }
                     ]}
                     hasFeedback>
@@ -154,11 +153,11 @@ const AddAssignment = ({ lstTimelines, onUploadFile, t, isLoading, createAssignm
                     rules={[
                         {
                             required: true,
-                            message: "Vui lòng nhập tiêu đề bài tập"
+                            message: this.props.t('req_title_assignment')
                         }
                     ]}
                     hasFeedback>
-                    <Input placeholder="Name of assignment..." />
+                    <Input placeholder={this.props.t('name_of_assign')}/>
                 </Form.Item>
 
                 <Form.Item
@@ -167,13 +166,13 @@ const AddAssignment = ({ lstTimelines, onUploadFile, t, isLoading, createAssignm
                     rules={[
                         {
                             required: true,
-                            message: "Vui lòng nhập yêu cầu bài tập"
+                            message: this.props.t('req_assign')
                         }
                     ]}
                     hasFeedback
                 >
                     <TextArea
-                        placeholder="Requirement of assignment..."
+                        placeholder={this.props.t('content_req_assign')}
                         autoSize={{ minRows: 3, maxRows: 5 }}
                     />
                 </Form.Item>
@@ -184,7 +183,7 @@ const AddAssignment = ({ lstTimelines, onUploadFile, t, isLoading, createAssignm
                     rules={[
                         {
                             required: true,
-                            message: 'Vui lòng chọn thời gian bắt đầu',
+                            message: this.props.t('req_begin_time'),
                         }
                     ]}
                     hasFeedback>
@@ -199,7 +198,7 @@ const AddAssignment = ({ lstTimelines, onUploadFile, t, isLoading, createAssignm
                     rules={[
                         {
                             required: true,
-                            message: 'Vui lòng chọn thời gian kết thúc',
+                            message: this.props.t('req_end_time'),
                         },
                         ({ getFieldValue }) => ({
                             validator(rule, value) {
@@ -207,7 +206,7 @@ const AddAssignment = ({ lstTimelines, onUploadFile, t, isLoading, createAssignm
                                     return Promise.resolve();
                                 }
 
-                                return Promise.reject('Thời gian kết thúc phải lớn hơn thời gian bắt đầu!');
+                                return Promise.reject(this.props.t('condition_start_end'));
                             },
                         }),
                     ]}
@@ -232,7 +231,7 @@ const AddAssignment = ({ lstTimelines, onUploadFile, t, isLoading, createAssignm
                         rules={[
                             {
                                 required: true,
-                                message: 'Vui lòng chọn thời gian quá hạn',
+                                message: this.props.t('req_due_to'),
                             },
                             ({ getFieldValue }) => ({
                                 validator(rule, value) {
@@ -240,7 +239,7 @@ const AddAssignment = ({ lstTimelines, onUploadFile, t, isLoading, createAssignm
                                         return Promise.resolve();
                                     }
 
-                                    return Promise.reject('Thời gian quá hạn phải lớn hơn thời gian kết thúc!');
+                                    return Promise.reject(this.props.t('condition_start_end'));
                                 },
                             }),
                         ]}
@@ -255,7 +254,7 @@ const AddAssignment = ({ lstTimelines, onUploadFile, t, isLoading, createAssignm
                     rules={[
                         {
                             required: true,
-                            message: "Vui lòng chọn kích thước file"
+                            message: this.props.t('size_file')
                         }
                     ]}
                     hasFeedback>
