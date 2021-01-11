@@ -1,9 +1,10 @@
-import { get, head } from 'lodash';
+import { get } from 'lodash';
 import { withTranslation } from 'react-i18next';
-import { Row, Input, Modal, Tabs, Button, notification, Spin, Alert } from 'antd'
+import { Row, Input, Modal, Tabs, Button } from 'antd'
 const { TextArea } = Input;
 const { TabPane } = Tabs;
 import restClient from '../../../../assets/common/core/restClient';
+import { notifyError, notifyWarning } from '../../../../assets/common/core/notify.js';
 import downloadFile from '../../../../assets/common/core/downloadFile.js';
 import moment from 'moment'
 import file from '../../../../assets/images/contents/file.png'
@@ -42,11 +43,11 @@ class AssignmentModal extends React.Component {
                 this.props.submitAssignment({ file: objectFile, idAssignment: idAssignment });
             } else {
                 this.props.onCancelSubmitAssignment();
-                notification.error({ message: "Thất bại", description: 'Gặp lỗi khi tải file vui lòng thử lại' });
+                notifyError("Thất bại", 'Gặp lỗi khi tải file vui lòng thử lại');
             }
         } else {
             this.props.onCancelSubmitAssignment();
-            notification.warning({ message: "Chú ý", description: 'Vui lòng chọn file trước khi nộp bài' });
+            notifyWarning("Chú ý", 'Vui lòng chọn file trước khi nộp bài');
         }
 
     }

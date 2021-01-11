@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { withTranslation } from 'react-i18next';
-import { Input, Select, Button, Form, DatePicker, notification, Checkbox } from 'antd'
+import { Input, Select, Button, Form, DatePicker, Checkbox } from 'antd'
 import restClient from '../../../../assets/common/core/restClient';
+import formatTime from '../../../../assets/common/core/formatTime';
+import { notifyError } from '../../../../assets/common/core/notify.js';
 import Loading from '../../loading/loading.jsx';
 import moment from 'moment';
 const { Option } = Select;
@@ -37,7 +39,7 @@ const AddSurvey = ({ lstTimelines, lstSurveys, t, createSurvey, updateSurvey, id
                             expireTime: moment(res.data.survey.expireTime),
                         });
                     } else {
-                        notification.error({ message: 'Error', description: res.data.message });
+                        notifyError('Error', res.data.message);
                     }
                 })
 
@@ -57,13 +59,14 @@ const AddSurvey = ({ lstTimelines, lstSurveys, t, createSurvey, updateSurvey, id
 
         const data = {
             ...fieldsValue.survey,
-            expireTime: fieldsValue.survey.expireTime.format('YYYY-MM-DDTHH:mm:ss'),
+            expireTime: formatTime(fieldsValue.survey.expireTime),
             isDeleted: !fieldsValue.survey.isDeleted
         };
+
         if (!idSurvey) {
             handleCreateSurvey(data, fieldsValue.idTimeline);
         } else {
-             handleUpdateSurvey(data, idTimeline);
+            handleUpdateSurvey(data, idTimeline);
             console.log('data', data);
         }
     }
@@ -82,7 +85,7 @@ const AddSurvey = ({ lstTimelines, lstSurveys, t, createSurvey, updateSurvey, id
                 if (!res.hasError) {
                     createSurvey({ survey: res.data.survey, idTimeline: idTimelineAdd })
                 } else {
-                    notification.error({ message: "Thất bại", description: res.data.message });
+                    notifyError("Thất bại", res.data.message);
                 }
             })
     }
@@ -101,7 +104,7 @@ const AddSurvey = ({ lstTimelines, lstSurveys, t, createSurvey, updateSurvey, id
                 if (!res.hasError) {
                     updateSurvey({ survey: res.data.survey, idTimeline: idTimelineUpdate })
                 } else {
-                    notification.error({ message: "Thất bại", description: res.data.message });
+                    notifyError("Thất bại", res.data.message);
                 }
             })
     }

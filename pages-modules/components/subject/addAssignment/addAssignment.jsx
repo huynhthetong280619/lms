@@ -2,13 +2,12 @@ import { useState, useEffect } from 'react';
 import { withTranslation } from 'react-i18next';
 import restClient from '../../../../assets/common/core/restClient';
 import formatTime from '../../../../assets/common/core/formatTime';
-import { Input, Select, Button, Checkbox, Form, DatePicker, notification } from 'antd'
+import { Input, Select, Button, Checkbox, Form, DatePicker } from 'antd'
 import downloadFile from '../../../../assets/common/core/downloadFile.js';
+import { notifyError } from '../../../../assets/common/core/notify.js';
 import Loading from '../../loading/loading.jsx';
 import moment from 'moment'
-import file from '../../../../assets/images/contents/file.png'
 import word from '../../../../assets/images/contents/word.png'
-import rar from '../../../../assets/images/contents/rar.png'
 import pdf from '../../../../assets/images/contents/pdf.png'
 const { Option } = Select;
 const { TextArea } = Input;
@@ -53,7 +52,7 @@ const AddAssignment = ({ lstTimelines, t, createAssignment, updateAssignment, id
                             },
                         });
                     } else {
-                        notification.error({ message: 'Error', description: res.data.message });
+                        notifyError('Error', res.data.message);
                     }
                 })
 
@@ -91,7 +90,7 @@ const AddAssignment = ({ lstTimelines, t, createAssignment, updateAssignment, id
                 if (!res.hasError) {
                     createAssignment({ assignment: res.data.assignment, idTimeline: idTimelineAdd })
                 } else {
-                    notification.error({ message: "Thất bại", description: res.data.message });
+                    notifyError("Thất bại", res.data.message);
                 }
             })
     }
@@ -110,7 +109,7 @@ const AddAssignment = ({ lstTimelines, t, createAssignment, updateAssignment, id
                 if (!res.hasError) {
                     updateAssignment({ assignment: res.data.assignment, idTimeline: idTimelineUpdate })
                 } else {
-                    notification.error({ message: "Thất bại", description: res.data.message });
+                    notifyError("Thất bại", res.data.message);
                 }
             })
     }
@@ -118,7 +117,10 @@ const AddAssignment = ({ lstTimelines, t, createAssignment, updateAssignment, id
     const onFinish = async (fieldsValue) => {
         setLoading(true);
         console.log('fileAttach', fileAttach);
-        const assign = fieldsValue.assignment;
+        const assign = {
+            ...fieldsValue.assignment,
+            isDeleted: !fieldsValue.assignment.isDeleted,
+        };
         const setting = {
             ...assign.setting,
             startTime: formatTime(assign.setting.startTime),
@@ -136,6 +138,7 @@ const AddAssignment = ({ lstTimelines, t, createAssignment, updateAssignment, id
                     name: assign.name,
                     content: assign.content,
                     setting: setting,
+                    isDeleted: assign.isDeleted,
                     file: file
                 }
                 if (!idAssignment) {
@@ -146,17 +149,15 @@ const AddAssignment = ({ lstTimelines, t, createAssignment, updateAssignment, id
                 }
             } else {
                 setLoading(false);
-                notification.error({
-                    message: 'Thất bại',
-                    description: 'Gặp lỗi khi tải file vui lòng thử lại'
-                });
+                notifyError('Thất bại', 'Gặp lỗi khi tải file vui lòng thử lại');
             }
 
         } else {
             data = {
                 name: assign.name,
                 content: assign.content,
-                setting: setting
+                setting: setting,
+                isDeleted: assign.isDeleted,
             }
             if (!idAssignment) {
                 handleCreateAssignment(data, fieldsValue.idTimeline);
@@ -265,9 +266,8 @@ const AddAssignment = ({ lstTimelines, t, createAssignment, updateAssignment, id
                                     message: 'Vui lòng chọn thời gian kết thúc',
                                 },
                                 ({ getFieldValue }) => ({
-                                    validator(value) {
-                                        const expireTime = getFieldValue(['assignment', 'setting', 'expireTime']);
-                                        if (!expireTime || expireTime.isAfter(getFieldValue(['assignment', 'setting', 'startTime']))) {
+                                    validator(rule, value) {
+                                        if (!value || value.isAfter(getFieldValue(['assignment', 'setting', 'startTime']))) {
                                             return Promise.resolve();
                                         } else {
                                             return Promise.reject('Thời gian kết thúc phải lớn hơn thời gian bắt đầu!');
@@ -299,9 +299,8 @@ const AddAssignment = ({ lstTimelines, t, createAssignment, updateAssignment, id
                                         message: 'Vui lòng chọn thời gian quá hạn',
                                     },
                                     ({ getFieldValue }) => ({
-                                        validator(value) {
-                                            const overDueDate = getFieldValue(['assignment', 'setting', 'overDueDate']);
-                                            if (!overDueDate || overDueDate.isAfter(getFieldValue(['assignment', 'setting', 'expireTime']))) {
+                                        validator(rule, value) {
+                                            if (!value || value.isAfter(getFieldValue(['assignment', 'setting', 'expireTime']))) {
                                                 return Promise.resolve();
                                             } else {
                                                 return Promise.reject('Thời gian quá hạn phải lớn hơn thời gian kết thúc!');
