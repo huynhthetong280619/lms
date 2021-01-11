@@ -1,18 +1,90 @@
 import { useState, useEffect } from 'react';
 import { withTranslation } from 'react-i18next';
-import { Input, Select, Button, Form, notification } from 'antd'
+import { Input, Select, Button, Form, Checkbox } from 'antd'
+import { notifyError, notifyWarning } from '../../../../assets/common/core/notify.js';
+import restClient from '../../../../assets/common/core/restClient';
+import Loading from '../../loading/loading.jsx';
+import downloadFile from '../../../../assets/common/core/downloadFile.js';
+import word from '../../../../assets/images/contents/word.png'
+import pdf from '../../../../assets/images/contents/pdf.png'
+import rar from '../../../../assets/images/contents/rar.png'
 const { Option } = Select;
 
-const AddFile = ({ t, isLoading, lstTimelines, onUploadFile, createFile }) => {
+const AddFile = ({ t, lstTimelines, createFile, updateFile, idSubject, idTimeline, idFile, token }) => {
 
     const [form] = Form.useForm();
     const [fileAttach, setFileAttach] = useState(null);
 
+    const [isLoading, setLoading] = useState(false);
+
+    const [file, setFile] = useState(null);
+
+
     useEffect(() => {
-        form.setFieldsValue({
-            idTimeline: lstTimelines[0]._id,
-        })
+        if (file) {
+            form.setFieldsValue({
+                idTimeline: idTimeline,
+                file: { ...file, isDeleted: !file.isDeleted }
+            })
+        }
+    }, [file])
+
+    useEffect(() => {
+        if (idFile) {
+            restClient.asyncGet(`/timeline/${idTimeline}/files/${idFile}/?idSubject=${idSubject}`, token)
+                .then(res => {
+                    if (!res.hasError) {
+                        setFile(res.data.file);
+                    } else {
+                        notifyError('Error', res.data.message);
+                    }
+                })
+
+        } else {
+            form.setFieldsValue({
+                idTimeline: lstTimelines[0]._id,
+                file: {
+                    isDeleted: !false,
+                }
+            })
+        }
     }, []);
+
+
+    const handleCreateFile = async (file, idTimelineAdd) => {
+        const data = {
+            idSubject: idSubject,
+            idTimeline: idTimelineAdd,
+            data: file
+        }
+        await restClient.asyncPost(`/timeline/upload/`, data, token)
+            .then(res => {
+                console.log('handleCreateFile', res)
+                setLoading(false);
+                if (!res.hasError) {
+                    createFile({ file: res.data.file, idTimeline: idTimelineAdd })
+                } else {
+                    notifyError("Thất bại", res.data.message);
+                }
+            })
+    }
+
+    const handleUpdateFile = async (file, idTimelineUpdate) => {
+        const data = {
+            idSubject: idSubject,
+            data: file
+        }
+        await restClient.asyncPut(`/timeline/${idTimelineUpdate}/files/${idFile}`, data, token)
+            .then(res => {
+                console.log('handleUpdateFile', res)
+                setLoading(false);
+                if (!res.hasError) {
+                    updateFile({ file: res.data.file, idTimeline: idTimelineUpdate })
+                } else {
+                    notifyError("Thất bại", res.data.message);
+                }
+            })
+    }
 
     const handleProcessFile = (e) => {
         setFileAttach(e.target.files[0])
@@ -28,54 +100,37 @@ const AddFile = ({ t, isLoading, lstTimelines, onUploadFile, createFile }) => {
             span: 16,
         },
     };
-    const handleUpload = async () => {
-        onUploadFile();
-        const formData = new FormData();
-        formData.append('file', fileAttach)
-        // replace this with your upload preset name
-        formData.append('upload_preset', 'gmttm4bo');
-        const options = {
-            method: 'POST',
-            body: formData,
-            header: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Accept',
-                mode: 'no-cors'
-            }
-        };
-
-        // replace cloudname with your Cloudinary cloud_name
-        return await fetch('https://api.Cloudinary.com/v1_1/dkepvw2rz/upload', options)
-            .then(res => res.json())
-            .then(res => {
-
-                console.log('Response', res)
-                return {
-                    name: res.original_filename,
-                    path: res.url,
-                    type: res.format || res.public_id.split('.')[1]
-                }
-            })
-            .catch(err => {
-                console.log('Upload attachment', err);
-                return null;
-            });
-    }
-
-
 
     const onFinish = async (values) => {
+        setLoading(true);
         console.log('fileAttach', fileAttach);
-
         if (fileAttach) {
-            const objectFile = await handleUpload();
+            const objectFile = await restClient.asyncUploadFile(fileAttach);
             if (objectFile) {
-                createFile({ file: objectFile, idTimeline: values.idTimeline });
+                const f = {
+                    ...objectFile,
+                    isDeleted: !values.file.isDeleted
+                }
+                console.log('File', f);
+                if (!idFile) {
+                    handleCreateFile(f, values.idTimeline);
+                }
+                else {
+                    handleUpdateFile(f, values.idTimeline);
+                }
             } else {
-                notification.error({ message: this.props.t('failure'), description: this.props.t('err_download_file') });
+                setLoading(false);
+                notifyError("Thất bại", 'Gặp lỗi khi tải file vui lòng thử lại');
             }
+        } else if (idFile) {
+            const f = {
+                ...file,
+                isDeleted: !values.file.isDeleted
+            }
+            handleUpdateFile(f, values.idTimeline);
         } else {
-            notification.warning({ message: this.props.t('warning'), description: this.props.t('select_file_before_update') });
+            setLoading(false);
+            notifyWarning("Chú ý", 'Vui lòng chọn file trước khi upload');
         }
     }
 
@@ -89,40 +144,72 @@ const AddFile = ({ t, isLoading, lstTimelines, onUploadFile, createFile }) => {
             </div>
 
 
-            <Form
-                {...formItemLayout}
-                onFinish={onFinish}
-                form={form}
-            >
-                <Form.Item
-                    label={t('timeline')}
-                    name="idTimeline"
-                    rules={[
-                        {
-                            required: true,
-                            message: this.props.t('req_select_week')
-                        }
-                    ]}
-                    hasFeedback>
-                    <Select >
-                        {
-                            lstTimelines.map(tl => (<Option value={tl._id} key={tl._id}>{tl.name}</Option>))
-                        }
-                    </Select>
-                </Form.Item>
+            {
+                (idFile && !file) ?
+                    <Loading />
+                    : (<Form
+                        {...formItemLayout}
+                        onFinish={onFinish}
+                        form={form}
+                    >
+                        <Form.Item
+                            label={t('timeline')}
+                            name="idTimeline"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Vui lòng chọn tuần"
+                                }
+                            ]}
+                            hasFeedback>
+                            <Select disabled={idFile || false}>
+                                {
+                                    lstTimelines.map(tl => (<Option value={tl._id} key={tl._id}>{tl.name}</Option>))
+                                }
+                            </Select>
+                        </Form.Item>
 
-                <Form.Item
-                    label={t('fileAttach')}
-                >
-                    <Input type="file" style={{ overflow: 'hidden' }} onChange={e => handleProcessFile(e)} />
-                </Form.Item>
 
-                <Form.Item wrapperCol={{ ...formItemLayout.wrapperCol, offset: 6 }}>
-                    <Button type="primary" loading={isLoading} htmlType="submit">
-                        {t('submit')}</Button>
-                </Form.Item>
+                        {file &&
+                            (
+                                <Form.Item
+                                    label={t('fileAttach')}>
+                                    <span style={{
+                                        verticalAlign: '-webkit-baseline-middle',
+                                        border: '1px dashed #cacaca',
+                                        padding: '3px 10px',
+                                        borderRadius: '20px',
+                                    }}>
+                                        {file.type.includes('doc')
+                                            ? <img src={word} width={20} /> : <img src={pdf} width={20} />}
+                                        <a style={{ marginLeft: 10 }}>
+                                            <span onClick={() => downloadFile(file)}>{file.name}.{file.type}</span>
+                                        </a>
+                                    </span>
+                                </Form.Item>
+                            )}
 
-            </Form>
+                        <Form.Item
+                            label={!idFile ? t('addFileAttach') : t('updateFileAttach')}
+                        >
+                            <Input type="file" style={{ overflow: 'hidden' }} onChange={e => handleProcessFile(e)} />
+                        </Form.Item>
+
+                        <Form.Item
+                            label={t('display')}
+                            name={['file', 'isDeleted']}
+                            valuePropName="checked"
+                        >
+                            <Checkbox />
+                        </Form.Item>
+
+
+                        <Form.Item wrapperCol={{ ...formItemLayout.wrapperCol, offset: 6 }}>
+                            <Button type="primary" loading={isLoading} htmlType="submit">
+                                {t('submit')}</Button>
+                        </Form.Item>
+
+                    </Form>)}
         </>
     )
 }

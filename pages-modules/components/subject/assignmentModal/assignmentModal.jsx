@@ -1,12 +1,17 @@
-import { get, head } from 'lodash';
+import { get } from 'lodash';
 import { withTranslation } from 'react-i18next';
-import { Row, Input, Modal, Tabs, Button, notification, Spin, Alert } from 'antd'
+import { Row, Input, Modal, Tabs, Button } from 'antd'
 const { TextArea } = Input;
 const { TabPane } = Tabs;
+import restClient from '../../../../assets/common/core/restClient';
+import { notifyError, notifyWarning } from '../../../../assets/common/core/notify.js';
+import downloadFile from '../../../../assets/common/core/downloadFile.js';
 import moment from 'moment'
 import file from '../../../../assets/images/contents/file.png'
 import word from '../../../../assets/images/contents/word.png'
 import rar from '../../../../assets/images/contents/rar.png'
+import pdf from '../../../../assets/images/contents/pdf.png'
+import Loading from '../../loading/loading.jsx'
 
 class AssignmentModal extends React.Component {
     constructor(props) {
@@ -29,54 +34,20 @@ class AssignmentModal extends React.Component {
         })
     }
 
-    handleUpload = async () => {
-        this.props.onSubmitAssignment();
-        const formData = new FormData();
-        formData.append('file', this.state.fileData)
-        // replace this with your upload preset name
-        formData.append('upload_preset', 'gmttm4bo');
-        const options = {
-            method: 'POST',
-            body: formData,
-            header: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': 'Accept',
-                mode: 'no-cors'
-            }
-        };
-
-        // replace cloudname with your Cloudinary cloud_name
-        return await fetch('https://api.Cloudinary.com/v1_1/dkepvw2rz/upload', options)
-            .then(res => res.json())
-            .then(res => {
-
-                console.log('Response', res)
-                return {
-                    name: res.original_filename,
-                    path: res.url,
-                    type: res.format || res.public_id.split('.')[1]
-                }
-            })
-            .catch(err => {
-                console.log('Upload attachment', err);
-                return null;
-            });
-    }
-
     handleSubmit = async () => {
         this.props.onSubmitAssignment();
         const idAssignment = this.props.assignment._id;
         if (this.state.fileData) {
-            const objectFile = await this.handleUpload();
+            const objectFile = await restClient.asyncUploadFile(this.state.fileData);
             if (objectFile) {
                 this.props.submitAssignment({ file: objectFile, idAssignment: idAssignment });
             } else {
                 this.props.onCancelSubmitAssignment();
-                notification.error({ message: this.props.t('failure'), description: this.props.t('err_download_file') });
+                notifyError("Thất bại", 'Gặp lỗi khi tải file vui lòng thử lại');
             }
         } else {
             this.props.onCancelSubmitAssignment();
-            notification.warning({ message: this.props.t("warrning"), description: this.props.t('warning_choose_file') });
+            notifyWarning("Chú ý", 'Vui lòng chọn file trước khi nộp bài');
         }
 
     }
@@ -85,8 +56,8 @@ class AssignmentModal extends React.Component {
         this.props.commentAssignmentGrade({ comment: this.state.comment, idAssignment: idAssignment });
     }
 
-    handleCancel=()=>{
-        this.setState({fileData:null,comment:''});
+    handleCancel = () => {
+        this.setState({ fileData: null, comment: '' });
         this.props.handleCancelModal();
     }
 
@@ -97,7 +68,7 @@ class AssignmentModal extends React.Component {
         return <Modal
             title={`[ ${this.props.t('exercise')} ] ${this.props.assignment ? this.props.assignment.name : ' '}`}
             visible={this.props.visible}
-            onCancel={()=>this.handleCancel()}
+            onCancel={() => this.handleCancel()}
             footer={null}
         >
             {this.props.assignment ?
@@ -130,7 +101,11 @@ class AssignmentModal extends React.Component {
                                             textAlign: 'center'
                                         }}>
                                             <img src={get(this.props.assignment.submission, 'file')?.type.includes('doc') ? word : get(this.props.assignment.submission, 'file')?.type == 'rar' ? rar : file} />
-                                            <div>{get(this.props.assignment.submission, 'file')?.name}</div>
+                                            <a>
+                                                <span onClick={() => downloadFile(get(this.props.assignment.submission, 'file'))}>
+                                                    {get(this.props.assignment.submission, 'file')?.name}.{get(this.props.assignment.submission, 'file')?.type}
+                                                </span>
+                                            </a>
                                         </div>
                                     </div>
                                 }
@@ -163,7 +138,11 @@ class AssignmentModal extends React.Component {
                                             padding: '3px 10px',
                                             borderRadius: '20px',
                                         }}>
-                                            {f.type.includes('doc') ? <img src={word} width={20} /> : <img src={pdf} width={20} />}<a href={f.path} style={{ marginLeft: 10 }}>{f.name}</a>
+                                            {f.type.includes('doc')
+                                                ? <img src={word} width={20} /> : <img src={pdf} width={20} />}
+                                            <a style={{ marginLeft: 10 }}>
+                                                <span onClick={() => downloadFile(f)}>{f.name}.{f.type}</span>
+                                            </a>
                                         </span>
                                     })
                                 }
@@ -220,13 +199,7 @@ class AssignmentModal extends React.Component {
                         </TabPane>
                     </Tabs>
                 ) :
-                <Spin spinning>
-                    <Alert
-                        message={t('get_data_server')}
-                        description={t('reason_get_server')}
-                        type="info"
-                    />
-                </Spin>
+                <Loading />
             }
         </Modal>
     }
