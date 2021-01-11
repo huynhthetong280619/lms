@@ -1,31 +1,16 @@
 import React from 'react'
-import { Row, Col, Popover, Tooltip, Tabs, Input, Timeline, Select, notification, Spin, Drawer, Modal, Button } from 'antd'
-import { Switch } from 'antd';
+import { Row, Col, Popover, Tooltip, Tabs, Timeline, notification, Drawer, Button } from 'antd'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 import styles from './styles.scss'
 import './overwrite.css'
 import { get, pick, head } from 'lodash';
-import add from '../../../assets/images/contents/add.png'
 import forum from '../../../assets/images/contents/forum.png'
-import excel from '../../../assets/images/contents/excel.png'
-import file from '../../../assets/images/contents/file.png'
-import pdf from '../../../assets/images/contents/pdf.png'
-import video from '../../../assets/images/contents/video.png'
-import loudspeaker from '../../../assets/images/contents/loudspeaker.png'
-import timeline from '../../../assets/images/contents/timeline.png'
-import word from '../../../assets/images/contents/word.png'
-import assignment from '../../../assets/images/contents/assignment.png'
-import quiz from '../../../assets/images/contents/quiz.png'
 import lock from '../../../assets/images/contents/lock.png'
-import surveyIcon from '../../../assets/images/contents/survey.png'
-import student from '../../../assets/images/contents/student.png'
-import external from '../../../assets/images/contents/external.png'
 import manageScore from '../../../assets/images/contents/manage-score.png'
 import { withTranslation } from 'react-i18next';
 import restClient from '../../../assets/common/core/restClient';
-import { MoreOutlined, SettingOutlined, AndroidOutlined } from '@ant-design/icons'
-import moment from 'moment'
+import { MoreOutlined } from '@ant-design/icons'
 require('isomorphic-fetch');
 import 'react-day-picker/lib/style.css';
 import newInfo from '../../../assets/images/contents/new.png';
@@ -52,7 +37,6 @@ import {
 } from '@ant-design/icons';
 import fileDownload from 'js-file-download';
 
-const { TabPane } = Tabs;
 
 class Subject extends React.Component {
 
@@ -68,14 +52,13 @@ class Subject extends React.Component {
             lstTimelines: [],
             lstQuizzes: [],
             lstSurveys: [],
-            FileData: null,
-            isAddInformation: false,
-            isAddFile: false,
-            isAddTimeline: false,
-            isAddAssignment: false,
-            isAddQuiz: false,
-            isAddSurvey: false,
-            isAddForum: false,
+            isFocusInformation: false,
+            isFocusFile: false,
+            isFocusTimeline: false,
+            isFocusAssignment: false,
+            isFocusQuiz: false,
+            isFocusSurvey: false,
+            isFocusForum: false,
             isImportSubject: false,
             deadlines: [],
             dueTo: [],
@@ -92,6 +75,10 @@ class Subject extends React.Component {
             isOnMovement: false,
             isOnEdit: false,
             isExporting: false,
+            idInformationFocus: null,
+            idTimelineFocus: null,
+            idSurveyFocus: null,
+            idAssignmentFocus: null,
         }
     }
 
@@ -194,12 +181,6 @@ class Subject extends React.Component {
 
     deleteForum = async () => {
 
-    }
-
-    handleProcessFileSubmission = (e) => {
-        this.setState({
-            FileData: e.target.files[0]
-        })
     }
 
     onSubmitAssignment = () => {
@@ -356,95 +337,83 @@ class Subject extends React.Component {
     }
 
     createAssignment = async ({ assignment, idTimeline }) => {
-        const data = {
-            idSubject: this.props.idSubject,
-            idTimeline: idTimeline,
-            data: assignment
-        }
+        this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công assignment')
+        let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
+        head(timelineUpdate).assignments.push(assignment)
+
+
+        console.log(timelineUpdate)
+
         this.setState({
-            isLoading: true
+            timelines: [...this.state.timelines],
+        }, () => {
+            console.log(this.state.timelines)
+            this.closeDrawerCreate();
         })
-        console.log('CreateAssignment', data);
-        await restClient.asyncPost('/assignment', data, this.props.token)
-            .then(res => {
-                console.log(res)
-                this.setState({
-                    isLoading: false
-                })
-                if (!res.hasError) {
-                    this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công assignment')
-                    let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === data.idTimeline)
-
-                    head(timelineUpdate).assignments.push(res.data.assignment)
-
-
-                    console.log(timelineUpdate)
-
-                    this.setState({
-                        timelines: [...this.state.timelines],
-                        isOpenDrawerCreate: false
-                    }, () => {
-                        console.log(this.state.timelines)
-                    })
-
-
-                    this.setState({
-                        assignment: {
-                            name: '',
-                            content: '',
-                            setting: {
-                                startTime: (new Date()),
-                                expireTime: (new Date()),
-                                isOverDue: false,
-                                overDueDate: (new Date()),
-                                fileSize: ''
-                            }
-                        }
-                    })
-                } else {
-                    this.notifyError("Thất bại", res.data.message);
-                }
-            })
     }
 
-    createSurvey = async ({ survey, idTimeline }) => {
-        console.log('createSurvey', survey)
-        const data = {
-            idSubject: this.props.idSubject,
-            idTimeline: idTimeline,
-            data: survey
-        }
+    updateAssignment = ({ assignment, idTimeline }) => {
+        this.notifySuccess('Thành công!', 'Bạn đã cập nhật assignment thành công')
+        let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
+
+        console.log('timelineUpdate', timelineUpdate)
+        let target = head(timelineUpdate).assignments.find(({ _id }) => _id === assignment._id);
+        console.log('targetAssignment', target);
+        let index = head(timelineUpdate).assignments.indexOf(target);
+
+        head(timelineUpdate).assignments.splice(index, 1, assignment);
+
         this.setState({
-            isLoading: true
+            timelines: [...this.state.timelines],
+        }, () => {
+            console.log(this.state.timelines)
+            this.closeDrawerCreate();
         })
-        console.log('data', data)
-        await restClient.asyncPost('/survey', data, this.props.token)
-            .then(res => {
-                console.log('createSurvey', res)
-                this.setState({
-                    isLoading: false
-                })
-                if (!res.hasError) {
-                    this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công survey')
-                    let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === data.idTimeline)
-
-                    console.log('timelineUpdate', timelineUpdate)
-                    head(timelineUpdate).surveys.push(res.data.survey)
-
-
-                    console.log(timelineUpdate)
-
-                    this.setState({
-                        timelines: [...this.state.timelines],
-                        isOpenDrawerCreate: false
-                    }, () => {
-                        console.log(this.state.timelines)
-                    })
-                } else {
-                    this.notifyError("Thất bại", res.data.message);
-                }
-            })
     }
+
+    createSurvey = ({ survey, idTimeline }) => {
+
+        this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công survey')
+        let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
+
+        console.log('timelineUpdate', timelineUpdate)
+        head(timelineUpdate).surveys.push(survey)
+
+
+        console.log(timelineUpdate)
+
+        this.setState({
+            timelines: [...this.state.timelines],
+        }, () => {
+            console.log(this.state.timelines)
+            this.closeDrawerCreate();
+        })
+
+    }
+    updateSurvey = ({ survey, idTimeline }) => {
+
+        this.notifySuccess('Thành công!', 'Bạn đã cập nhật survey thành công')
+        let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
+
+        console.log('timelineUpdate', timelineUpdate)
+        let target = head(timelineUpdate).surveys.find(({ _id }) => _id === survey._id);
+        console.log('targetSurvey', target);
+        let index = head(timelineUpdate).surveys.indexOf(target);
+
+        head(timelineUpdate).surveys.splice(index, 1, survey);
+
+
+        console.log(timelineUpdate)
+
+        this.setState({
+            timelines: [...this.state.timelines],
+        }, () => {           
+            console.log(this.state.timelines)
+            this.closeDrawerCreate();
+        })
+    }
+
+
 
     notifySuccess = (message, description) => {
         notification.success({
@@ -557,46 +526,54 @@ class Subject extends React.Component {
     }
 
 
-    addFile = () => {
+    focusFile = (idFile) => {
         this.setState({
-            isAddFile: true,
+            isFocusFile: true,
         })
     }
 
-    addInformation = () => {
-        console.log('Add information')
+    focusInformation = (idInformation) => {
+        console.log('Add information', idInformation)
         this.setState({
-            isAddInformation: true,
+            isFocusInformation: true,
+            idInformationFocus: idInformation
         })
     }
 
-    addTimeline = () => {
+    focusTimeline = (idTimeline) => {
         this.setState({
-            isAddTimeline: true,
+            isFocusTimeline: true,
+            idTimelineFocus: idTimeline,
         })
     }
 
-    addAssignment = () => {
+    focusAssignment = (idAssignment, idTimeline) => {
         this.setState({
-            isAddAssignment: true,
+            isFocusAssignment: true,
+            idTimelineRequired: idTimeline,
+            idAssignmentFocus: idAssignment
         })
     }
 
     addQuiz = () => {
         this.setState({
-            isAddQuiz: true,
+            isFocusQuiz: true,
         })
     }
 
-    addSurvey = () => {
+    focusSurvey = (idSurvey, idTimeline) => {
+        console.log('idTimeline', idTimeline)
         this.setState({
-            isAddSurvey: true
+            isFocusSurvey: true,
+            idSurveyFocus: idSurvey,
+            idTimelineRequired: idTimeline
         })
     }
+
 
     addForum = () => {
         this.setState({
-            isAddForum: true
+            isFocusForum: true
         })
     }
 
@@ -685,15 +662,20 @@ class Subject extends React.Component {
     closeDrawerCreate = () => {
         this.setState({
             isOpenDrawerCreate: false,
-            isAddInformation: false,
-            isAddFile: false,
-            isAddTimeline: false,
-            isAddAssignment: false,
-            isAddQuiz: false,
-            isAddSurvey: false,
-            isAddForum: false,
+            isFocusInformation: false,
+            isFocusFile: false,
+            isFocusTimeline: false,
+            isFocusAssignment: false,
+            isFocusQuiz: false,
+            isFocusSurvey: false,
+            isFocusForum: false,
             isImportSubject: false,
             isLoading: false,
+            idInformationFocus: null,
+            idSurveyFocus: null,
+            idAssignmentFocus: null,
+            idTimelineFocus: null,
+            idTimelineRequired: null,
         })
     }
 
@@ -730,60 +712,13 @@ class Subject extends React.Component {
             });
     }
 
+
+
     render() {
 
         const { t } = this.props;
 
         console.log(this.state.isTeacherPrivilege)
-        // const content = (
-        //     <div>
-        //         <span style={{ margin: '0 10px' }} onClick={() => this.addFileWord()}>
-        //             <i>
-        //                 <Tooltip title="Add file word">
-        //                     <img src={file} style={{ width: '50px' }} />
-        //                 </Tooltip>
-        //             </i>
-        //         </span>
-        //         <span style={{ margin: '0 10px' }} onClick={() => this.addInformation()}>
-        //             <i>
-        //                 <Tooltip title="Add file information">
-        //                     <img src={loudspeaker} style={{ width: '50px' }} />
-        //                 </Tooltip>
-        //             </i>
-        //         </span>
-        //         <span style={{ margin: '0 10px' }} onClick={() => this.addTimeline()}>
-        //             <i>
-        //                 <Tooltip title="Add file timeline">
-        //                     <img src={timeline} style={{ width: '50px' }} />
-        //                 </Tooltip>
-        //             </i>
-        //         </span>
-
-        //         <span style={{ margin: '0 10px' }} onClick={() => this.addAssignment()}>
-        //             <i>
-        //                 <Tooltip title="Add assignment">
-        //                     <img src={assignment} style={{ width: '50px' }} />
-        //                 </Tooltip>
-        //             </i>
-        //         </span>
-
-        //         <span style={{ margin: '0 10px' }} onClick={() => this.addQuiz()}>
-        //             <i>
-        //                 <Tooltip title="Add quiz">
-        //                     <img src={quiz} style={{ width: '50px' }} />
-        //                 </Tooltip>
-        //             </i>
-        //         </span>
-
-        //         <span style={{ margin: '0 10px' }} onClick={() => this.addSurvey()}>
-        //             <i>
-        //                 <Tooltip title="Add survey">
-        //                     <img src={surveyIcon} style={{ width: '50px' }} />
-        //                 </Tooltip>
-        //             </i>
-        //         </span>
-        //     </div>
-        // );
 
         const contentCRUD = (Id, isDeleted, type, timelineId) => {
 
@@ -821,7 +756,7 @@ class Subject extends React.Component {
 
         }
 
-        const timelineTemplate = (id, name, description, assignments, exams, forums, information, files, surveys, flagMove) => (
+        const timelineTemplate = (idTimeline, name, description, assignments, exams, forums, information, files, surveys, flagMove) => (
             <div style={{ margin: '0 10px 10px 10px', border: `${flagMove ? '1px dashed #d9d9d9' : '2px solid #cacaca'}` }}>
                 <div style={{ position: 'relative' }}>
                     {/* {this.state.isLoadingRequirement && <Spin style={{position: 'absolute', top: '50%', left: '50%', zIndex: 100}}/>} */}
@@ -887,9 +822,9 @@ class Subject extends React.Component {
                     {
 
                         surveys != null ? (
-                            surveys.map(f => {
+                            surveys.map(survey => {
                                 return (
-                                    <Row style={{ marginBottom: 10 }} key={f._id} >
+                                    <Row style={{ marginBottom: 10 }} key={survey._id} >
                                         <Col span={2} style={{
                                             textAlign: 'center',
                                             alignSelf: 'center'
@@ -903,16 +838,21 @@ class Subject extends React.Component {
                                             alignSelf: 'center',
                                             marginLeft: '10px'
                                         }}>
-                                            <a style={{ display: 'inline-block', cursor: 'pointer', color: '#000' }} href={`/surveys/${f._id}?idSubject=${this.props.idSubject}&idTimeline=${id}`}>{f.name}</a>
+                                            <a style={{ display: 'inline-block', cursor: 'pointer', color: '#000' }} href={`/surveys/${survey._id}?idSubject=${this.props.idSubject}&idTimeline=${idTimeline}`}>{survey.name}</a>
 
                                         </Col>
                                         <Col span={2} style={{
                                             fontSize: '20px',
                                             alignSelf: 'center',
-                                            marginLeft: '10px'
+                                            marginLeft: '10px',
+                                            display: 'flex',
+                                            justifyContent: 'space-evenly'
                                         }}>
-
-                                            {this.state.isOnEdit && <FontAwesomeIcon icon="edit" />}
+                                            {this.state.isOnEdit && (<Tooltip title="Edit Survey">
+                                                <a>
+                                                    <FontAwesomeIcon icon="edit" onClick={() => { this.focusSurvey(survey._id, idTimeline); this.openDrawerCreate('CẬP NHẬT KHẢO SÁT') }} />
+                                                </a>
+                                            </Tooltip>)}
                                             {this.state.isOnEdit && <FontAwesomeIcon icon="lock-open" />}
                                         </Col>
                                     </Row>
@@ -955,7 +895,7 @@ class Subject extends React.Component {
                                             justifyContent: 'space-between'
                                         }}>
                                             <Tooltip title="View online">
-                                                <a href={`/view?idSubject=${this.props.idSubject}&idTimeline=${id}&idFile=${f._id}`} target='_blank'>
+                                                <a href={`/view?idSubject=${this.props.idSubject}&idTimeline=${idTimeline}&idFile=${f._id}`} target='_blank'>
                                                     <FontAwesomeIcon icon="external-link-alt" />
                                                 </a>
                                             </Tooltip>
@@ -975,7 +915,7 @@ class Subject extends React.Component {
                             assignments.map(assign => (
                                 !this.state.isTeacherPrivilege ?
                                     <Row style={{ marginBottom: 10, position: 'relative', cursor: 'pointer' }} onClick={() => {
-                                        this.getRequirementAssignment({ idAssignment: assign._id, idTimeline: id });
+                                        this.getRequirementAssignment({ idAssignment: assign._id, idTimeline: idTimeline });
                                     }} key={assign._id}>
 
                                         <Col span={2} style={{
@@ -1011,7 +951,7 @@ class Subject extends React.Component {
                                             alignSelf: 'center',
                                             marginLeft: '10px'
                                         }}>
-                                            <a style={{ display: 'inline-block', cursor: 'pointer', color: '#000' }} href={`/manage/${assign._id}?idSubject=${this.props.idSubject}&idTimeline=${id}`}>{assign.name}</a>
+                                            <a style={{ display: 'inline-block', cursor: 'pointer', color: '#000' }} href={`/manage/${assign._id}?idSubject=${this.props.idSubject}&idTimeline=${idTimeline}`}>{assign.name}</a>
 
                                         </Col>
                                         <Col span={2} style={{
@@ -1020,13 +960,19 @@ class Subject extends React.Component {
                                             marginLeft: '10px'
                                         }}>
 
-                                            {(this.state.isExe && assign.isDeleted) && <img src={lock} width={20} />}
+                                            {/* {(this.state.isExe && assign.isDeleted) && <img src={lock} width={20} />}
 
-                                            {this.state.isExe && <Popover content={contentCRUD(assign._id, assign.isDeleted, 'assignment', id)} title="Thao tác">
+                                            {this.state.isExe && <Popover content={contentCRUD(assign._id, assign.isDeleted, 'assignment', idTimeline)} title="Thao tác">
                                                 <img src={opts} width={20} />
-                                            </Popover>}
-                                            {this.state.isOnEdit && <FontAwesomeIcon icon="edit" />}
-                                            {this.state.isOnEdit && <FontAwesomeIcon icon="lock-open" />}
+                                            </Popover>} */}
+
+                                            {this.state.isOnEdit && (<Tooltip title="Edit Survey">
+                                                <a>
+                                                    <FontAwesomeIcon icon="edit" onClick={() => { this.focusAssignment(assign._id, idTimeline); this.openDrawerCreate('CẬP NHẬT BÀI TẬP') }} />
+                                                </a>
+                                            </Tooltip>)}
+
+                                            {/* {this.state.isOnEdit && <FontAwesomeIcon icon="lock-open" />} */}
                                         </Col>
                                     </Row>
                             ))
@@ -1051,7 +997,7 @@ class Subject extends React.Component {
                                         alignSelf: 'center',
                                         marginLeft: '10px'
                                     }}>
-                                        <a style={{ display: 'inline-block', cursor: 'pointer', color: '#000' }} href={`/forums/${fr._id}?idSubject=${this.props.idSubject}&idTimeline=${id}`}>{fr.name}</a>
+                                        <a style={{ display: 'inline-block', cursor: 'pointer', color: '#000' }} href={`/forums/${fr._id}?idSubject=${this.props.idSubject}&idTimeline=${idTimeline}`}>{fr.name}</a>
 
                                     </Col>
                                     <Col span={2} style={{
@@ -1086,7 +1032,7 @@ class Subject extends React.Component {
                                         alignSelf: 'center',
                                         marginLeft: '10px'
                                     }}>
-                                        <a style={{ display: 'inline-block', cursor: 'pointer', color: '#000' }} href={`/quizzis/${ex._id}?idSubject=${this.props.idSubject}&idTimeline=${id}`}>{ex.name}</a>
+                                        <a style={{ display: 'inline-block', cursor: 'pointer', color: '#000' }} href={`/quizzis/${ex._id}?idSubject=${this.props.idSubject}&idTimeline=${idTimeline}`}>{ex.name}</a>
                                     </Col>
                                 </Row>
                             ))
@@ -1232,7 +1178,7 @@ class Subject extends React.Component {
                             cursor: 'pointer'
                         }} onClick={() => {
                             this.openDrawerCreate('TẠO THÔNG BÁO');
-                            this.addInformation()
+                            this.focusInformation()
                         }}>
                             THÔNG BÁO
                        </Col>
@@ -1246,7 +1192,7 @@ class Subject extends React.Component {
                         }}
                             onClick={() => {
                                 this.openDrawerCreate('TẠO TÀI LIỆU');
-                                this.addFile()
+                                this.focusFile()
                             }}>
                             TÀI LIỆU
                        </Col>
@@ -1259,7 +1205,7 @@ class Subject extends React.Component {
                             cursor: 'pointer'
                         }} onClick={() => {
                             this.openDrawerCreate('TẠO BÀI TẬP');
-                            this.addAssignment();
+                            this.focusAssignment();
                         }}>
                             BÀI TẬP
                        </Col>
@@ -1287,7 +1233,7 @@ class Subject extends React.Component {
                             cursor: 'pointer'
                         }} onClick={() => {
                             this.openDrawerCreate('TẠO BÀI KHẢO SÁT');
-                            this.addSurvey();
+                            this.focusSurvey();
                         }}>
                             KHẢO SÁT
                        </Col>
@@ -1300,7 +1246,7 @@ class Subject extends React.Component {
                             cursor: 'pointer'
                         }} onClick={() => {
                             this.openDrawerCreate('TẠO TUẦN MỚI');
-                            this.addTimeline()
+                            this.focusTimeline()
                         }}>
                             TUẦN
                        </Col>
@@ -1317,7 +1263,7 @@ class Subject extends React.Component {
                             lineHeight: '50px',
                             cursor: 'pointer'
                         }} onClick={() => {
-                            this.openDrawerCreate('TẠO DIỄN ĐÀN MỚI MỚI');
+                            this.openDrawerCreate('TẠO DIỄN ĐÀN MỚI');
                             this.addForum();
                         }}>
                             DIỄN ĐÀN
@@ -1392,14 +1338,14 @@ class Subject extends React.Component {
                     width={540}
                     style={{ textAlign: 'center' }}
                 >
-                    {this.state.isAddQuiz && (<AddQuiz isLoading={this.state.isLoading} lstQuizzes={this.state.lstQuizzes} lstTimelines={this.state.lstTimelines} createQuiz={this.createQuiz} />)}
-                    {this.state.isAddSurvey && (<AddSurvey isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} lstSurveys={this.state.lstSurveys} createSurvey={this.createSurvey} />)}
-                    {this.state.isAddAssignment && (<AddAssignment isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} onUploadFile={this.onUploadFile} onCancelUploadFile={this.onCancelUploadFile} createAssignment={this.createAssignment} notifyError={this.notifyError} />)}
-                    {this.state.isAddFile && (<AddFile isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} onUploadFile={this.onUploadFile} onCancelUploadFile={this.onCancelUploadFile} createFile={this.createFile} />)}
-                    {this.state.isAddInformation && (<AddInformation lstTimelines={this.state.lstTimelines} isLoading={this.state.isLoading} createInformation={this.createInformation} />)}
-                    {this.state.isAddTimeline && (<AddTimeline createTimeline={this.createTimeline} isLoading={this.state.isLoading} />)}
+                    {this.state.isFocusQuiz && (<AddQuiz isLoading={this.state.isLoading} lstQuizzes={this.state.lstQuizzes} lstTimelines={this.state.lstTimelines} createQuiz={this.createQuiz} />)}
+                    {this.state.isFocusSurvey && (<AddSurvey isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} lstSurveys={this.state.lstSurveys} createSurvey={this.createSurvey} updateSurvey={this.updateSurvey} idSubject={this.props.idSubject} idTimeline={this.state.idTimelineRequired} idSurvey={this.state.idSurveyFocus} token={this.props.token} />)}
+                    {this.state.isFocusAssignment && (<AddAssignment isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} createAssignment={this.createAssignment} updateAssignment={this.updateAssignment} idSubject={this.props.idSubject} idTimeline={this.state.idTimelineRequired} idAssignment={this.state.idAssignmentFocus} token={this.props.token} />)}
+                    {this.state.isFocusFile && (<AddFile isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} onUploadFile={this.onUploadFile} onCancelUploadFile={this.onCancelUploadFile} createFile={this.createFile} />)}
+                    {this.state.isFocusInformation && (<AddInformation lstTimelines={this.state.lstTimelines} isLoading={this.state.isLoading} createInformation={this.createInformation} idSubject={this.props.idSubject} idTimeline={this.props.idTimeline} idInformation={this.state.idInformationFocus} />)}
+                    {this.state.isFocusTimeline && (<AddTimeline createTimeline={this.createTimeline} isLoading={this.state.isLoading} />)}
                     {this.state.isImportSubject && (<ImportSubject isLoading={this.state.isLoading} handleImportSubject={this.handleImportSubject} />)}
-                    {this.state.isAddForum && (<AddForum isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} createForum={this.createForum} />)}
+                    {this.state.isFocusForum && (<AddForum isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} createForum={this.createForum} />)}
 
                 </Drawer>
                 {
@@ -1430,125 +1376,6 @@ class Subject extends React.Component {
 
                             ?
                             null
-                            // <Col span={8}
-                            //     style={{
-                            //         margin: '10px',
-                            //         background: '#fff',
-                            //         minHeight: '200px',
-                            //         maxHeight: 726
-                            //     }}>
-
-                            //     <div
-                            //         style={{
-                            //             textAlign: 'center',
-                            //             padding: 10
-                            //         }}>
-
-                            //         <Tabs defaultActiveKey="1">
-                            //             <TabPane
-                            //                 tab={
-                            //                     <span>
-                            //                         <SettingOutlined />
-                            //                         {t('setting')}
-                            //                     </span>
-                            //                 }
-                            //                 key="1"
-                            //                 style={{ height: 'auto' }}
-                            //             >
-                            //                 <Row>
-                            //                     <Col span={10}>
-                            //                         <span style={{ fontWeight: 600 }}>Sắp xếp mốc thời gian</span>
-                            //                     </Col>
-                            //                     <Col span={10}>
-                            //                         <Switch defaultChecked={false} onChange={e => this.onOrderTimeLine(e)} />
-                            //                     </Col>
-                            //                 </Row>
-                            //                 <Row>
-                            //                     <Col span={10}>
-                            //                         <span style={{ fontWeight: 600 }}>Nghiệp vụ thao tác</span>
-                            //                     </Col>
-                            //                     <Col span={10}>
-                            //                         <Switch defaultChecked={false} onChange={e => this.onExe(e)} />
-                            //                     </Col>
-                            //                 </Row>
-                            //             </TabPane>
-                            //             <TabPane
-                            //                 tab={
-                            //                     <span>
-                            //                         <AndroidOutlined />
-                            //                         {t('add_content')}
-                            //                     </span>
-                            //                 }
-                            //                 key="2"
-                            //                 style={{ height: 'auto' }}
-                            //             >
-
-                            //                 <Row style={{
-                            //                     background: '#cacaca',
-                            //                     borderRadius: '30px',
-                            //                     padding: '10px 0',
-                            //                     width: '47px',
-                            //                     marginBottom: "15px"
-                            //                 }}>
-                            //                     <Popover content={content} title="Thêm nội dung">
-                            //                         <div>
-                            //                             <i>
-                            //                                 <img src={add} style={{ width: '25px' }} />
-                            //                             </i>
-                            //                         </div>
-                            //                     </Popover>
-                            //                 </Row>
-
-                            //                 <div style={{
-                            //                     border: "2px solid #cacaca",
-                            //                     padding: "20px 0",
-                            //                     borderRadius: "11px",
-                            //                     position: 'relative'
-
-                            //                 }}>
-                            //                     {this.state.isLoading && <Spin style={{ position: 'absolute', top: '50%', left: '50%', zIndex: 100 }} />}
-                            //                     {
-                            //                         this.state.isOpenSetting && <div style={{
-                            //                             fontStyle: "italic",
-                            //                             color: "#cacaca"
-                            //                         }}>
-                            //                             {t('setting_title')}
-                            //                         </div>
-                            //                     }
-
-                            //                     {
-                            //                         this.state.isAddQuiz && (
-                            //                             <AddQuiz isLoading={this.state.isLoading} lstQuizzes={this.state.lstQuizzes} lstTimelines={this.state.lstTimelines} createQuiz={this.createQuiz} />
-                            //                         )
-                            //                     }
-
-                            //                     {
-                            //                         this.state.isAddSurvey && (
-                            //                             <AddSurvey isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} lstSurveys={this.state.lstSurveys} createSurvey={this.createSurvey} />
-                            //                         )
-                            //                     }
-
-                            //                     {
-                            //                         this.state.isAddAssignment && (
-                            //                             <AddAssignment isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} onUploadFile={this.onUploadFile} createAssignment={this.createAssignment} notifyError={this.notifyError} />
-                            //                         )}
-                            //                     {this.state.isAddFile && <>
-                            //                         <AddFile isLoading={this.state.isLoading} lstTimelines={this.state.lstTimelines} onUploadFile={this.onUploadFile} createFile={this.createFile} />
-                            //                     </>}
-                            //                     {this.state.isAddInformation && <>
-                            //                         <AddInformation lstTimelines={this.state.lstTimelines} isLoading={this.state.isLoading} createInformation={this.createInformation} />
-                            //                     </>}
-
-                            //                     {this.state.isAddTimeline && <>
-                            //                         <AddTimeline createTimeline={this.createTimeline} isLoading={this.state.isLoading} />
-                            //                     </>}
-
-                            //                 </div>
-                            //             </TabPane>
-                            //         </Tabs>
-                            //     </div>
-                            // </Col>
-
                             :
                             <Col span={8}
                                 style={{

@@ -9,6 +9,8 @@ import moment from 'moment'
 import file from '../../../../assets/images/contents/file.png'
 import word from '../../../../assets/images/contents/word.png'
 import rar from '../../../../assets/images/contents/rar.png'
+import pdf from '../../../../assets/images/contents/pdf.png'
+import Loading from '../../loading/loading.jsx'
 
 class AssignmentModal extends React.Component {
     constructor(props) {
@@ -196,13 +198,7 @@ class AssignmentModal extends React.Component {
                         </TabPane>
                     </Tabs>
                 ) :
-                <Spin spinning>
-                    <Alert
-                        message="Lấy dữ liệu từ server"
-                        description="Hoạt động có thể chậm do mạng..."
-                        type="info"
-                    />
-                </Spin>
+                <Loading />
             }
         </Modal>
     }

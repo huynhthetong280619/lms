@@ -1,17 +1,14 @@
 {
     "sbmit_stat": "Nộp bài tập",
-
     "systm_onl": "Hệ thống học trực tuyến",
     "univers_nm": "Trường Đại học sư phạm kỹ thuật TP.Hồ Chí Minh",
     "term_condt": "Điều khoản",
     "policy": "Chính sách",
     "social_ntw": "Mạng xã hội",
-
     "nm_course": "KHÓA HỌC",
     "upcm_dl": "BÀI TẬP SẮP HẾT HẠN",
     "dl": "Hạn cuối",
     "complt": "Hoàn thành",
-
     "discussion_forum": "Diễn đàn thảo luận",
     "exercise": "Bài tập",
     "quiz": "Câu hỏi nhanh",
@@ -28,8 +25,6 @@
     "please_fill_into_topic_name": "Vui lòng nhập thông tin tên chủ đề",
     "please_fill_into_topic_description": "Vui lòng nhập thông tin mô tả chủ đề",
     "add_content": "Nội dung",
-
-
     "our": "NGƯỜI HƯỚNG DẪN",
     "top": "GIỎI NHẤT",
     "instructor": "CỦA CHÚNG TÔI",
@@ -61,7 +56,8 @@
     "overDueDate": "Ngày quá hạn: ",
     "fileSize": "Kích thước tệp: ",
     "fileAttach": "Tệp đính kèm: ",
-    "submit": "Tạo mới",
+    "addFileAttach": "Thêm tệp đính kèm",
+    "submit": "Lưu",
     "setting_title": "Cấu hình khóa học",
     "setting_quiz": "Cấu hình bài trắc nghiệm",
     "setting_survey": "Cấu hình bài khảo sát",
@@ -74,5 +70,8 @@
     "code_student": "Mã số sinh viên",
     "grade": "Điểm",
     "surName": "Họ",
-    "firstName": "Tên"
+    "firstName": "Tên",
+    "display": "Hiện thị",
+    "isDeleted": "Khóa",
+    "isDeleted_descriptiopn": "(Checked để không hiện thị)"
 }
