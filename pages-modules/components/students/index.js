@@ -5,7 +5,7 @@ import { withTranslation } from 'react-i18next'
 const { TabPane } = Tabs;
 import './overwrite.css'
 import StudentManage from './StudentManage/studentManage.jsx'
-import ExamManage from './ExamManage/ExamManage.jsx'
+import ExamManage from './ExamManage/examManage'
 import TranscriptManage from './TranscriptManage/transcriptManage.jsx'
 
 
@@ -28,7 +28,6 @@ class Student extends React.Component {
 
         return (
             <div class="lms-ws-student-page">
-
                 <Row style={{
                     width: '85%',
                     textAlign: 'center',
