@@ -2,6 +2,7 @@ import { Row, Col, Table, Input, Popconfirm, Button, Form, notification } from '
 import React, { useState } from 'react'
 import { get } from 'lodash'
 import downloadFile from '../../../assets/common/core/downloadFile.js';
+import restClient from '../../../assets/common/core/restClient.js';
 import 'antd/dist/antd.css';
 
 const Manage = ({ assignment, idAssign, idSubject, idTimeline, token }) => {
@@ -46,7 +47,7 @@ const Manage = ({ assignment, idAssign, idSubject, idTimeline, token }) => {
                     let newData = state.lstSubmission;
                     const rowIndex = newData.findIndex(value => value._id === idSubmission);
                     console.log('rowIndex', rowIndex);
-                    newData[rowIndex].feedBack.grade = row.grade;
+                    newData[rowIndex].feedBack = res.data.feedBack;
                     setState({ ...state, editingKey: null, lstSubmission: newData });
                 } else {
                     notification.error({

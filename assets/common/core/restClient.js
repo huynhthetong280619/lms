@@ -193,7 +193,7 @@ class RestClient {
 
     async asyncDelete(path, data, token) {
         try {
-            const response = await fetch(this.getUrl(path, options), {
+            const response = await fetch(this.getUrl(path), {
                 headers: this.createHeaders(token),
                 body: JSON.stringify(data),
                 method: 'DELETE',
