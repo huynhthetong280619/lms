@@ -5,6 +5,8 @@ import '../overwrite.css'
 import survey from '../../../../assets/images/contents/surveylogo.png'
 import restClient from '../../../../assets/common/core/restClient'
 import Router from 'next/router'
+import { withTranslation } from 'react-i18next'
+
 class SurveyExecute extends React.Component {
 
     state = {
@@ -14,7 +16,6 @@ class SurveyExecute extends React.Component {
     }
 
     componentDidMount() {
-        console.log('this.props.surveyQ.questionnaire', this.props.surveyQ.questionnaire)
 
         console.log('componentDidMount', this.props.questionnaire.questions)
         this.setState({
@@ -96,6 +97,8 @@ class SurveyExecute extends React.Component {
     }
 
     render() {
+        const {t} = this.props;
+
         const radioStyle = {
             display: 'block',
             height: '30px',
@@ -199,4 +202,4 @@ class SurveyExecute extends React.Component {
     }
 }
 
-export default SurveyExecute
+export default withTranslation('translations')(SurveyExecute)

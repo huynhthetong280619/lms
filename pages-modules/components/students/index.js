@@ -227,7 +227,7 @@ class Student extends React.Component {
         await RestClient.asyncPut(`/subject/${this.props.idSubject}/ratio`, data, this.props.token)
             .then(res => {
                 if (!res.hasError) {
-                    this.state({
+                    this.setState({
                         lstClassScore: res.data
                     })
                 }
@@ -258,7 +258,7 @@ class Student extends React.Component {
 
 
     onFinish = (value) => {
-        addStudentToClass(valude)
+        this.addStudentToClass(valude)
     }
     render() {
 

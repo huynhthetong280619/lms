@@ -8,6 +8,7 @@ const { TabPane } = Tabs;
 import './overwrite.css'
 import '../fontAwesomeIcon'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { withTranslation } from 'react-i18next'
 
 class Survey extends React.Component {
 
@@ -19,7 +20,8 @@ class Survey extends React.Component {
     }
 
     render() {
-        const { survey } = this.props
+        const { survey, t } = this.props
+
         const radioStyle = {
             display: 'block',
             height: '30px',
@@ -52,7 +54,7 @@ class Survey extends React.Component {
                                     <i>
                                     <FontAwesomeIcon icon="poll" style={{ width: 105, height: 105, color: '#ff4000' }} />
                                     </i>
-                                    <div style={{ fontSize: '2em' }}>[{t('survey').toUpperCase()}] {get(survey, 'name')}</div>
+                                    <div style={{ fontSize: '2em' }}>[ {t('survey')}] {get(survey, 'name')}</div>
                                     <div>
                                         <div><span style={{ fontWeight: 700 }}>{t('close')}: </span> {this.transTime(get(survey, 'expireTime'))}</div>
                                         <div><span style={{ fontWeight: 700 }}>{t('time_remain')}: </span> {moment.utc(get(survey, 'expireTime')).fromNow()}</div>
@@ -226,4 +228,4 @@ class Survey extends React.Component {
 }
 
 
-export default Survey
+export default withTranslation('translations')(Survey)

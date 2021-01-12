@@ -735,44 +735,6 @@ class Subject extends React.Component {
 
         const { t } = this.props;
 
-        console.log(this.state.isTeacherPrivilege)
-
-        const contentCRUD = (Id, isDeleted, type, timelineId) => {
-
-            if (type == 'assignment') {
-                return (
-                    <ul>
-                        <li style={{ textDecoration: 'none' }}>
-                            {
-                                isDeleted ? <a onClick={() => this.unlock(`/assignment/${Id}/hide?idSubject=${this.props.idSubject}&idTimeline=${timelineId}`)}>Unlock</a> : <a onClick={() => this.lock(`/assignment/${Id}/hide?idSubject=${this.props.idSubject}&idTimeline=${timelineId}`)}>Lock</a>
-                            }
-                        </li>
-                        <li style={{ textDecoration: 'none' }}>
-                            <a onClick={() => this.edit(Id)}>Edit</a>
-                        </li>
-
-                    </ul>
-                )
-            }
-
-            if (type == 'survey') {
-                return (
-                    <ul>
-                        <li style={{ textDecoration: 'none' }}>
-                            {
-                                isDeleted ? <a onClick={() => this.unlock(`/survey/${Id}/hide?idSubject=${this.props.idSubject}&idTimeline=${timelineId}`)}>Unlock</a> : <a onClick={() => this.lock(`/survey/${Id}//hide?idSubject=${this.props.idSubject}&idTimeline=${timelineId}`)}>Lock</a>
-                            }
-                        </li>
-                        <li style={{ textDecoration: 'none' }}>
-                            <a onClick={() => this.edit(Id)}>Edit</a>
-                        </li>
-
-                    </ul>
-                )
-            }
-
-        }
-
         const timelineTemplate = (idTimeline, name, description, assignments, exams, forums, information, files, surveys, flagMove) => (
             <div style={{ margin: '0 10px 10px 10px', border: `${flagMove ? '1px dashed #d9d9d9' : '2px solid #cacaca'}` }}>
                 <div style={{ position: 'relative' }}>
@@ -806,7 +768,7 @@ class Subject extends React.Component {
                     {
 
                         information != null ? (
-                            <Row style={{ paddingLeft: 47 }}>
+                            <Row style={{ paddingLeft: 23 }}>
                                 <Timeline>
                                     {information.map(info => {
                                         return (
@@ -868,7 +830,7 @@ class Subject extends React.Component {
                                                     <FontAwesomeIcon icon="edit" onClick={() => { this.focusSurvey(survey._id, idTimeline); this.openDrawerCreate('CẬP NHẬT KHẢO SÁT') }} />
                                                 </a>
                                             </Tooltip>)}
-                                            {this.state.isTeacherPrivilege && (!survey.isDeleted ? <FontAwesomeIcon icon="lock-open" /> : <FontAwesomeIcon icon="lock" />)}
+                                            {this.state.isTeacherPrivilege && (!survey.isDeleted ? <FontAwesomeIcon icon="lock-open" style={{ color: '#e84118' }}/> : <FontAwesomeIcon icon="lock" style={{ color: '#e84118' }}/>)}
                                         </Col>
                                     </Row>
                                 )
@@ -919,7 +881,7 @@ class Subject extends React.Component {
                                                 </a>
                                             </Tooltip>)}
 
-                                            {this.state.isTeacherPrivilege && (!f.isDeleted ? <FontAwesomeIcon icon="lock-open" /> : <FontAwesomeIcon icon="lock" />)}
+                                            {this.state.isTeacherPrivilege && (!f.isDeleted ? <FontAwesomeIcon icon="lock-open" style={{ color: '#e84118' }}/> : <FontAwesomeIcon icon="lock" style={{ color: '#e84118' }}/>)}
                                         </Col>
                                     </Row>
                                 )
@@ -986,7 +948,7 @@ class Subject extends React.Component {
                                                 </a>
                                             </Tooltip>)}
 
-                                            {this.state.isTeacherPrivilege && (!assign.isDeleted ? <FontAwesomeIcon icon="lock-open" /> : <FontAwesomeIcon icon="lock" />)}
+                                            {this.state.isTeacherPrivilege && (!assign.isDeleted ? <FontAwesomeIcon icon="lock-open" style={{ color: '#e84118' }}/> : <FontAwesomeIcon icon="lock" style={{ color: '#e84118' }}/>)}
                                         </Col>
                                     </Row>
                             ))
@@ -1026,7 +988,7 @@ class Subject extends React.Component {
                                                 <FontAwesomeIcon icon="edit" onClick={() => { this.focusForum(fr._id, idTimeline); this.openDrawerCreate('CẬP NHẬT DIỄN ĐÀN') }} />
                                             </a>
                                         </Tooltip>)}
-                                        {this.state.isTeacherPrivilege && (!fr.isDeleted ? <FontAwesomeIcon icon="lock-open" /> : <FontAwesomeIcon icon="lock" />)}
+                                        {this.state.isTeacherPrivilege && (!fr.isDeleted ? <FontAwesomeIcon icon="lock-open" style={{ color: '#e84118' }}/> : <FontAwesomeIcon icon="lock" style={{ color: '#e84118' }}/>)}
                                     </Col>
 
                                 </Row>
@@ -1066,13 +1028,13 @@ class Subject extends React.Component {
                                     }}>
                                         {this.state.isOnEdit && (<Tooltip title="Edit Exam">
                                             <a>
-                                                <FontAwesomeIcon icon="edit" onClick={() => { this.focusQuiz(ex._id, idTimeline); this.openDrawerCreate('CẬP NHẬT BÀI KIỂM TRA') }} />
+                                                <FontAwesomeIcon icon="edit" style={{ color: '#3498db' }} onClick={() => { this.focusQuiz(ex._id, idTimeline); this.openDrawerCreate('CẬP NHẬT BÀI KIỂM TRA') }} />
                                             </a>
                                         </Tooltip>)}
 
-                                        {this.state.isTeacherPrivilege && ((!ex.isDeleted) ? <FontAwesomeIcon icon="lock-open" /> : <FontAwesomeIcon icon="lock" />)}
+                                        {this.state.isTeacherPrivilege && ((!ex.isDeleted) ? <FontAwesomeIcon icon="lock-open" style={{ color: '#e84118' }}/> : <FontAwesomeIcon icon="lock" style={{ color: '#e84118' }}/>)}
                                     </Col>
-                                    <Col span={2} style={{
+                                    {/* <Col span={2} style={{
                                         fontSize: '20px',
                                         alignSelf: 'center',
                                         marginLeft: '10px',
@@ -1080,7 +1042,7 @@ class Subject extends React.Component {
                                         justifyContent: 'space-between'
                                     }}>
                                         {this.state.isOnEdit && <Tooltip title="Edit Mode"><FontAwesomeIcon icon="edit" style={{ color: '#3498db' }} /></Tooltip>}
-                                        {this.state.isOnEdit && <Tooltip title="Lock Mode"><FontAwesomeIcon icon="lock-open" style={{ color: '#e84118' }} /></Tooltip>}</Col>
+                                        {this.state.isOnEdit && <Tooltip title="Lock Mode"><FontAwesomeIcon icon="lock-open" style={{ color: '#e84118' }} /></Tooltip>}</Col> */}
                                 </Row>
                             ))
 
@@ -1446,6 +1408,7 @@ class Subject extends React.Component {
                                 <div>
 
                                     <Deadline deadlines={this.state.deadlines} dueTo={this.state.dueTo} />
+
 
                                 </div>
                             </Col>

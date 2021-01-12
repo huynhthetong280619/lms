@@ -30,11 +30,13 @@ import {
   faEdit,
   faSave,
   faLockOpen,
-  faExternalLinkAlt
+  faExternalLinkAlt,
+  faComment
 } from "@fortawesome/free-solid-svg-icons";
 
 
 library.add(
+  faComment,
   faExternalLinkAlt,
   faLockOpen,
   faSave,

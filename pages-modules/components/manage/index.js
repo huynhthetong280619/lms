@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { get } from 'lodash'
 import downloadFile from '../../../assets/common/core/downloadFile.js';
 import 'antd/dist/antd.css';
+import restClient from '../../../assets/common/core/restClient';
 
 const Manage = ({ assignment, idAssign, idSubject, idTimeline, token }) => {
     const [form] = Form.useForm();
@@ -46,6 +47,7 @@ const Manage = ({ assignment, idAssign, idSubject, idTimeline, token }) => {
                     let newData = state.lstSubmission;
                     const rowIndex = newData.findIndex(value => value._id === idSubmission);
                     console.log('rowIndex', rowIndex);
+                    console.log('rowIndex', newData)
                     newData[rowIndex].feedBack.grade = row.grade;
                     setState({ ...state, editingKey: null, lstSubmission: newData });
                 } else {

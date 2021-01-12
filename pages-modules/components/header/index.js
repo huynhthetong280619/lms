@@ -297,7 +297,7 @@ class Headers extends React.Component {
                 <Col span={4}>
 
                 </Col>
-                <Col xs={10}>
+                <Col xs={10} style={{alignSelf: 'center'}}>
                     {/* Authentication */}
                     {
                         this.state.isLogin ? <div style={{ textAlign: 'right' }}>
