@@ -2,33 +2,19 @@ import { withTranslation } from 'react-i18next'
 import { get, head } from 'lodash'
 import { CSVLink } from "react-csv";
 import excel from '../../../assets/images/contents/excel.png'
-import {  Row,Col, Table, Select , Tag, Space  } from 'antd'
+import { Row, Col, Table, Select, Tag, Space, Typography } from 'antd'
 import statisticsPoint from '../../../assets/images/contents/statistics-point.png'
-
-const columnsGrade = [
-    {
-        title: "Tên bài kiểm tra",
-        dataIndex: "name",
-        key: "name"
-    },
-    {
-        title: "Điểm",
-        dataIndex: "grade",
-        key: "grade",
-        render: data => (data == null ? (<span style={{color: '#ff4000', fontStyle: 'italic'}}>Chưa nộp bài</span>) : data)
-    }
-]
-
+const { Text } = Typography;
 class Points extends React.Component {
 
-    constructor(props){
+    constructor(props) {
         super(props)
-        this.state ={
+        this.state = {
             lstSubmissionCore: [],
         }
     }
 
-    componentDidMount(){
+    componentDidMount() {
         console.log('componentDidMount', this.props.lstSubmissionCore)
         this.setState({
             lstSubmissionCore: this.props.lstSubmissionCore,
@@ -37,12 +23,36 @@ class Points extends React.Component {
 
     render() {
 
+        const { t } = this.props;
+
+
+        const columnsGrade = [
+            {
+                title: t('test'),
+                dataIndex: "name",
+                key: "name"
+            },
+            {
+                title: t('grade'),
+                dataIndex: "grade",
+                key: "grade",
+                render: (data, record) => (
+                    (data !== null) ? data :
+                        (<>
+                            {  record.status === 'notSubmit' && <Text type='danger'>{t('status_not_submit')}</Text>}
+                            {  record.status === 'notGrade' && <Text type='warning'>{t('status_not_graded')}</Text>}
+                        </>
+                        )
+                )
+            }
+        ]
+
         return <>
             <Row style={{
                 width: '80%',
                 textAlign: 'center',
                 background: '#fff',
-                minHeight: '20px',justifyContent: 'center',
+                minHeight: '20px', justifyContent: 'center',
                 margin: '0 auto'
             }}>
                 <Row style={{ width: '100%' }}>
@@ -53,7 +63,7 @@ class Points extends React.Component {
                         <span>
                             <img src={statisticsPoint} width="80px" />
                         </span>
-                        <span style={{ fontWeight: '700' }}>[Statistics-Point] Thống kế điểm kiểm tra</span> 
+                        <span style={{ fontWeight: '700' }}>[Statistics-Point] Thống kế điểm kiểm tra</span>
                     </div>
                     <div style={{ width: '100%', minHeight: '150px' }}>
                         <div style={{
@@ -64,7 +74,7 @@ class Points extends React.Component {
                             borderRadius: "20px"
 
                         }}>
-                               
+
                             <Row style={{ border: '2px solid #cacaca' }}>
                                 <Table rowKey="name" pagination={false} columns={columnsGrade} dataSource={this.state.lstSubmissionCore} scroll={{ y: 240 }} style={{ width: '100%' }} />
                             </Row>

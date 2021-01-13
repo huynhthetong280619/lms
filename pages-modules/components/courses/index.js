@@ -84,7 +84,7 @@ class Courses extends React.Component {
                         <Row style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
                             {
                                 this.state.courses.length > 0 ? this.state.courses.map(course => (
-                                    <a className="ant-col ant-col-6"
+                                    <a className='ant-col ant-col-6'
                                         href={`/subject/${course._id}`}
                                         key={course._id}
                                         style={{
@@ -125,7 +125,7 @@ class Courses extends React.Component {
                                 margin: '10px',
                                 background: '#fff',
                                 minHeight: '200px',
-                                maxHeight: "768px"
+                                maxHeight: '768px'
                             }}>
                             <div>
                                 <div style={{
@@ -146,7 +146,7 @@ class Courses extends React.Component {
                                     margin: '10px',
                                     background: '#fff',
                                     minHeight: '200px',
-                                    maxHeight: "553px"
+                                    maxHeight: '553px'
                                 }}>
                                 <div>
                                     <div style={{

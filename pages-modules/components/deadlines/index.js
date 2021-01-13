@@ -32,14 +32,14 @@ const checkUrgentDay = (end) => {
 
     const duration = moment.duration(endDate.diff(startDate));
 
-    if(duration.days() < 2){
+    if (duration.days() < 2) {
         return true
     }
     return false
 }
 
-const DeadlineItem = ({ deadline, flag }) => (
-    <Badge.Ribbon placement="left" text={flag ? 'Completed' : checkUrgentDay(get(deadline, 'expireTime')) ? "Urgent upcoming deadline !" : 'Not done !'} color={flag ? '#4cd137' : checkUrgentDay(get(deadline, 'expireTime')) ? '#e84118' : '#00a8ff'}
+const DeadlineItem = ({ t, deadline, flag }) => (
+    <Badge.Ribbon placement="left" text={flag ? t('completed') : checkUrgentDay(get(deadline, 'expireTime')) ? t('urgent_upcoming_deadline') : t('not_done')} color={flag ? '#4cd137' : checkUrgentDay(get(deadline, 'expireTime')) ? '#e84118' : '#00a8ff'}
     >
         <Row key={deadline._id}
             style={{
@@ -57,9 +57,9 @@ const DeadlineItem = ({ deadline, flag }) => (
                 <div> [{getType(deadline.type)}] {deadline.name} </div>
                 <div>
                     <span style={
-                        { fontWeight: 600 }} > Due to: </span>{transTime(get(deadline, 'expireTime'))} </div>
+                        { fontWeight: 600 }} > {t('dueTo')} </span>{transTime(get(deadline, 'expireTime'))} </div>
                 <div>
-                    <span style={{ fontWeight: 600 }} > Time remaining: </span> {moment.utc(get(deadline, 'expireTime')).fromNow()} </div>
+                    <span style={{ fontWeight: 600 }} > {t('time_remain')} </span> {moment.utc(get(deadline, 'expireTime')).fromNow()} </div>
                 {deadline.subject && (<a href={`/subject/${deadline.subject._id}`} ><span > {deadline.subject.name} </span></a>)}
             </Col>
 
@@ -80,10 +80,10 @@ class Deadline extends React.Component {
                         overflowX: 'hidden'
                     }} >
                         {deadlines.length > 0
-                            ? deadlines.map(dl => (<DeadlineItem deadline={dl} flag={false}/>))
+                            ? deadlines.map(dl => (<DeadlineItem t={t} deadline={dl} flag={false} />))
                             : <Row >
                                 <img src={deadlineCalcular} />
-                                < div style={{ width: "100%", color: '#cacaca', textAlign: 'center' }} > No upcoming deadline </div>
+                                < div style={{ width: "100%", color: '#cacaca', textAlign: 'center' }} >{t('no_upcoming_deadline')} </div>
                             </Row>
                         }
                     </div>
@@ -96,7 +96,7 @@ class Deadline extends React.Component {
                             overflowX: 'hidden'
                         }}
                     >
-                        {dueTo.map(dt => (<DeadlineItem deadline={dt} flag={true}/>))}
+                        {dueTo.map(dt => (<DeadlineItem t={t} deadline={dt} flag={true} />))}
                     </div>
                 </TabPane>
             </Tabs>

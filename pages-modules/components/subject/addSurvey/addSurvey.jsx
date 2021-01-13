@@ -39,7 +39,7 @@ const AddSurvey = ({ lstTimelines, lstSurveys, t, createSurvey, updateSurvey, id
                             expireTime: moment(res.data.survey.expireTime),
                         });
                     } else {
-                        notifyError('Error', res.data.message);
+                        notifyError(t('failure'), res.data.message);
                     }
                 })
 
@@ -85,7 +85,7 @@ const AddSurvey = ({ lstTimelines, lstSurveys, t, createSurvey, updateSurvey, id
                 if (!res.hasError) {
                     createSurvey({ survey: res.data.survey, idTimeline: idTimelineAdd })
                 } else {
-                    notifyError("Thất bại", res.data.message);
+                    notifyError(t('failure'), res.data.message);
                 }
             })
     }
@@ -104,7 +104,7 @@ const AddSurvey = ({ lstTimelines, lstSurveys, t, createSurvey, updateSurvey, id
                 if (!res.hasError) {
                     updateSurvey({ survey: res.data.survey, idTimeline: idTimelineUpdate })
                 } else {
-                    notifyError("Thất bại", res.data.message);
+                    notifyError(t('failure'), res.data.message);
                 }
             })
     }
@@ -143,7 +143,7 @@ const AddSurvey = ({ lstTimelines, lstSurveys, t, createSurvey, updateSurvey, id
                         rules={[
                             {
                                 required: true,
-                                message: "Vui lòng chọn tuần"
+                                message: t('req_select_week')
                             }
                         ]}
                         hasFeedback>
@@ -160,18 +160,18 @@ const AddSurvey = ({ lstTimelines, lstSurveys, t, createSurvey, updateSurvey, id
                         rules={[
                             {
                                 required: true,
-                                message: "Vui lòng nhập tiêu đề bài khảo sát"
+                                message: t('req_title_survey')
                             }
                         ]}
                         hasFeedback>
-                        <Input placeholder="Name of survey..." />
+                        <Input placeholder={t('name_of_survey')} />
                     </Form.Item>
 
                     <Form.Item
                         label={t('content')}
                         name={['survey', 'description']}>
                         <TextArea
-                            placeholder="Description of survey..."
+                            placeholder={t('desc_of_survey')}
                             autoSize={{ minRows: 3, maxRows: 5 }}
                         />
                     </Form.Item>
@@ -184,7 +184,7 @@ const AddSurvey = ({ lstTimelines, lstSurveys, t, createSurvey, updateSurvey, id
                         rules={[
                             {
                                 required: true,
-                                message: 'Vui lòng chọn thời gian kết thúc',
+                                message: t('req_begin_time'),
                             }
                         ]}
                     >
@@ -192,12 +192,12 @@ const AddSurvey = ({ lstTimelines, lstSurveys, t, createSurvey, updateSurvey, id
                     </Form.Item>
 
                     <Form.Item
-                        label={t('code')}
+                        label={t('code_survey')}
                         name={['survey', 'code']}
                         rules={[
                             {
                                 required: true,
-                                message: 'Vui lòng chọn đề',
+                                message: t('req_code_survey'),
                             }
                         ]}
                         hasFeedback

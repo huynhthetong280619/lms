@@ -10,6 +10,7 @@ import { withTranslation } from 'react-i18next'
 import profileImg from '../../../assets/images/contents/profileN.png'
 
 import restClient from '../../../assets/common/core/restClient'
+import { notifyError, notifyWarning, notifySuccess } from '../../../assets/common/core/notify'
 import { getCookie } from '../../../assets/common/core/localStorage'
 import { FACEBOOK_CLIENT_ID } from '../../../assets/constants/const'
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
@@ -37,20 +38,7 @@ function getBase64(img, callback) {
     reader.readAsDataURL(img);
 }
 
-function beforeUpload(file) {
-    console.log('beforeUpload', file)
-    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-    if (!isJpgOrPng) {
-        message.error('You can only upload JPG/PNG file!');
-    }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-        message.error('Image must smaller than 2MB!');
-    }
-    return isJpgOrPng && isLt2M;
-}
-
-const Profile = ({ token }) => {
+const Profile = ({ t, token }) => {
 
     const [state, setState] = useState({
         loading: false,
@@ -88,16 +76,27 @@ const Profile = ({ token }) => {
     const { loading, imageUrl, connectFacebook, disconnectFacebook,
         submitPassword, submitProfile } = state;
 
+    const beforeUpload = (file) => {
+        console.log('beforeUpload', file)
+        const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+        if (!isJpgOrPng) {
+            notifyError(t('failure'), t('condition_avatar_type'));
+        }
+        const isLt2M = file.size / 1024 / 1024 < 2;
+        if (!isLt2M) {
+            notifyError(t('failure'), t('condition_avatar_size'));
+        }
+        return isJpgOrPng && isLt2M;
+    }
+
+
     const updateProfile = async (values) => {
-        console.log('profile', values);
-        console.log('image', imageUrl);
         setState({ ...state, submitProfile: true });
-        const tokenCookies = getCookie('token');
         await restClient.asyncPut(`/user/`, {
             surName: values.surName,
             firstName: values.firstName,
             urlAvatar: imageUrl,
-        }, tokenCookies)
+        }, token)
             .then(res => {
                 setState({ ...state, submitProfile: false });
                 console.log('resLink', res)
@@ -105,9 +104,9 @@ const Profile = ({ token }) => {
                 if (!res.hasError) {
                     localStorage.setItem('user', JSON.stringify(res.data.user));
                     setProfile(res.data.user);
-                    message.success(res.data.message);
+                    notifySuccess(t('success'), t('update_profile_success'));
                 } else {
-                    message.error(res.data.message);
+                    notifyError(t('failure'), res.data.message);
                 }
             })
     }
@@ -126,9 +125,9 @@ const Profile = ({ token }) => {
                 // localStorage.removeItem('user');
                 if (!res.hasError) {
                     formPassword.resetFields();
-                    message.success(res.data.message);
+                    notifySuccess(t('success'), t('update_password_success'));
                 } else {
-                    message.error(res.data.message);
+                    notifyError(t('failure'), res.data.message);
                 }
             })
     }
@@ -186,9 +185,9 @@ const Profile = ({ token }) => {
                 if (!res.hasError) {
                     localStorage.setItem('user', JSON.stringify(res.data.user));
                     setProfile(res.data.user);
-                    message.success(res.data.message);
+                    notifySuccess(t('success'), res.data.message);
                 } else {
-                    message.error(res.data.message);
+                    notifyError(t('failure'), res.data.message);
                 }
             })
     }
@@ -205,9 +204,9 @@ const Profile = ({ token }) => {
                 if (!res.hasError) {
                     localStorage.setItem('user', JSON.stringify(res.data.user));
                     setProfile(res.data.user);
-                    message.success(res.data.message);
+                    notifySuccess(t('success'), res.data.message);
                 } else {
-                    message.error(res.data.message);
+                    notifyError(t('failure'), res.data.message);
                 }
             })
     }
@@ -239,12 +238,12 @@ const Profile = ({ token }) => {
                 <span style={{
                     fontWeight: "700",
                     marginLeft: "10px"
-                }}>YOUR DETAIL PROFILE</span>
+                }}>{t('profile_title').toUpperCase()}</span>
             </div>
             <Divider />
             <Row style={{ justifyContent: 'space-between' }}>
                 <Col span={8}>
-                    <SectionDescription title="Profile" content="Your email address is your identity on LMS and is used to log in." />
+                    <SectionDescription title={t('profile')} content={t('profile_description')}/>
                 </Col>
                 <Col span={2}>
                     <Upload
@@ -278,31 +277,31 @@ const Profile = ({ token }) => {
                             <Input readOnly disabled />
                         </Form.Item>
                         <Form.Item
-                            label="Email"
+                            label={t('email_address')}
                             name={"emailAddress"}>
                             <Input readOnly disabled />
                         </Form.Item>
                         <Form.Item
-                            label="Surname"
+                            label={t('surName')}
                             name={"surName"}
                             rules={[
                                 {
                                     required: true,
-                                    message: 'Please input your Surname!',
+                                    message: t('req_surName'),
                                 }
                             ]}>
-                            <Input placeholder="Your surname..." />
+                            <Input/>
                         </Form.Item>
                         <Form.Item
-                            label="First name"
+                            label={t('firstName')}
                             name={"firstName"}
                             rules={[
                                 {
                                     required: true,
-                                    message: 'Please input your First name!',
+                                    message: t('req_firstName'),
                                 }
                             ]}>
-                            <Input placeholder="Your first name..." />
+                            <Input />
                         </Form.Item>
                         <Form.Item
                             style={{ textAlign: 'center' }}>
@@ -312,12 +311,12 @@ const Profile = ({ token }) => {
                                 form="form-profile"
                                 size='large'
                                 loading={submitProfile}
-                            >Save</Button>
+                            >{t('save')}</Button>
 
                         </Form.Item>
                     </Form>
 
-                    <Divider>Social Network</Divider>
+                    <Divider>{t('social_ntw')}</Divider>
                     {!profile.facebookId ? (<FacebookLogin
                         appId={`${FACEBOOK_CLIENT_ID}`}
                         autoLoad={false}
@@ -329,10 +328,10 @@ const Profile = ({ token }) => {
                                 onClick={renderProps.onClick}
                                 icon={<FacebookOutlined />}
                             >
-                                Connect to Facebook
+                               {t('connect_facebook')}
                             </Button>
                         )}
-                    />) : (<Row style={{justifyContent: 'space-between'}}>
+                    />) : (<Row style={{ justifyContent: 'space-between' }}>
                         <Col span={6}>
                             <Tag icon={<FacebookOutlined />} color="#3b5999">Facebook</Tag>
                         </Col>
@@ -349,7 +348,7 @@ const Profile = ({ token }) => {
                                 loading={disconnectFacebook}
                                 onClick={unlinkSocial}
                             >
-                                Unlink Facebook
+                                {t('unlink_facebook')}
                         </Button>
                         </Col>
 
@@ -360,7 +359,7 @@ const Profile = ({ token }) => {
             <Divider />
             <Row style={{ justifyContent: 'space-between' }}>
                 <Col span={8}>
-                    <SectionDescription title="Password" content="Changing your password will also required your current password" />
+                    <SectionDescription title={t('password')} content={t('password_description')} />
                 </Col>
                 <Col span={2} />
                 <Col span={10}>
@@ -374,35 +373,35 @@ const Profile = ({ token }) => {
                         requiredMark={"optional"}
                     >
                         <Form.Item
-                            label="Current password"
+                            label={t('current_password')}
                             name="current"
                             rules={[
                                 {
                                     required: true,
-                                    message: 'Please input your current password!',
+                                    message: t('req_current_password'),
                                 }
                             ]}
                             hasFeedback>
-                            <Input.Password placeholder="enter your current password" />
+                            <Input.Password placeholder={t('placeholder_current_password')}/>
                         </Form.Item>
                         <Divider />
                         <Form.Item
-                            label="New password"
+                            label={t('new_password')}
                             name="new"
                             rules={[
                                 {
                                     required: true,
-                                    message: 'Please input your new password!',
+                                    message: t('req_new_password'),
                                 },
                                 {
                                     min: 8,
-                                    message: 'Password must be 8 or more characters.'
+                                    message: t('req_length_password')
                                 }
                             ]}
                             hasFeedback
                         >
                             <Input.Password
-                                placeholder="enter a new password" />
+                                placeholder={t('placeholder_new_password')}/>
                         </Form.Item>
                         <Form.Item
                             name="confirm"
@@ -411,7 +410,7 @@ const Profile = ({ token }) => {
                             rules={[
                                 {
                                     required: true,
-                                    message: 'Please confirm your password!',
+                                    message: t('req_confirm_password'),
                                 },
                                 ({ getFieldValue }) => ({
                                     validator(rule, value) {
@@ -419,12 +418,12 @@ const Profile = ({ token }) => {
                                             return Promise.resolve();
                                         }
 
-                                        return Promise.reject('The two passwords that you entered do not match!');
+                                        return Promise.reject(t('req_match_password'));
                                     },
                                 }),
                             ]}
-                            label="Confirm New Password">
-                            <Input.Password placeholder="enter the password again" />
+                            label={t('confirm_password')}>
+                            <Input.Password placeholder={t('placeholder_confirm_password')} />
                         </Form.Item>
                         <Form.Item shouldUpdate={true}>
                             {() => (
@@ -436,7 +435,7 @@ const Profile = ({ token }) => {
                                         !formPassword.isFieldsTouched(true) ||
                                         formPassword.getFieldsError().filter(({ errors }) => errors.length).length
                                     }
-                                >Update password</Button>
+                                >{t('update_password')}</Button>
                             )}
                         </Form.Item>
                     </Form>

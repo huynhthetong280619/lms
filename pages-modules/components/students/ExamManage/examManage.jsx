@@ -38,6 +38,8 @@ const ExamManage = ({ t, lstSubmissionCore }) => {
 
     const headersCSV = [
         { label: t('code_student'), key: 'student.code' },
+        { label: t('surName'), key: 'student.surName' },
+        { label: t('firstName'), key: 'student.firstName' },
         { label: t('grade'), key: 'grade' }
     ]
 

@@ -13,16 +13,16 @@ import restClient from '../../../assets/common/core/restClient'
 import { get } from 'lodash'
 
 import './overwrite.css'
-const CommentList = ({ comments }) => (
+const CommentList = ({ t, comments }) => (
     <List
         dataSource={comments}
-        header={`${comments.length} ${comments.length > 1 ? 'replies' : 'reply'}`}
+        header={`${comments.length} ${comments.length > 1 ? t('replies') : t('reply')}`}
         itemLayout="horizontal"
         renderItem={props => <Comment author={<a>{get(get(props, 'create'), 'surName') + " " + get(get(props, 'create'), 'firstName')}</a>}
             avatar={
                 <Avatar
                     src={get(get(props, 'create'), 'urlAvatar')}
-                    alt="Han Solo"
+                    alt={get(get(props, 'create'), 'surName') + " " + get(get(props, 'create'), 'firstName')}
                 />
             }
 
@@ -43,15 +43,15 @@ const CommentList = ({ comments }) => (
     />
 );
 
-const Editor = ({ onChange, onSubmit, submitting, value }) => (
+const Editor = ({ t, onChange, onSubmit, submitting, value }) => (
     <>
         <Form.Item>
             <TextArea rows={4} onChange={onChange} value={value} />
         </Form.Item>
         <Form.Item>
             <Button htmlType="submit" loading={submitting} onClick={onSubmit} type="primary">
-                Add Comment
-        </Button>
+                {t('add_comment')}
+            </Button>
         </Form.Item>
     </>
 );
@@ -121,7 +121,7 @@ class Discussion extends React.Component {
 
     render() {
         const { comments, submitting, value, lstDiscussion } = this.state;
-
+        const { t } = this.props;
         return (
             <>
                 <Row id="lms-ws-discussion-page" style={{
@@ -140,7 +140,7 @@ class Discussion extends React.Component {
                             <span>
                                 <img src={discussion} width="80px" />
                             </span>
-                            <span style={{ fontWeight: '700' }}>[ TOPIC ] {get(this.props.detailTopic, 'name').toUpperCase()}</span>
+                            <span style={{ fontWeight: '700' }}>[ {t('topic')} ] {get(this.props.detailTopic, 'name').toUpperCase()}</span>
                         </div>
                         <div style={{ width: '100%', minHeight: '150px' }}>
                             <div style={{
@@ -167,7 +167,7 @@ class Discussion extends React.Component {
                                     {get(this.props.detailTopic, 'content')}
                                 </div>
                             </div>
-                            {comments.length > 0 && <CommentList comments={comments} />}
+                            {comments.length > 0 && <CommentList t={t} comments={comments} />}
                             <Comment
                                 avatar={
                                     <Avatar
@@ -177,6 +177,7 @@ class Discussion extends React.Component {
                                 }
                                 content={
                                     <Editor
+                                        t={t}
                                         onChange={this.handleChange}
                                         onSubmit={this.handleSubmit}
                                         submitting={submitting}

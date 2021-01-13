@@ -43,7 +43,7 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, createQuiz, updateQuiz, idSubjec
                             expireTime: moment(ex.expireTime),
                         });
                     } else {
-                        notifyError('Error', res.data.message);
+                        notifyError(t('failure'), res.data.message);
                     }
                 })
 
@@ -79,7 +79,7 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, createQuiz, updateQuiz, idSubjec
                 if (!res.hasError) {
                     createQuiz({ exam: res.data.exam, idTimeline: idTimelineAdd })
                 } else {
-                    notifyError("Thất bại", res.data.message);
+                    notifyError(t('failure'), res.data.message);
                 }
             })
     }
@@ -98,7 +98,7 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, createQuiz, updateQuiz, idSubjec
                 if (!res.hasError) {
                     updateQuiz({ exam: res.data.exam, idTimeline: idTimelineUpdate })
                 } else {
-                    notifyError("Thất bại", res.data.message);
+                    notifyError(t('failure'), res.data.message);
                 }
             })
     }
@@ -156,7 +156,7 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, createQuiz, updateQuiz, idSubjec
                             rules={[
                                 {
                                     required: true,
-                                    message: "Vui lòng chọn tuần"
+                                    message:t('req_select_week')
                                 }
                             ]}
                             hasFeedback>
@@ -173,11 +173,11 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, createQuiz, updateQuiz, idSubjec
                             rules={[
                                 {
                                     required: true,
-                                    message: "Vui lòng nhập tiêu đề bài kiểm tra"
+                                    message: t('req_title_quiz')
                                 }
                             ]}
                             hasFeedback>
-                            <Input placeholder="Name of exam..." />
+                            <Input placeholder={t('name_of_quiz')} />
                         </Form.Item>
 
                         <Form.Item
@@ -186,12 +186,12 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, createQuiz, updateQuiz, idSubjec
                             rules={[
                                 {
                                     required: true,
-                                    message: 'Vui lòng nhập yêu cầu bài kiểm tra',
+                                    message: t('req_quiz_content'),
                                 }
                             ]}
                             hasFeedback>
                             <TextArea
-                                placeholder="Content of exam..."
+                                placeholder={t('content_of_quiz')}
                                 autoSize={{ minRows: 3, maxRows: 5 }}
                             />
                         </Form.Item>
@@ -202,7 +202,7 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, createQuiz, updateQuiz, idSubjec
                             rules={[
                                 {
                                     required: true,
-                                    message: 'Vui lòng chọn thời gian bắt đầu',
+                                    message: t('req_begin_time'),
                                 }
                             ]}
                             hasFeedback>
@@ -217,7 +217,7 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, createQuiz, updateQuiz, idSubjec
                             rules={[
                                 {
                                     required: true,
-                                    message: 'Vui lòng chọn thời gian kết thúc',
+                                    message: t('req_end_time'),
                                 },
                                 ({ getFieldValue }) => ({
                                     validator(rule, value) {
@@ -225,7 +225,7 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, createQuiz, updateQuiz, idSubjec
                                             return Promise.resolve();
                                         }
 
-                                        return Promise.reject('Thời gian kết thúc phải lớn hơn thời gian bắt đầu!');
+                                        return Promise.reject(t('condition_start_end'));
                                     },
                                 }),
                             ]}
@@ -234,12 +234,12 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, createQuiz, updateQuiz, idSubjec
                         </Form.Item>
 
                         <Form.Item
-                            label={t('code')}
+                            label={t('code_quiz_bank')}
                             name={['exam', 'setting', 'code']}
                             rules={[
                                 {
                                     required: true,
-                                    message: 'Vui lòng chọn đề',
+                                    message: t('req_code_quiz'),
                                 }
                             ]}
                             hasFeedback
@@ -257,7 +257,7 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, createQuiz, updateQuiz, idSubjec
                             rules={[
                                 {
                                     required: true,
-                                    message: 'Vui lòng chọn số lượng câu hỏi',
+                                    message: t('req_qty_question'),
                                 }
                             ]}
                             hasFeedback>
@@ -270,13 +270,13 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, createQuiz, updateQuiz, idSubjec
                             rules={[
                                 {
                                     required: true,
-                                    message: 'Vui lòng chọn thời gian làm bài',
+                                    message: t('req_time_take_quiz'),
                                 }
                             ]}
                             hasFeedback>
                             <InputNumber min={1} max={180}
-                                formatter={value => `${value} phút`}
-                                parser={value => value.replace(' phút', '')} />
+                                formatter={value => `${value} ${t('minutes')}`}
+                                parser={value => value.replace(` ${t('minutes')}`, '')} />
 
                         </Form.Item>
 
@@ -286,13 +286,13 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, createQuiz, updateQuiz, idSubjec
                             rules={[
                                 {
                                     required: true,
-                                    message: 'Vui lòng chọn số lần tham gia',
+                                    message: t('req_count_attempt'),
                                 }
                             ]}
                             hasFeedback>
                             <InputNumber min={1} max={10}
-                                formatter={value => `${value} lần`}
-                                parser={value => value.replace(' lần', '')}
+                                formatter={value => `${value} ${t('times')}`}
+                                parser={value => value.replace(` ${t('times')}`, '')}
                             />
 
                         </Form.Item>

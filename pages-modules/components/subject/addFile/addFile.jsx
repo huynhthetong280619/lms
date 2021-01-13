@@ -36,7 +36,7 @@ const AddFile = ({ t, lstTimelines, createFile, updateFile, idSubject, idTimelin
                     if (!res.hasError) {
                         setFile(res.data.file);
                     } else {
-                        notifyError('Error', res.data.message);
+                        notifyError(t('failure'), res.data.message);
                     }
                 })
 
@@ -64,7 +64,7 @@ const AddFile = ({ t, lstTimelines, createFile, updateFile, idSubject, idTimelin
                 if (!res.hasError) {
                     createFile({ file: res.data.file, idTimeline: idTimelineAdd })
                 } else {
-                    notifyError("Thất bại", res.data.message);
+                    notifyError(t('failure'), res.data.message);
                 }
             })
     }
@@ -81,7 +81,7 @@ const AddFile = ({ t, lstTimelines, createFile, updateFile, idSubject, idTimelin
                 if (!res.hasError) {
                     updateFile({ file: res.data.file, idTimeline: idTimelineUpdate })
                 } else {
-                    notifyError("Thất bại", res.data.message);
+                    notifyError(t('failure'), res.data.message);
                 }
             })
     }
@@ -120,7 +120,7 @@ const AddFile = ({ t, lstTimelines, createFile, updateFile, idSubject, idTimelin
                 }
             } else {
                 setLoading(false);
-                notifyError("Thất bại", 'Gặp lỗi khi tải file vui lòng thử lại');
+                notifyError(t('failure'), t('err_upload_file'));
             }
         } else if (idFile) {
             const f = {
@@ -130,7 +130,7 @@ const AddFile = ({ t, lstTimelines, createFile, updateFile, idSubject, idTimelin
             handleUpdateFile(f, values.idTimeline);
         } else {
             setLoading(false);
-            notifyWarning("Chú ý", 'Vui lòng chọn file trước khi upload');
+            notifyWarning(t('warning'), t('warning_choose_file_upload'));
         }
     }
 
@@ -158,7 +158,7 @@ const AddFile = ({ t, lstTimelines, createFile, updateFile, idSubject, idTimelin
                             rules={[
                                 {
                                     required: true,
-                                    message: "Vui lòng chọn tuần"
+                                    message: t('req_select_week')
                                 }
                             ]}
                             hasFeedback>

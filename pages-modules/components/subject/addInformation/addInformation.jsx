@@ -2,6 +2,7 @@ import { withTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import { Input, Select, Button, Form, notification } from 'antd'
 import restClient from '../../../../assets/common/core/restClient';
+import { notifyError } from '../../../../assets/common/core/notify';
 import Loading from '../../loading/loading.jsx';
 const { Option } = Select;
 const { TextArea } = Input;
@@ -22,7 +23,7 @@ const AddInformation = ({ t, lstTimelines, isLoading, createInformation, idSubje
                             information: res.data.information
                         })
                     } else {
-                        notification.error({ message: 'Error', description: res.data.message });
+                        notifyError(t('failure'), res.data.message );
                     }
                 })
 
@@ -77,7 +78,7 @@ const AddInformation = ({ t, lstTimelines, isLoading, createInformation, idSubje
                                 rules={[
                                     {
                                         required: true,
-                                        message: "Vui lòng chọn tuần"
+                                        message: t('req_select_week')
                                     }
                                 ]}
                                 hasFeedback
@@ -95,11 +96,11 @@ const AddInformation = ({ t, lstTimelines, isLoading, createInformation, idSubje
                                 rules={[
                                     {
                                         required: true,
-                                        message: "Vui lòng nhập tiêu đề thông báo"
+                                        message: t('req_title_announce')
                                     }
                                 ]}
                                 hasFeedback>
-                                <Input placeholder="Name of announcement..." />
+                                <Input placeholder={t('name_of_announce')} />
                             </Form.Item>
 
                             <Form.Item
@@ -108,12 +109,12 @@ const AddInformation = ({ t, lstTimelines, isLoading, createInformation, idSubje
                                 rules={[
                                     {
                                         required: true,
-                                        message: 'Vui lòng nhập nội dung thông báo',
+                                        message: t('req_content_announce'),
                                     }
                                 ]}
                                 hasFeedback>
                                 <TextArea
-                                    placeholder="Content of announcement..."
+                                    placeholder={t('content_announce')}
                                     autoSize={{ minRows: 3, maxRows: 5 }}
                                 />
                             </Form.Item>

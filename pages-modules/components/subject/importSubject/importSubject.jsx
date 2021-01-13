@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { withTranslation } from 'react-i18next';
 import { Input, Select, Button, Form, notification } from 'antd'
+import { notifyError, notifyWarning } from '../../../../assets/common/core/notify.js';
 
 const ImportSubject = ({ t, isLoading, handleImportSubject }) => {
 
@@ -41,10 +42,7 @@ const ImportSubject = ({ t, isLoading, handleImportSubject }) => {
                 data = JSON.parse(text);
             }
             catch (error) {
-                notification.error({
-                    message: 'Chú ý',
-                    description: 'Vui lòng chọn file có nội dung được quy định'
-                });
+                notifyWarning(t('warning'), t('warning_choose_file_upload'))
                 return;
             }
 
@@ -56,19 +54,13 @@ const ImportSubject = ({ t, isLoading, handleImportSubject }) => {
             }
             console.log(data);
             if (!values.quizBank && !values.surveyBank && !values.timelines && !values.studentIds) {
-                notification.error({
-                    message: 'Chú ý',
-                    description: 'Vui lòng chọn file có nội dung được quy định'
-                })
+                notifyWarning(t('warning'), t('condition_file_import'))
             } else {
                 handleImportSubject(values);
             }
 
         } else {
-            notification.error({
-                message: 'Chú ý',
-                description: 'Vui lòng chọn file'
-            })
+            notifyWarning(t('warning'),t('warning_choose_file_upload'))
         }
     }
 

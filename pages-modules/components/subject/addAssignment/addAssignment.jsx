@@ -52,7 +52,7 @@ const AddAssignment = ({ lstTimelines, t, createAssignment, updateAssignment, id
                             },
                         });
                     } else {
-                        notifyError('Error', res.data.message);
+                        notifyError(t('failure'), res.data.message);
                     }
                 })
 
@@ -90,7 +90,7 @@ const AddAssignment = ({ lstTimelines, t, createAssignment, updateAssignment, id
                 if (!res.hasError) {
                     createAssignment({ assignment: res.data.assignment, idTimeline: idTimelineAdd })
                 } else {
-                    notifyError("Thất bại", res.data.message);
+                    notifyError(t('failure'), res.data.message);
                 }
             })
     }
@@ -109,7 +109,7 @@ const AddAssignment = ({ lstTimelines, t, createAssignment, updateAssignment, id
                 if (!res.hasError) {
                     updateAssignment({ assignment: res.data.assignment, idTimeline: idTimelineUpdate })
                 } else {
-                    notifyError("Thất bại", res.data.message);
+                    notifyError(t('failure'), res.data.message);
                 }
             })
     }
@@ -149,7 +149,7 @@ const AddAssignment = ({ lstTimelines, t, createAssignment, updateAssignment, id
                 }
             } else {
                 setLoading(false);
-                notifyError('Thất bại', 'Gặp lỗi khi tải file vui lòng thử lại');
+                notifyError(t('failure'), t('err_upload_file'));
             }
 
         } else {
@@ -201,7 +201,7 @@ const AddAssignment = ({ lstTimelines, t, createAssignment, updateAssignment, id
                             rules={[
                                 {
                                     required: true,
-                                    message: "Vui lòng chọn tuần"
+                                    message: t('req_select_week')
                                 }
                             ]}
                             hasFeedback>
@@ -218,11 +218,11 @@ const AddAssignment = ({ lstTimelines, t, createAssignment, updateAssignment, id
                             rules={[
                                 {
                                     required: true,
-                                    message: "Vui lòng nhập tiêu đề bài tập"
+                                    message: t('req_title_assignment')
                                 }
                             ]}
                             hasFeedback>
-                            <Input placeholder="Name of assignment..." />
+                            <Input placeholder={t('name_of_assign')} />
                         </Form.Item>
 
                         <Form.Item
@@ -231,13 +231,13 @@ const AddAssignment = ({ lstTimelines, t, createAssignment, updateAssignment, id
                             rules={[
                                 {
                                     required: true,
-                                    message: "Vui lòng nhập yêu cầu bài tập"
+                                    message: t('req_assign_requirement')
                                 }
                             ]}
                             hasFeedback
                         >
                             <TextArea
-                                placeholder="Requirement of assignment..."
+                                placeholder={t('content_req_assign')}
                                 autoSize={{ minRows: 3, maxRows: 5 }}
                             />
                         </Form.Item>
@@ -248,7 +248,7 @@ const AddAssignment = ({ lstTimelines, t, createAssignment, updateAssignment, id
                             rules={[
                                 {
                                     required: true,
-                                    message: 'Vui lòng chọn thời gian bắt đầu',
+                                    message: t('req_begin_time'),
                                 }
                             ]}
                             hasFeedback>
@@ -263,14 +263,14 @@ const AddAssignment = ({ lstTimelines, t, createAssignment, updateAssignment, id
                             rules={[
                                 {
                                     required: true,
-                                    message: 'Vui lòng chọn thời gian kết thúc',
+                                    message: t('req_end_time'),
                                 },
                                 ({ getFieldValue }) => ({
                                     validator(rule, value) {
                                         if (!value || value.isAfter(getFieldValue(['assignment', 'setting', 'startTime']))) {
                                             return Promise.resolve();
                                         } else {
-                                            return Promise.reject('Thời gian kết thúc phải lớn hơn thời gian bắt đầu!');
+                                            return Promise.reject(t('condition_start_end'));
                                         }
                                     },
                                 }),
@@ -296,14 +296,14 @@ const AddAssignment = ({ lstTimelines, t, createAssignment, updateAssignment, id
                                 rules={[
                                     {
                                         required: true,
-                                        message: 'Vui lòng chọn thời gian quá hạn',
+                                        message: t('req_over_time'),
                                     },
                                     ({ getFieldValue }) => ({
                                         validator(rule, value) {
                                             if (!value || value.isAfter(getFieldValue(['assignment', 'setting', 'expireTime']))) {
                                                 return Promise.resolve();
                                             } else {
-                                                return Promise.reject('Thời gian quá hạn phải lớn hơn thời gian kết thúc!');
+                                                return Promise.reject(t('condition_end_over'));
                                             }
                                         },
                                     }),
@@ -319,7 +319,7 @@ const AddAssignment = ({ lstTimelines, t, createAssignment, updateAssignment, id
                             rules={[
                                 {
                                     required: true,
-                                    message: "Vui lòng chọn kích thước file"
+                                    message: t('req_size_file')
                                 }
                             ]}
                             hasFeedback>

@@ -87,7 +87,7 @@ const StudentManage = ({ t, lstStudents, idSubject, token }) => {
             key: 'code',
         },
         {
-            title: 'Email',
+            title: t('email_address'),
             dataIndex: 'emailAddress',
             key: 'emailAddress'
         },
@@ -104,7 +104,7 @@ const StudentManage = ({ t, lstStudents, idSubject, token }) => {
 
 
         {
-            title: 'Action',
+            title: t('action'),
             key: 'action',
             render: (text, record) => (
                 <Button
@@ -112,7 +112,7 @@ const StudentManage = ({ t, lstStudents, idSubject, token }) => {
                     danger
                     loading={isLoadingDelete && isFocusDelete(record._id)}
                     onClick={() => handleDeleteStudent(record)}
-                >Delete</Button>
+                >{t('delete')}</Button>
             ),
         },
     ];

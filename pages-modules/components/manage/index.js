@@ -1,12 +1,12 @@
 import { Row, Col, Table, Input, Popconfirm, Button, Form, notification } from 'antd';
 import React, { useState } from 'react'
 import { get } from 'lodash'
+import { withTranslation } from 'react-i18next';
 import downloadFile from '../../../assets/common/core/downloadFile.js';
 import restClient from '../../../assets/common/core/restClient.js';
 import 'antd/dist/antd.css';
-import restClient from '../../../assets/common/core/restClient';
 
-const Manage = ({ assignment, idAssign, idSubject, idTimeline, token }) => {
+const Manage = ({ t, assignment, idAssign, idSubject, idTimeline, token }) => {
     const [form] = Form.useForm();
 
     const [state, setState] = useState({
@@ -48,12 +48,7 @@ const Manage = ({ assignment, idAssign, idSubject, idTimeline, token }) => {
                     let newData = state.lstSubmission;
                     const rowIndex = newData.findIndex(value => value._id === idSubmission);
                     console.log('rowIndex', rowIndex);
-<<<<<<< HEAD
-                    console.log('rowIndex', newData)
-                    newData[rowIndex].feedBack.grade = row.grade;
-=======
                     newData[rowIndex].feedBack = res.data.feedBack;
->>>>>>> origin/handleManage
                     setState({ ...state, editingKey: null, lstSubmission: newData });
                 } else {
                     notification.error({
@@ -63,23 +58,23 @@ const Manage = ({ assignment, idAssign, idSubject, idTimeline, token }) => {
                 }
             })
     }
-    
+
     const columns = [
         {
-            title: 'MSSV',
+            title: t('code_student'),
             dataIndex: ['student', 'code'],
             key: 'code',
             sorter: (a, b) => parseInt(b.student.code) - parseInt(a.student.code),
             sortDirections: ['descend'],
             sortOrder: 'descend',
         },
-        { title: 'Họ và tên', dataIndex: 'student', key: 'student', render: data => <span>{get(data, 'surName') + " " + get(data, 'firstName')}</span> },
+        { title: t('fullName'), dataIndex: 'student', key: 'student', render: data => <span>{get(data, 'surName') + " " + get(data, 'firstName')}</span> },
         {
-            title: 'File submission', dataIndex: 'file', key: 'file',
+            title: t('file_submission'), dataIndex: 'file', key: 'file',
             render: data => <a onClick={() => downloadFile(data)}>{data.name}.{data.type}</a>
         },
         {
-            title: 'Grade',
+            title: t('grade'),
             dataIndex: '',
             render: (data) => {
                 if (isEditingRow(data)) {
@@ -89,27 +84,30 @@ const Manage = ({ assignment, idAssign, idSubject, idTimeline, token }) => {
                             rules={[
                                 {
                                     required: true,
-                                    message: 'Vui lòng nhập điểm'
+                                    message: t('req_grade')
                                 },
-                                {
-                                    min: 0,
-                                    message: 'Điểm thấp nhất là 0'
-                                },
-                                {
-                                    max: 10,
-                                    message: 'Điểm thấp nhất là 10'
-                                }
+                                ({ }) => ({
+                                    validator(rule, value) {
+                                        if (!value) {
+                                            return Promise.resolve();
+                                        } else if (value < 0) {
+                                            return Promise.reject(t('req_grade_min'));
+                                        } else if (value > 10) {
+                                            return Promise.reject(t('req_grade_max'));
+                                        }
+                                    },
+                                }),
                             ]}>
                             <Input type="number" min='0' max='10' defaultValue={data.feedBack ? data.feedBack.grade : null} />
                         </Form.Item>
                     )
                 } else {
-                    return <span>{data.feedBack ? data.feedBack.grade : 'Chưa chấm điểm'}</span>
+                    return <span>{data.feedBack ? data.feedBack.grade : t('not_grade')}</span>
                 }
             }
         },
         {
-            title: 'Action',
+            title: t('action'),
             dataIndex: '',
             render: (data) => {
                 if (isEditingRow(data)) {
@@ -121,10 +119,10 @@ const Manage = ({ assignment, idAssign, idSubject, idTimeline, token }) => {
                                     marginRight: 8,
                                 }}
                                 loading={state.isConfirm}
-                                type='primary'>Save</Button>
+                                type='primary'>{t('submit')}</Button>
                             <Button
                                 onClick={() => { setState({ ...state, editingKey: null }) }}
-                            >Cancel</Button>
+                            >{t('cancel')}</Button>
                         </span>
                     )
 
@@ -133,7 +131,7 @@ const Manage = ({ assignment, idAssign, idSubject, idTimeline, token }) => {
                         <Button
                             onClick={() => editRow(data)}
                         >
-                            Edit
+                            {t('edit')}
                         </Button>
                     )
                 }
@@ -149,7 +147,7 @@ const Manage = ({ assignment, idAssign, idSubject, idTimeline, token }) => {
             background: '#fff',
             minHeight: '20px',
             justifyContent: 'center',
-            margin:'0 auto'
+            margin: '0 auto'
         }}>
 
             <Row style={{ width: '100%' }}>
@@ -175,4 +173,4 @@ const Manage = ({ assignment, idAssign, idSubject, idTimeline, token }) => {
     )
 }
 
-export default Manage;
+export default withTranslation('translations')(Manage);

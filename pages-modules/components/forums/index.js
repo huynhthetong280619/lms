@@ -65,7 +65,7 @@ class Forum extends React.Component {
                     isLoading: false
                 })
                 if (!res.hasError) {
-                    this.notifySuccess('Thành công!', 'Tạo chủ đề thành công')
+                    this.notifySuccess(this.props.t('success'), this.props.t('add_topic_success'))
                     this.setState({
                         isLoading: false
                     })
@@ -74,7 +74,7 @@ class Forum extends React.Component {
                     })
                     this.setState({ isModalCreateTopic: false });
                 } else {
-                    this.notifyError('Thất bại!', res.data.message);
+                    this.notifyError(this.props.t('failure'), res.data.message);
                 }
 
             })
@@ -132,7 +132,7 @@ class Forum extends React.Component {
                             <label>{t('topic_name')}</label>
                         </Col>
                         <Col span={14}>
-                            <Input placeholder={t('please_fill_into_topic_name')} style={{ borderRadius: 20 }} onChange={(e) => this.setState({ topic_name: e.target.value.trim() })} />
+                            <Input placeholder={t('req_topic_name')} style={{ borderRadius: 20 }} onChange={(e) => this.setState({ topic_name: e.target.value.trim() })} />
                         </Col>
                     </Row>
                     <Row style={{ margin: "10px 0" }}>
@@ -140,7 +140,7 @@ class Forum extends React.Component {
                             <label>{t('topic_description')}</label>
                         </Col>
                         <Col span={14}>
-                            <Input placeholder={t('please_fill_into_topic_description')} style={{ borderRadius: 20 }} onChange={(e) => this.setState({ topic_desc: e.target.value.trim() })} />
+                            <Input placeholder={t('req_topic_description')} style={{ borderRadius: 20 }} onChange={(e) => this.setState({ topic_desc: e.target.value.trim() })} />
                         </Col>
                     </Row>
                 </Modal>
@@ -158,7 +158,7 @@ class Forum extends React.Component {
                         <Col span={12} style={{ textAlign: 'end', alignSelf: 'center' }}>
                             <Button type="primary" onClick={() => this.setState({
                                 isModalCreateTopic: true
-                            })}>Tạo topic</Button>
+                            })}>{t('new_topic')}</Button>
                         </Col>
                     </Row>
 
@@ -178,7 +178,7 @@ class Forum extends React.Component {
                                 this.state.detailForum.map(({ _id, create, name, description, replies }) => {
                                     return (
                                         <a href={`/forums/disscuss/${_id}?idSubject=${this.props.idSubject}&idTimeline=${this.props.idTimeline}&idForum=${this.props.idForum}`} key={_id}>
-                                            <Badge.Ribbon text={`Replies in topic: ${replies}`}
+                                            <Badge.Ribbon text={`${t('replies_in_topic')}${replies ? replies : 0}`}
                                             >
 
                                                 <Card

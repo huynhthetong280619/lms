@@ -32,7 +32,7 @@ const AddForum = ({ t, lstTimelines, createForum, updateForum, idSubject, idTime
                     if (!res.hasError) {
                         setForum(res.data.forum);
                     } else {
-                        notifyError('Error', res.data.message);
+                        notifyError(t('failure'), res.data.message);
                     }
                 })
 
@@ -74,7 +74,7 @@ const AddForum = ({ t, lstTimelines, createForum, updateForum, idSubject, idTime
                 if (!res.hasError) {
                     createForum({ forum: res.data.forum, idTimeline: idTimelineAdd })
                 } else {
-                    notifyError("Thất bại", res.data.message);
+                    notifyError(t('failure'), res.data.message);
                 }
             })
     }
@@ -93,7 +93,7 @@ const AddForum = ({ t, lstTimelines, createForum, updateForum, idSubject, idTime
                 if (!res.hasError) {
                     updateForum({ forum: res.data.forum, idTimeline: idTimelineUpdate })
                 } else {
-                    notifyError("Thất bại", res.data.message);
+                    notifyError(t('failure'), res.data.message);
                 }
             })
     }
@@ -132,7 +132,7 @@ const AddForum = ({ t, lstTimelines, createForum, updateForum, idSubject, idTime
                             rules={[
                                 {
                                     required: true,
-                                    message: "Vui lòng chọn tuần"
+                                    message: t('req_select_week')
                                 }
                             ]}
                             hasFeedback>
@@ -149,11 +149,11 @@ const AddForum = ({ t, lstTimelines, createForum, updateForum, idSubject, idTime
                             rules={[
                                 {
                                     required: true,
-                                    message: "Vui lòng nhập tiêu đề diễn đàn"
+                                    message: t('req_forum_name')
                                 }
                             ]}
                             hasFeedback>
-                            <Input placeholder="Name of forum..." />
+                            <Input placeholder={t('forum_name')} />
                         </Form.Item>
 
                         <Form.Item
@@ -162,12 +162,12 @@ const AddForum = ({ t, lstTimelines, createForum, updateForum, idSubject, idTime
                             rules={[
                                 {
                                     required: true,
-                                    message: 'Vui lòng nhập mô tả về diễn đàn',
+                                    message: t('req_forum_description'),
                                 }
                             ]}
                             hasFeedback>
                             <TextArea
-                                placeholder="Description of forum..."
+                                placeholder={t('forum_description')}
                                 autoSize={{ minRows: 3, maxRows: 5 }}
                             />
                         </Form.Item>

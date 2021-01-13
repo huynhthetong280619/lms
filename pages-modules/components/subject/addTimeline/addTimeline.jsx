@@ -45,7 +45,7 @@ const AddTimeline = ({ t, createTimeline, isLoading }) => {
                     rules={[
                         {
                             required: true,
-                            message: this.props.t('require_title_week')
+                            message: t('require_title_week')
                         }
                     ]}
                     hasFeedback>
@@ -58,7 +58,7 @@ const AddTimeline = ({ t, createTimeline, isLoading }) => {
                     rules={[
                         {
                             required: true,
-                            message: this.props.t('require_desc_week'),
+                            message: t('require_desc_week'),
                         }
                     ]}
                     hasFeedback>

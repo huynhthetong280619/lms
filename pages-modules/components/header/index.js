@@ -5,8 +5,10 @@ import { Avatar, dividerClassName } from "@fluentui/react-northstar";
 import { GoogleLogin } from 'react-google-login';
 import { GOOGLE_CLIENT_ID, FACEBOOK_CLIENT_ID } from '../../../assets/constants/const'
 import restClient from '../../../assets/common/core/restClient'
+import { notifyError, notifySuccess } from '../../../assets/common/core/notify'
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
 import { get, isEmpty } from 'lodash'
+import { withTranslation } from 'react-i18next';
 
 import styles from './styles.scss'
 import './overwrite.css'
@@ -37,7 +39,7 @@ class Headers extends React.Component {
         isLogin: false,
         username: '',
         isLoading: false,
-        loginChange: 'Sign in',
+        loginChange: this.props.t('sign_in'),
         isLoadingPage: false
     };
 
@@ -76,11 +78,10 @@ class Headers extends React.Component {
     handleLogin = async (values) => {
         this.setState({
             isLoading: true,
-            loginChange: "On Authenticate...",
+            loginChange: this.props.t('on_authenticate'),
             isLoadingPage: true
         })
-        console.log(values.username);
-        console.log(values.password);
+
         const data = {
             code: values.username,
             password: values.password
@@ -88,16 +89,12 @@ class Headers extends React.Component {
         await restClient.asyncPost(`/user/authenticate`, data, null)
             .then(res => {
                 if (!res.hasError) {
-                    // cookieCutter.set('token', get(res.data, 'token'))
-                    // Router.push(
-                    //     '/courses'
-                    // )
                     authenticate(res, () => {
                         Router.push("/courses");
                     })
                 } else {
-                    this.setState({ isLoading: false, loginChange: 'Sign in' });
-                    message.error(res.data.message);
+                    this.setState({ isLoading: false, loginChange: this.props.t('sign_in') });
+                    notifyError(this.props.t('failure'), res.data.message);
                 }
             })
 
@@ -111,7 +108,7 @@ class Headers extends React.Component {
         }
         this.setState({
             isLoading: true,
-            loginChange: "On Authenticate..."
+            loginChange: this.props.t('on_authenticate')
         })
         await restClient.asyncPost(`/user/auth/google`, data, null)
             .then(res => {
@@ -122,8 +119,8 @@ class Headers extends React.Component {
                     })
                 }
                 else {
-                    this.setState({ isLoading: false, loginChange: 'Sign in' });
-                    message.error(res.data.message);
+                    this.setState({ isLoading: false, loginChange: this.props.t('sign_in') });
+                    notifyError(this.props.t('failure'), res.data.message);
                 }
             })
     }
@@ -131,7 +128,7 @@ class Headers extends React.Component {
     responseFacebook = async (response) => {
         this.setState({
             isLoading: true,
-            loginChange: "On Authenticate..."
+            loginChange: this.props.t('on_authenticate')
         })
         console.log('responseFacebook', response);
         const token = response.accessToken;
@@ -153,8 +150,8 @@ class Headers extends React.Component {
                     })
                 }
                 else {
-                    this.setState({ isLoading: false, loginChange: 'Sign in' });
-                    message.error(res.data.message);
+                    this.setState({ isLoading: false, loginChange: this.props.t('sign_in') });
+                    notifyError(this.props.t('failure'), res.data.message);
                 }
             })
     }
@@ -170,12 +167,14 @@ class Headers extends React.Component {
 
     render() {
 
+        const { t } = this.props;
+
         const content = (
             <div>
-                <a className='menu_item setting' href="/profiles">Account settings</a>
+                <a className='menu_item setting' href="/profiles">{t('account_setting')}</a>
                 <a className='menu_item sign_out'
                     onClick={(e) => this.logout()}
-                >Sign out</a>
+                >{t('sign_out')}</a>
             </div>
         );
 
@@ -211,7 +210,7 @@ class Headers extends React.Component {
                         loading={this.state.isLoadingPage}
                     />
                 </div>
-                <Modal title="Login form" centered={true} visible={this.state.isVisible} onOk={this.handleOk} onCancel={this.handleCancel} footer={null}>
+                <Modal title={ t('sign_in').toUpperCase()} centered={true} visible={this.state.isVisible} onOk={this.handleOk} onCancel={this.handleCancel} footer={null}>
                     <Form
                         onFinish={this.handleLogin}
                     >
@@ -220,28 +219,28 @@ class Headers extends React.Component {
                             rules={[
                                 {
                                     required: true,
-                                    message: 'Please input your Username!',
+                                    message: t('req_username'),
                                 },
                             ]}
                         >
                             <Input
                                 size='large'
                                 prefix={<UserOutlined className="site-form-item-icon" />}
-                                placeholder="Enter your code..." />
+                                placeholder={t('placeholder_username')} />
                         </Form.Item>
                         <Form.Item
                             name="password"
                             rules={[
                                 {
                                     required: true,
-                                    message: 'Please input your Password!',
+                                    message: t('req_password'),
                                 },
                             ]}
                         >
                             <Input.Password
                                 prefix={<KeyOutlined className="site-form-item-icon" />}
                                 size='large'
-                                placeholder="Enter your password..."
+                                placeholder={t('placeholder_password')}
                             />
                         </Form.Item>
 
@@ -257,13 +256,13 @@ class Headers extends React.Component {
                     <Row style={{ textAlign: 'center' }}>
                         <Divider style={{
                             width: "100%", color: '#cacaca',
-                        }}> Or sign by certificate</Divider>
+                        }}>{t('other_certificate')}</Divider>
                         <Row style={{ width: '100%', justifyContent: 'center' }}>
                             <GoogleLogin
                                 clientId={GOOGLE_CLIENT_ID}
                                 render={renderProps => (
                                     <Row>
-                                        <Button className="social google" onClick={renderProps.onClick} disabled={renderProps.disabled}>Log in with Google</Button>
+                                        <Button className="social google" onClick={renderProps.onClick} disabled={renderProps.disabled}>{t('login_google')}</Button>
                                     </Row>
                                 )}
                                 onSuccess={this.responseGoogle}
@@ -278,7 +277,7 @@ class Headers extends React.Component {
                                 callback={this.responseFacebook}
                                 render={renderProps => (
                                     <Row>
-                                        <Button className="social facebook" onClick={renderProps.onClick} disabled={renderProps.disabled}>Log in with Facebook</Button>
+                                        <Button className="social facebook" onClick={renderProps.onClick} disabled={renderProps.disabled}>{t('login_facebook')}</Button>
                                     </Row>
                                 )}
                             />
@@ -297,7 +296,7 @@ class Headers extends React.Component {
                 <Col span={4}>
 
                 </Col>
-                <Col xs={10} style={{alignSelf: 'center'}}>
+                <Col xs={10} style={{ alignSelf: 'center' }}>
                     {/* Authentication */}
                     {
                         this.state.isLogin ? <div style={{ textAlign: 'right' }}>
@@ -308,7 +307,7 @@ class Headers extends React.Component {
                                     lineHeight: '46px',
                                     borderRadius: '50%'
                                 }}> */}
-                                    <Avatar image={this.state.profile.urlAvatar} />
+                                <Avatar image={this.state.profile.urlAvatar} />
                                 {/* </button> */}
                             </Popover>
                         </div>
@@ -329,4 +328,4 @@ class Headers extends React.Component {
 }
 
 
-export default Headers
+export default withTranslation('translations')(Headers);

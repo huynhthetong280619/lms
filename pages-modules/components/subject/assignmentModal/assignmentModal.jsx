@@ -1,6 +1,6 @@
 import { get } from 'lodash';
 import { withTranslation } from 'react-i18next';
-import { Row, Input, Modal, Tabs, Button } from 'antd'
+import { Row, Input, Modal, Tabs, Button, Typography } from 'antd'
 const { TextArea } = Input;
 const { TabPane } = Tabs;
 import restClient from '../../../../assets/common/core/restClient';
@@ -12,6 +12,8 @@ import word from '../../../../assets/images/contents/word.png'
 import rar from '../../../../assets/images/contents/rar.png'
 import pdf from '../../../../assets/images/contents/pdf.png'
 import Loading from '../../loading/loading.jsx'
+
+const { Text } = Typography;
 
 class AssignmentModal extends React.Component {
     constructor(props) {
@@ -43,11 +45,11 @@ class AssignmentModal extends React.Component {
                 this.props.submitAssignment({ file: objectFile, idAssignment: idAssignment });
             } else {
                 this.props.onCancelSubmitAssignment();
-                notifyError("Thất bại", 'Gặp lỗi khi tải file vui lòng thử lại');
+                notifyError(this.props.t('failure'), this.props.t('err_upload_file'));
             }
         } else {
             this.props.onCancelSubmitAssignment();
-            notifyWarning("Chú ý", 'Vui lòng chọn file trước khi nộp bài');
+            notifyWarning(this.props.t('warning'), this.props.t('warning_choose_file_submit'));
         }
 
     }
@@ -76,7 +78,10 @@ class AssignmentModal extends React.Component {
                     <Tabs defaultActiveKey="1" centered>
                         <TabPane tab={`${t('submission')}`} key="1">
                             <div>
-                                <div>{t('sbmit_stat')}</div>
+                                <div style={{ margin: '10px 0' }}>
+                                    <span style={{ fontWeight: 600 }}>{t('sbmit_stat')}: </span>
+                                    {(get(this.props.assignment, 'submissionStatus') ? <Text type='success'>{t('status_submitted')}</Text> : <Text type='danger'>{t('status_not_submit')}</Text>)}
+                                </div>
                                 <div style={{ margin: '10px 0' }}>
                                     <span style={{ fontWeight: 600 }}>{t('dueTo')}: </span>
                                     <span>{this.transTime(get(this.props.assignment, 'setting')?.expireTime)}</span>
@@ -122,7 +127,7 @@ class AssignmentModal extends React.Component {
                             }
 
                         </TabPane>
-                        <TabPane tab="Requirement" key="2">
+                        <TabPane tab={t('requirement')} key="2">
                             <div style={{ fontWeight: "700" }}>[{t('require_content')}]</div>
                             <div dangerouslySetInnerHTML={{ __html: get(this.props.assignment, 'content') }} />
                             {/* <div>
@@ -148,10 +153,13 @@ class AssignmentModal extends React.Component {
                                 }
                             </div>
                         </TabPane>
-                        <TabPane tab="Grade" key="3">
+                        <TabPane tab={t('grade')} key="3">
                             {
                                 get(this.props.assignment, 'gradeStatus') ? (<>
-                                    <div>{t('status_review')}</div>
+                                    <div style={{ margin: '10px 0' }}>
+                                        <span style={{ fontWeight: 600 }}>{t('grade_status')}: </span>
+                                        <Text type="success">{t('status_graded')}</Text>
+                                    </div>
                                     <div>
                                         <span style={{ fontWeight: 600 }}>{t('grade')}: </span>
                                         <span>{get(get(this.props.assignment, 'submission')?.feedBack, 'grade')}</span>

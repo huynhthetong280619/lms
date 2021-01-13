@@ -149,7 +149,7 @@ class Subject extends React.Component {
             return {
                 ...item,
                 index: index + 1,
-                name: "Tuần 0" + (index + 1)
+                name: `Tuần ${index < 10 ? 0 : ''}` + (index + 1)
             }
         })
 
@@ -227,7 +227,7 @@ class Subject extends React.Component {
                             console.log('New-ASSIGNMENT', this.state.assignmentRequirement);
                         });
                 } else {
-                    this.notifyError("Thất bại!", res.data.message);
+                    this.notifyError(this.props.t('failure'), res.data.message);
                 }
             })
     }
@@ -254,7 +254,7 @@ class Subject extends React.Component {
 
     createFile = ({ file, idTimeline }) => {
 
-        this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công document')
+        this.notifySuccess(this.props.t('success'), this.props.t('add_document_success'))
 
         let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
 
@@ -271,7 +271,7 @@ class Subject extends React.Component {
     }
 
     updateFile = ({ file, idTimeline }) => {
-        this.notifySuccess('Thành công!', 'Bạn đã cập nhật tài liệu thành công')
+        this.notifySuccess(this.props.t('success'), this.props.t('update_document_success'))
         let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
         let target = head(timelineUpdate).files.find(({ _id }) => _id === file._id);
         console.log('targetFile', target);
@@ -287,7 +287,7 @@ class Subject extends React.Component {
 
     createQuiz = ({ exam, idTimeline }) => {
 
-        this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công quiz')
+        this.notifySuccess(this.props.t('success'), this.props.t('add_quiz_success'))
         let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
 
         console.log('timelineUpdate', timelineUpdate)
@@ -305,7 +305,7 @@ class Subject extends React.Component {
     }
 
     updateQuiz = ({ exam, idTimeline }) => {
-        this.notifySuccess('Thành công!', 'Bạn đã cập nhật quiz thành công')
+        this.notifySuccess(this.props.t('success'), this.props.t('update_quiz_success'))
         let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
 
         //console.log('timelineUpdate', timelineUpdate)
@@ -336,7 +336,7 @@ class Subject extends React.Component {
     }
 
     createAssignment = async ({ assignment, idTimeline }) => {
-        this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công assignment')
+        this.notifySuccess(this.props.t('success'), this.props.t('add_quiz_assign'))
         let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
         head(timelineUpdate).assignments.push(assignment)
 
@@ -352,7 +352,7 @@ class Subject extends React.Component {
     }
 
     updateAssignment = ({ assignment, idTimeline }) => {
-        this.notifySuccess('Thành công!', 'Bạn đã cập nhật assignment thành công')
+        this.notifySuccess(this.props.t('success'), this.props.t('update_assign_success'))
         let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
 
         console.log('timelineUpdate', timelineUpdate)
@@ -372,7 +372,7 @@ class Subject extends React.Component {
 
     createSurvey = ({ survey, idTimeline }) => {
 
-        this.notifySuccess('Thành công!', 'Bạn vừa mới thêm thành công survey')
+        this.notifySuccess(this.props.t('success'), this.props.t('add_quiz_survey'))
         let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
 
         console.log('timelineUpdate', timelineUpdate)
@@ -391,7 +391,7 @@ class Subject extends React.Component {
     }
     updateSurvey = ({ survey, idTimeline }) => {
 
-        this.notifySuccess('Thành công!', 'Bạn đã cập nhật survey thành công')
+        this.notifySuccess(this.props.t('success'), this.props.t('add_quiz_survey'))
         let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
 
         console.log('timelineUpdate', timelineUpdate)
@@ -466,7 +466,7 @@ class Subject extends React.Component {
     }
 
     createForum = async ({ forum, idTimeline }) => {
-        this.notifySuccess('Thành công!', 'Bạn vừa mới thêm forum thành công')
+        this.notifySuccess(this.props.t('success'), this.props.t('add_forum_timeline'))
 
         let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
 
@@ -481,7 +481,7 @@ class Subject extends React.Component {
 
     updateForum = ({ forum, idTimeline }) => {
 
-        this.notifySuccess('Thành công!', 'Bạn đã cập nhật survey thành công')
+        this.notifySuccess(this.props.t('success'), this.props.t('update_forum_success'))
         let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
 
         let target = head(timelineUpdate).forums.find(({ _id }) => _id === forum._id);
@@ -705,7 +705,7 @@ class Subject extends React.Component {
                     console.log('res', res);
                     fileDownload(JSON.stringify(res.data), `${this.props.subject.name}.json`);
                 } else {
-                    this.notifyError('Error', res.data.message);
+                    this.notifyError(this.props.t('failure'), res.data.message);
                 }
             });
     }
@@ -722,9 +722,9 @@ class Subject extends React.Component {
                         lstSurveys: res.data.surveyBank,
                         lstQuizzes: res.data.quizBank
                     });
-                    this.notifySuccess('Thành công!', res.data.message);
+                    this.notifySuccess(this.props.t('success'), res.data.message);
                 } else {
-                    this.notifyError('Error', res.data.message);
+                    this.notifyError(this.props.t('failure'), res.data.message);
                 }
             });
     }
@@ -830,7 +830,7 @@ class Subject extends React.Component {
                                                     <FontAwesomeIcon icon="edit" onClick={() => { this.focusSurvey(survey._id, idTimeline); this.openDrawerCreate('CẬP NHẬT KHẢO SÁT') }} />
                                                 </a>
                                             </Tooltip>)}
-                                            {this.state.isTeacherPrivilege && (!survey.isDeleted ? <FontAwesomeIcon icon="lock-open" style={{ color: '#e84118' }}/> : <FontAwesomeIcon icon="lock" style={{ color: '#e84118' }}/>)}
+                                            {this.state.isTeacherPrivilege && (!survey.isDeleted ? <FontAwesomeIcon icon="lock-open" style={{ color: '#e84118' }} /> : <FontAwesomeIcon icon="lock" style={{ color: '#e84118' }} />)}
                                         </Col>
                                     </Row>
                                 )
@@ -881,7 +881,7 @@ class Subject extends React.Component {
                                                 </a>
                                             </Tooltip>)}
 
-                                            {this.state.isTeacherPrivilege && (!f.isDeleted ? <FontAwesomeIcon icon="lock-open" style={{ color: '#e84118' }}/> : <FontAwesomeIcon icon="lock" style={{ color: '#e84118' }}/>)}
+                                            {this.state.isTeacherPrivilege && (!f.isDeleted ? <FontAwesomeIcon icon="lock-open" style={{ color: '#e84118' }} /> : <FontAwesomeIcon icon="lock" style={{ color: '#e84118' }} />)}
                                         </Col>
                                     </Row>
                                 )
@@ -948,7 +948,7 @@ class Subject extends React.Component {
                                                 </a>
                                             </Tooltip>)}
 
-                                            {this.state.isTeacherPrivilege && (!assign.isDeleted ? <FontAwesomeIcon icon="lock-open" style={{ color: '#e84118' }}/> : <FontAwesomeIcon icon="lock" style={{ color: '#e84118' }}/>)}
+                                            {this.state.isTeacherPrivilege && (!assign.isDeleted ? <FontAwesomeIcon icon="lock-open" style={{ color: '#e84118' }} /> : <FontAwesomeIcon icon="lock" style={{ color: '#e84118' }} />)}
                                         </Col>
                                     </Row>
                             ))
@@ -988,7 +988,7 @@ class Subject extends React.Component {
                                                 <FontAwesomeIcon icon="edit" onClick={() => { this.focusForum(fr._id, idTimeline); this.openDrawerCreate('CẬP NHẬT DIỄN ĐÀN') }} />
                                             </a>
                                         </Tooltip>)}
-                                        {this.state.isTeacherPrivilege && (!fr.isDeleted ? <FontAwesomeIcon icon="lock-open" style={{ color: '#e84118' }}/> : <FontAwesomeIcon icon="lock" style={{ color: '#e84118' }}/>)}
+                                        {this.state.isTeacherPrivilege && (!fr.isDeleted ? <FontAwesomeIcon icon="lock-open" style={{ color: '#e84118' }} /> : <FontAwesomeIcon icon="lock" style={{ color: '#e84118' }} />)}
                                     </Col>
 
                                 </Row>
@@ -1032,7 +1032,7 @@ class Subject extends React.Component {
                                             </a>
                                         </Tooltip>)}
 
-                                        {this.state.isTeacherPrivilege && ((!ex.isDeleted) ? <FontAwesomeIcon icon="lock-open" style={{ color: '#e84118' }}/> : <FontAwesomeIcon icon="lock" style={{ color: '#e84118' }}/>)}
+                                        {this.state.isTeacherPrivilege && ((!ex.isDeleted) ? <FontAwesomeIcon icon="lock-open" style={{ color: '#e84118' }} /> : <FontAwesomeIcon icon="lock" style={{ color: '#e84118' }} />)}
                                     </Col>
                                     {/* <Col span={2} style={{
                                         fontSize: '20px',
@@ -1254,11 +1254,11 @@ class Subject extends React.Component {
                             lineHeight: '50px',
                             cursor: 'pointer'
                         }} onClick={() => {
-                            this.openDrawerCreate('TẠO TUẦN MỚI');
+                            this.openDrawerCreate(this.props.t('create_timeline'));
                             this.focusTimeline()
                         }}>
-                            TUẦN
-                       </Col>
+                            {t('timeline')}
+                        </Col>
 
 
                     </Row>
@@ -1272,11 +1272,11 @@ class Subject extends React.Component {
                             lineHeight: '50px',
                             cursor: 'pointer'
                         }} onClick={() => {
-                            this.openDrawerCreate('TẠO DIỄN ĐÀN MỚI');
+                            this.openDrawerCreate(this.props.t('create_forum'));
                             this.focusForum();
                         }}>
-                            DIỄN ĐÀN
-                       </Col>
+                            {t('forum')}
+                        </Col>
                     </Row>
 
                     <Row>
@@ -1318,10 +1318,10 @@ class Subject extends React.Component {
                                 size='large'
                                 icon={<UploadOutlined />}
                                 onClick={() => {
-                                    this.openDrawerCreate('IMPORT DỮ LIỆU');
+                                    this.openDrawerCreate(this.props.t('import_data'));
                                     this.importSubject()
                                 }}
-                            > IMPORT</Button>
+                            > {this.props.t('import').toUpperCase()}</Button>
 
                         </Col>
                         <Col span={12} className="action-select-add-content" >
@@ -1331,7 +1331,7 @@ class Subject extends React.Component {
                                 type='primary'
                                 size='large'
                                 icon={<ExportOutlined />}
-                            > EXPORT</Button>
+                            > {this.props.t('export').toUpperCase()}</Button>
                         </Col>
                     </Row>
 

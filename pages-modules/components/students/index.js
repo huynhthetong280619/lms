@@ -26,6 +26,8 @@ class Student extends React.Component {
 
     render() {
 
+        const { t } = this.props
+
         return (
             <div class="lms-ws-student-page">
                 <Row style={{
@@ -42,13 +44,13 @@ class Student extends React.Component {
 
                     <Row style={{ width: '90%', marginBottom: 30 }}>
                         <Tabs defaultActiveKey="1" centered style={{ width: "100%" }}>
-                            <TabPane tab="Lớp học" key="1">
+                            <TabPane tab={t('class')} key="1">
                                 <StudentManage lstStudents={this.props.listStudent} idSubject={this.props.idSubject} token={this.props.token} />
                             </TabPane>
-                            <TabPane tab="Bài kiểm tra" key="2">
+                            <TabPane tab={t('test')} key="2">
                                 <ExamManage lstSubmissionCore={this.state.lstSubmissionCore} />
                             </TabPane>
-                            <TabPane tab="Bảng điểm" key="3">
+                            <TabPane tab={t('transcript')} key="3">
                                 <TranscriptManage lstClassScore={this.state.lstClassScore} idSubject={this.props.idSubject} token={this.props.token} />
                             </TabPane>
                         </Tabs>
