@@ -109,7 +109,6 @@ button.btn-login {
     width: 210px;
 }
 
-
 .ant-btn-round.ant-btn-lg {
     font-size: 20px;
 }
@@ -134,19 +133,34 @@ div.ant-row.ant-form-item {
     cursor: pointer
 }
 
-.facebook{
+.facebook {
     background: #32508e
 }
 
-.facebook:hover{
+.facebook:hover {
     background: #32508e
 }
 
-.google{
+.google {
     background: #dd4b39
 }
 
-.google:hover{
+.google:hover {
     background: #dd4b39
 }
 
+.icon-facebook {
+    color: #32508e
+}
+
+.icon-facebook:hover {
+    color: #32508e
+}
+
+.icon-google {
+    color: #dd4b39
+}
+
+.icon-google:hover {
+    color: #dd4b39
+}

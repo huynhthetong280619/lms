@@ -17,7 +17,7 @@ i18n
         translations: vi
       },
     },
-      fallbackLng: 'en',
+      fallbackLng: 'vi',
 
       // have a common namespace used around the full app
       ns: ['translations'],

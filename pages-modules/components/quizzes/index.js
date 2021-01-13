@@ -1,10 +1,12 @@
 import React from 'react'
-import { Row, Col, Button, Table, Tag } from 'antd'
-import {SyncOutlined} from '@ant-design/icons'
+import { Row, Col, Button, Table, Tag, Typography } from 'antd'
+import { SyncOutlined } from '@ant-design/icons'
 import quizTime from '../../../assets/images/contents/quiz-time.png'
 import { get } from 'lodash'
 import moment from 'moment'
 import restClient from '../../../assets/common/core/restClient'
+import { withTranslation } from 'react-i18next'
+const { Text } = Typography;
 
 import './overwrite.css'
 
@@ -14,7 +16,6 @@ class Quiz extends React.Component {
         this.state = {
             isTeacherPrivilege: false,
             submissions: [],
-            columns: [],
         }
     }
 
@@ -46,70 +47,68 @@ class Quiz extends React.Component {
         this.setState({
             submissions: get(this.props.requirementExam, 'submissions')
         })
-
-
-        if (user?.idPrivilege == 'teacher') {
-            this.setState({
-                columns: [
-                    {
-                        title: 'Student',
-                        dataIndex: 'student',
-                        key: 'student',
-                        render: (data) => {
-                            console.log(data);
-                            return (<span> {get(data, 'surName') + " " + get(data, 'firstName')}</span>)
-                        }
-                    },
-                    {
-                        title: 'Grade',
-                        dataIndex: 'grade',
-                        key: 'grade',
-                        render: (data) => (
-                            data ? <span>{data}</span> : <span>Chưa làm bài</span>
-                        )
-                    },
-                    {
-                        title: 'Review',
-                        dataIndex: 'review',
-                        key: 'review',
-                        render: () => <a>Review</a>
-                    },
-                ]
-            });
-        } else {
-            this.setState({
-                columns: [
-                    {
-                        title: 'Attempt',
-                        dataIndex: 'time',
-                        key: 'time',
-                        render: data => <span> {data}</span>
-                    },
-                    {
-                        title: 'Grade',
-                        dataIndex: 'grade',
-                        key: 'grade',
-                    },
-                    {
-                        title: 'Status',
-                        dataIndex: 'isContinue',
-                        key: 'isContinue',
-                        render: (data) => data ?<Tag icon={<SyncOutlined spin />} color="processing" >Continue</Tag> : <Tag color="success">Completed</Tag>
-                    },
-                    {
-                        title: 'Tiếp tục',
-                        dataIndex: 'isContinue',
-                        key: 'isContinue',
-                        render: (data) => data ? <a href={`/exams/${this.props.idExam}?idSubject=${this.props.idSubject}&idTimeline=${this.props.idTimeline}`}>Continue</a> : null
-                    }
-                ]
-            })
-        }
     }
 
     render() {
 
-        const { requirementExam } = this.props;
+        const { requirementExam, t } = this.props;
+
+        const { isTeacherPrivilege } = this.state;
+
+        let columns = []
+
+        if (isTeacherPrivilege) {
+            columns = [
+                {
+                    title: t('student'),
+                    dataIndex: 'student',
+                    key: 'student',
+                    render: (data) => {
+                        console.log(data);
+                        return (<span> {get(data, 'surName') + " " + get(data, 'firstName')}</span>)
+                    }
+                },
+                {
+                    title: t('grade'),
+                    dataIndex: 'grade',
+                    key: 'grade',
+                    render: (data) => (
+                        data ? <Text type='success'>{data}</Text> : <Text type='danger'>{t('not_do')}</Text>
+                    )
+                },
+                {
+                    title: t('review'),
+                    dataIndex: 'review',
+                    key: 'review',
+                    render: () => <a>{t('review')}</a>
+                },
+            ]
+        } else {
+            columns = [
+                {
+                    title: t('time_attempt'),
+                    dataIndex: 'time',
+                    key: 'time',
+                    render: data => <span> {data}</span>
+                },
+                {
+                    title: t('grade'),
+                    dataIndex: 'grade',
+                    key: 'grade',
+                },
+                {
+                    title: t('status'),
+                    dataIndex: 'isContinue',
+                    key: 'isContinue',
+                    render: (data) => data ? <Tag icon={<SyncOutlined spin />} color="processing" >{this.props.t('doing')}</Tag> : <Tag color="success">{t('completed')}</Tag>
+                },
+                {
+                    dataIndex: 'isContinue',
+                    key: 'isContinue',
+                    render: (data) => data ? <a href={`/exams/${this.props.idExam}?idSubject=${this.props.idSubject}&idTimeline=${this.props.idTimeline}`}>{t('continue')}</a> : null
+                }
+            ]
+        }
 
         console.log('requirementExam', requirementExam)
 
@@ -140,18 +139,18 @@ class Quiz extends React.Component {
                             </i>
                             <div style={{ fontSize: '2em' }}>{get(requirementExam, 'name')}</div>
                             <div>
-                                <div><span style={{ fontWeight: 700 }}>Attemp allowed: </span> {get(get(requirementExam, 'setting'), 'attemptCount')}</div>
-                                {!this.state.isTeacherPrivilege && (<div><span style={{ fontWeight: 700 }}>Attemp available: </span> {get(requirementExam, 'attemptAvailable')}</div>)}
-                                <div><span style={{ fontWeight: 700 }}>Open: </span> {this.transTime(get(requirementExam, 'startTime'))}</div>
-                                <div><span style={{ fontWeight: 700 }}>Closed: </span> {this.transTime(get(requirementExam, 'expireTime'))}</div>
-                                <div><span style={{ fontWeight: 700 }}>Time remaining: </span> {get(requirementExam, 'timingRemain')}</div>
-                                <div><span style={{ fontWeight: 700 }}>Status: </span>{get(requirementExam, 'isOpen') ? <span style={{ color: '#44bd32', fontWeight: 900 }}>Opening</span> : <span style={{ color: '#e84118', fontWeight: 900 }}>Closed</span>}</div>
-                                <div><span style={{ fontWeight: 700 }}>Grading method: </span>Highest grade</div>
+                                <div><span style={{ fontWeight: 700 }}>{t('attempt_allowed')} </span> {get(get(requirementExam, 'setting'), 'attemptCount')}</div>
+                                {!this.state.isTeacherPrivilege && (<div><span style={{ fontWeight: 700 }}>{t('attempt_available')}</span> {get(requirementExam, 'attemptAvailable')}</div>)}
+                                <div><span style={{ fontWeight: 700 }}>{t('quiz_open')}</span> {this.transTime(get(requirementExam, 'startTime'))}</div>
+                                <div><span style={{ fontWeight: 700 }}>{t('quiz_close')}</span> {this.transTime(get(requirementExam, 'expireTime'))}</div>
+                                <div><span style={{ fontWeight: 700 }}>{t('quiz_time_remaining')}</span> {get(requirementExam, 'timingRemain')}</div>
+                                <div><span style={{ fontWeight: 700 }}>{t('quiz_status')}</span>{get(requirementExam, 'isOpen') ? <span style={{ color: '#44bd32', fontWeight: 900 }}>{t('opening')}</span> : <span style={{ color: '#e84118', fontWeight: 900 }}>{t('closed')}</span>}</div>
+                                <div><span style={{ fontWeight: 700 }}>{t('quiz_grade_method')}</span>{t('quiz_highest_grade')}</div>
                             </div>
                             {!this.state.isTeacherPrivilege && (<div>
-                                {(get(requirementExam, 'attemptAvailable') > 0 && get(requirementExam, 'isAttempt') == true) && <Button type="primary" href={`/exams/${this.props.idExam}?idSubject=${this.props.idSubject}&idTimeline=${this.props.idTimeline}`} style={{ marginTop: 25 }}>Take quiz</Button>}
-                                {(get(requirementExam, 'attemptAvailable') == 0) && <div style={{ color: '#ff4000', fontStyle: 'italic', fontWeight: 900 }}>Hết số lần cho phép làm bài quiz</div>}
-                                {(!get(requirementExam, 'isOpen')) && (get(requirementExam, 'isRemain')) && <div style={{ color: '#ff4000', fontStyle: 'italic', fontWeight: 900 }}>Chưa đến thời gian làm bài quiz</div>}
+                                {(get(requirementExam, 'attemptAvailable') > 0 && get(requirementExam, 'isAttempt') == true) && <Button type="primary" href={`/exams/${this.props.idExam}?idSubject=${this.props.idSubject}&idTimeline=${this.props.idTimeline}`} style={{ marginTop: 25 }}>{t('take_quiz')}</Button>}
+                                {(get(requirementExam, 'attemptAvailable') == 0) && <div style={{ color: '#ff4000', fontStyle: 'italic', fontWeight: 900 }}>{t('quiz_join_run_out')}</div>}
+                                {(!get(requirementExam, 'isOpen')) && (get(requirementExam, 'isRemain')) && <div style={{ color: '#ff4000', fontStyle: 'italic', fontWeight: 900 }}>{t('quiz_not_time')}</div>}
                             </div>)}
                         </div>
 
@@ -163,7 +162,7 @@ class Quiz extends React.Component {
                             borderRadius: "20px"
 
                         }}>
-                            <Table pagination={false} dataSource={this.state.submissions} columns={this.state.columns} rowKey='key' scroll={{ y: 240 }} />
+                            <Table pagination={false} columns={columns} dataSource={this.state.submissions} rowKey='key' scroll={{ y: 240 }} />
                         </div>
                     </div>
                 </div>
@@ -173,4 +172,4 @@ class Quiz extends React.Component {
     }
 }
 
-export default Quiz
+export default withTranslation('translations')(Quiz);

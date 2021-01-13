@@ -1,14 +1,16 @@
 import React from 'react';
-import { Row, Col, Button, Radio, Checkbox, notification,Tooltip } from 'antd'
+import { Row, Col, Button, Radio, Checkbox, notification, Tooltip } from 'antd'
 
 import survey from '../../../assets/images/contents/surveylogo.png'
 import { get } from 'lodash'
 import './overwrite.css'
 import Countdown from "react-countdown";
 import restClient from '../../../assets/common/core/restClient';
+import { notifyError, notifySuccess } from '../../../assets/common/core/notify';
 import Router from 'next/router'
 import CountDownTest from '../countDown';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { withTranslation } from 'react-i18next'
 import '../fontAwesomeIcon'
 
 class Exams extends React.Component {
@@ -82,10 +84,7 @@ class Exams extends React.Component {
                     Router.push(`/quizzis/${this.props.idExam}?idSubject=${this.props.idSubject}&idTimeline=${this.props.idTimeline}`)
                 } else {
                     this.setState({ loading: false });
-                    notification.error({
-                        message: res.data.message,
-                        placement: 'topRight'
-                    });
+                    notifyError(this.props.t('failure'), res.data.message);
                 }
             })
     }
@@ -98,14 +97,14 @@ class Exams extends React.Component {
             lineHeight: '30px'
         };
 
-        const { examQuestion } = this.props;
+        const { examQuestion, t } = this.props;
 
         console.log(examQuestion)
 
         const renderer = ({ hours, minutes, seconds, completed }) => {
             if (completed) {
                 // Render a completed state
-                return <div>Hello</div>;
+                return <div>{t('time_out')}</div>;
             } else {
                 // Render a countdown
                 return <CountDownTest hours={hours} minutes={minutes} seconds={seconds} />
@@ -136,7 +135,7 @@ class Exams extends React.Component {
                 <div style={{ width: '90%' }}>
                     <div style={{ textAlign: 'left', width: '100%', padding: '10px 0' }}>
                         <span>
-                            <FontAwesomeIcon icon="spell-check" style={{ width: 60, height: 60, color: '#F79F1F' }}/>
+                            <FontAwesomeIcon icon="spell-check" style={{ width: 60, height: 60, color: '#F79F1F' }} />
                         </span>
                         <span style={{ fontWeight: '700' }}>{get(examQuestion, 'name').toUpperCase()}</span>
                     </div>
@@ -155,7 +154,7 @@ class Exams extends React.Component {
                                         (
                                             <div className="ant-row" style={{ marginBottom: 10 }}>
                                                 <Col span={10} style={{ textAlign: 'left' }}>
-                                                    <div style={{ fontWeight: 600 }}><span>Question {index}: </span>{q.question}</div>
+                                                    <div style={{ fontWeight: 600 }}><span>{t('question')} {index+1}: </span>{q.question}</div>
                                                     <div>
                                                         <Checkbox.Group style={{ width: '100%' }} onChange={e => this.onChangeMultipleChoice(e, q._id)}>
                                                             <Row>
@@ -183,13 +182,13 @@ class Exams extends React.Component {
                                         :
                                         (<div className="ant-row" style={{ marginBottom: 10 }}>
                                             <Col span={10} style={{ textAlign: 'left' }}>
-                                                <div style={{ fontWeight: 600 }}><span>Question {index}: </span>{q.question}</div>
+                                                <div style={{ fontWeight: 600 }}><span>{t('question')} {index+1}: </span>{q.question}</div>
                                                 <div>
                                                     <Radio.Group onChange={e => this.onChoice(e, q._id)} value={get(this.state.answer, q._id)}>
                                                         {
                                                             q.answers.map(a => (
                                                                 <Radio style={radioStyle} value={a._id}>
-                                                                    <Tooltip title={a.answer}>{a.answer.length > 150 ? a.answer.slice(0, 150) + '...': a.answer}</Tooltip>
+                                                                    <Tooltip title={a.answer}>{a.answer.length > 150 ? a.answer.slice(0, 150) + '...' : a.answer}</Tooltip>
                                                                 </Radio>
                                                             ))
                                                         }
@@ -203,7 +202,7 @@ class Exams extends React.Component {
                             }
                         </div>
                         <div style={{ marginBottom: 20 }}>
-                            <Button type="primary" loading={this.state.loading} onClick={() => this.submitExam()}>Submit</Button>
+                            <Button type="primary" loading={this.state.loading} onClick={() => this.submitExam()}>{t('quiz_submit')}</Button>
                         </div>
                     </div>
                 </div>
@@ -212,4 +211,4 @@ class Exams extends React.Component {
     }
 }
 
-export default Exams
+export default withTranslation('translations')(Exams);

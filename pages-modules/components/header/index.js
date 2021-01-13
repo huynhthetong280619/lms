@@ -18,7 +18,7 @@ import notification from '../../../assets/images/contents/notification.png'
 import profile from '../../../assets/images/contents/profile.png'
 import enter from '../../../assets/images/contents/enter.png'
 import logo from '../../../assets/logo/logo.png'
-import { UserOutlined, KeyOutlined, GoogleOutlined, FacebookOutlined, PoweroffOutlined, HomeOutlined } from '@ant-design/icons';
+import { UserOutlined, KeyOutlined, GoogleOutlined, FacebookOutlined, PoweroffOutlined, HomeOutlined,GooglePlusOutlined, } from '@ant-design/icons';
 import Router from 'next/router'
 import { authenticate, removeCookie, isAuth } from '../../../assets/common/core/localStorage';
 import { css } from "@emotion/core";
@@ -210,7 +210,7 @@ class Headers extends React.Component {
                         loading={this.state.isLoadingPage}
                     />
                 </div>
-                <Modal title={ t('sign_in').toUpperCase()} centered={true} visible={this.state.isVisible} onOk={this.handleOk} onCancel={this.handleCancel} footer={null}>
+                <Modal title={t('sign_in').toUpperCase()} centered={true} visible={this.state.isVisible} onOk={this.handleOk} onCancel={this.handleCancel} footer={null}>
                     <Form
                         onFinish={this.handleLogin}
                     >
@@ -262,7 +262,7 @@ class Headers extends React.Component {
                                 clientId={GOOGLE_CLIENT_ID}
                                 render={renderProps => (
                                     <Row>
-                                        <Button className="social google" onClick={renderProps.onClick} disabled={renderProps.disabled}>{t('login_google')}</Button>
+                                        <Button icon={<GooglePlusOutlined />} className="social google" onClick={renderProps.onClick} disabled={renderProps.disabled}>{t('login_google')}</Button>
                                     </Row>
                                 )}
                                 onSuccess={this.responseGoogle}
@@ -277,7 +277,7 @@ class Headers extends React.Component {
                                 callback={this.responseFacebook}
                                 render={renderProps => (
                                     <Row>
-                                        <Button className="social facebook" onClick={renderProps.onClick} disabled={renderProps.disabled}>{t('login_facebook')}</Button>
+                                        <Button icon={<FacebookOutlined />} className="social facebook" onClick={renderProps.onClick} disabled={renderProps.disabled}>{t('login_facebook')}</Button>
                                     </Row>
                                 )}
                             />

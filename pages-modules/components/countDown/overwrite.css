@@ -1,14 +1,13 @@
-#time{
+#time {
     display: flex;
 }
 
-#time div{
+#time div {
     position: relative;
     margin: 0 5px;
-    -webkit-box-reflect:below 1px linear-gradient(transparent, #0004)
 }
 
-#time div span{
+#time div span {
     position: relative;
     display: block;
     width: 60px;
@@ -20,10 +19,10 @@
     justify-content: center;
     font-size: 3em;
     z-index: 1000;
-    box-shadow: 0 0 0 1px rgba(0,0,0,.2);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, .2);
 }
 
-#time div span:nth-child(2){
+#time div span:nth-child(2) {
     height: 15px;
     font-size: .7em;
     letter-spacing: .2em;
@@ -32,10 +31,8 @@
     box-shadow: none;
     background: #127fd6;
     text-transform: uppercase;
-
 }
 
-#time div:last-child span:nth-child(2){
+#time div:last-child span:nth-child(2) {
     background: #ec0062;
 }
-

@@ -1,13 +1,15 @@
+import { withTranslation } from 'react-i18next'
 import { Spin, Alert } from 'antd'
-const Loading = () => {
+
+const Loading = ({t}) => {
     return (
         <Spin spinning>
             <Alert
-                message="Lấy dữ liệu từ server"
-                description="Hoạt động có thể chậm do mạng..."
+                message={t('get_data_server')}
+                description={t('reason_get_server')}
                 type="info"
             />
         </Spin>
     )
 }
-export default Loading;
+export default withTranslation('translations')(Loading);
