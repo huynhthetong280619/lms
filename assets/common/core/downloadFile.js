@@ -1,9 +1,14 @@
 import fetch from 'node-fetch';
 import fileDownload from 'js-file-download';
-import { notification } from 'antd';
+import { notifyError } from './notify';
 
 const downloadFile = (file) => {
-    fetch(file.path, { method: 'GET' })
+    fetch(file.path, {
+        method: 'GET',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Accept',
+        mode: 'no-cors'
+    })
         .then(res => {
             return res.blob();
         })
@@ -11,10 +16,7 @@ const downloadFile = (file) => {
             fileDownload(blob, `${file.name}.${file.type}`);
         })
         .catch(err => {
-            notification.error({
-                message: "Error!",
-                description: 'err.message'
-            })
+            notifyError('Error', err.message);
         })
 }
 export default downloadFile;

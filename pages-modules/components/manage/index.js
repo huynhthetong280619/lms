@@ -1,9 +1,10 @@
-import { Row, Col, Table, Input, Popconfirm, Button, Form, notification } from 'antd';
+import { Row, Col, Table, Input, Button, Form, notification } from 'antd';
 import React, { useState } from 'react'
 import { get } from 'lodash'
 import { withTranslation } from 'react-i18next';
 import downloadFile from '../../../assets/common/core/downloadFile.js';
 import restClient from '../../../assets/common/core/restClient.js';
+import HeadPage from '../headPage/headPage.jsx';
 import 'antd/dist/antd.css';
 
 const Manage = ({ t, assignment, idAssign, idSubject, idTimeline, token }) => {
@@ -141,35 +142,38 @@ const Manage = ({ t, assignment, idAssign, idSubject, idTimeline, token }) => {
 
 
     return (
-        <Row id="lms-ws-exam-component" style={{
-            width: '85%',
-            textAlign: 'center',
-            background: '#fff',
-            minHeight: '20px',
-            justifyContent: 'center',
-            margin: '0 auto'
-        }}>
+        <>
+            <HeadPage title={`${assignment.name}`} />
+            <Row id="lms-ws-exam-component" style={{
+                width: '85%',
+                textAlign: 'center',
+                background: '#fff',
+                minHeight: '20px',
+                justifyContent: 'center',
+                margin: '0 auto'
+            }}>
 
-            <Row style={{ width: '100%' }}>
-                <Col span={24} style={{ padding: '25px', fontSize: '2em' }}>{get(state.assignment, 'name')}</Col>
+                <Row style={{ width: '100%' }}>
+                    <Col span={24} style={{ padding: '25px', fontSize: '2em' }}>{get(state.assignment, 'name')}</Col>
+                </Row>
+                <Row style={{ width: '100%', padding: 10 }}>
+                    <div style={{ width: '100%', border: '1px solid #cacaca' }}>
+                        <Form
+                            form={form}
+                        >
+                            <Table
+                                columns={columns}
+                                scroll={{ y: 240 }}
+                                dataSource={state.lstSubmission}
+                                rowKey={["student"], ["_id"]}
+                                pagination={false}
+                                bordered
+                            />
+                        </Form>
+                    </div>
+                </Row>
             </Row>
-            <Row style={{ width: '100%', padding: 10 }}>
-                <div style={{ width: '100%', border: '1px solid #cacaca' }}>
-                    <Form
-                        form={form}
-                    >
-                        <Table
-                            columns={columns}
-                            scroll={{ y: 240 }}
-                            dataSource={state.lstSubmission}
-                            rowKey={["student"], ["_id"]}
-                            pagination={false}
-                            bordered
-                        />
-                    </Form>
-                </div>
-            </Row>
-        </Row>
+        </>
     )
 }
 

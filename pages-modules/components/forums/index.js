@@ -1,11 +1,11 @@
 import React from 'react'
-import { Row, Col, Modal, Input, Card, notification, Button, Tooltip, Badge } from 'antd'
+import { Row, Col, Modal, Input, Card, notification, Button, Tooltip, Badge, Form } from 'antd'
 
 import discussion from '../../../assets/images/contents/discussion.jpg'
 import { withTranslation } from 'react-i18next'
 import restClient from '../../../assets/common/core/restClient'
 import { get } from 'lodash'
-
+import HeadPage from '../headPage/headPage.jsx';
 import './overwrite.css'
 
 const { Meta } = Card;
@@ -35,23 +35,19 @@ class Forum extends React.Component {
         this.setState({ isModalCreateTopic: true });
     };
 
-    handleOk = () => {
-        this.createForum()
-    };
-
     handleCancel = () => {
         this.setState({ isModalCreateTopic: false });
     };
 
-    createForum = async () => {
+    createTopic = async ({ topic }) => {
 
         const data = {
             idSubject: this.props.idSubject,
             idTimeline: this.props.idTimeline,
             idForum: this.props.idForum,
             data: {
-                name: this.state.topic_name,
-                content: this.state.topic_desc
+                name: topic.name,
+                content: topic.content
             }
         }
         this.setState({
@@ -104,6 +100,11 @@ class Forum extends React.Component {
             placement: 'bottomRight'
         });
     };
+    onFinish = (values) => {
+        console.log(values);
+
+        this.createTopic({ topic: values });
+    }
 
 
     render() {
@@ -112,7 +113,17 @@ class Forum extends React.Component {
 
         console.log(forum)
 
+        const layout = {
+            labelCol: {
+                span: 6
+            },
+            wrapperCol: {
+                span: 18
+            }
+        };
+
         return (<>
+            <HeadPage title={`${this.props.nameSubject}: ${forum.name}`} />
             <Row style={{
                 width: '85%',
                 textAlign: 'center',
@@ -123,26 +134,48 @@ class Forum extends React.Component {
                 <Modal
                     title={t('new_topic')}
                     visible={this.state.isModalCreateTopic}
-                    onOk={this.handleOk}
                     onCancel={this.handleCancel}
                     confirmLoading={this.state.isLoading}
+                    footer={[
+                        <Button key="back" onClick={this.handleCancel}>
+                            {t('cancel')}
+                        </Button>,
+                        <Button key="submit" form="frm_add_topic" htmlType="submit" type="primary" loading={this.state.isLoading}>
+                            {t('save')}
+                        </Button>,
+                    ]}
                 >
-                    <Row style={{ margin: "10px 0" }}>
-                        <Col span={6}>
-                            <label>{t('topic_name')}</label>
-                        </Col>
-                        <Col span={14}>
-                            <Input placeholder={t('req_topic_name')} style={{ borderRadius: 20 }} onChange={(e) => this.setState({ topic_name: e.target.value.trim() })} />
-                        </Col>
-                    </Row>
-                    <Row style={{ margin: "10px 0" }}>
-                        <Col span={6}>
-                            <label>{t('topic_description')}</label>
-                        </Col>
-                        <Col span={14}>
-                            <Input placeholder={t('req_topic_description')} style={{ borderRadius: 20 }} onChange={(e) => this.setState({ topic_desc: e.target.value.trim() })} />
-                        </Col>
-                    </Row>
+                    <Form
+                        {...layout}
+                        name='frm_add_topic'
+                        id='frm_add_topic'
+                        onFinish={this.onFinish}
+                    >
+                        <Form.Item
+                            name='name'
+                            label={t('name')}
+                            rules={[
+                                {
+                                    required: true,
+                                    message: t('req_topic_name')
+                                }
+                            ]}
+                        >
+                            <Input placeholder={t('topic_name')} style={{ borderRadius: 20 }} />
+                        </Form.Item>
+                        <Form.Item
+                            name='content'
+                            label={t('content')}
+                            rules={[
+                                {
+                                    required: true,
+                                    message: t('req_topic_content')
+                                }
+                            ]}
+                        >
+                            <Input placeholder={t('topic_content')} style={{ borderRadius: 20 }} />
+                        </Form.Item>
+                    </Form>
                 </Modal>
                 <Row style={{ width: '100%' }}>
                     <Col span={24} style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject.toUpperCase()}</Col>

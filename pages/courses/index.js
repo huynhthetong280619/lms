@@ -40,4 +40,4 @@ PageCourse.getInitialProps = async (ctx) => {
     };
 }
 
-export default PageCourse
+export default (PageCourse)

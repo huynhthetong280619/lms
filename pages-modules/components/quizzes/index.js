@@ -6,6 +6,7 @@ import { get } from 'lodash'
 import moment from 'moment'
 import restClient from '../../../assets/common/core/restClient'
 import { withTranslation } from 'react-i18next'
+import HeadPage from '../headPage/headPage.jsx';
 const { Text } = Typography;
 
 import './overwrite.css'
@@ -112,63 +113,67 @@ class Quiz extends React.Component {
 
         console.log('requirementExam', requirementExam)
 
-        return (<div className="lms-ws-quizzes-page">
-            <Row style={{
-                width: '85%',
-                textAlign: 'center',
-                background: '#fff',
-                minHeight: '20px',
-                margin: '0 auto',
-                justifyContent: 'center'
-            }}>
-                <Row style={{ width: '100%' }}>
-                    <Col span={24} style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject.toUpperCase()}</Col>
-                </Row>
-                <div style={{ width: '90%' }}>
-                    <div style={{ width: '100%', minHeight: '150px' }}>
-                        <div style={{
-                            textAlign: 'center',
-                            padding: '45px',
-                            marginBottom: "25px",
-                            border: "2px solid #c4c4c4",
-                            borderRadius: "20px"
+        return (
+            <>
+                <HeadPage title={`${this.props.nameSubject}: ${requirementExam.name}`} />
+                <div className="lms-ws-quizzes-page">
+                    <Row style={{
+                        width: '85%',
+                        textAlign: 'center',
+                        background: '#fff',
+                        minHeight: '20px',
+                        margin: '0 auto',
+                        justifyContent: 'center'
+                    }}>
+                        <Row style={{ width: '100%' }}>
+                            <Col span={24} style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject.toUpperCase()}</Col>
+                        </Row>
+                        <div style={{ width: '90%' }}>
+                            <div style={{ width: '100%', minHeight: '150px' }}>
+                                <div style={{
+                                    textAlign: 'center',
+                                    padding: '45px',
+                                    marginBottom: "25px",
+                                    border: "2px solid #c4c4c4",
+                                    borderRadius: "20px"
 
-                        }}>
-                            <i>
-                                <img src={quizTime} />
-                            </i>
-                            <div style={{ fontSize: '2em' }}>{get(requirementExam, 'name')}</div>
-                            <div>
-                                <div><span style={{ fontWeight: 700 }}>{t('attempt_allowed')} </span> {get(get(requirementExam, 'setting'), 'attemptCount')}</div>
-                                {!this.state.isTeacherPrivilege && (<div><span style={{ fontWeight: 700 }}>{t('attempt_available')}</span> {get(requirementExam, 'attemptAvailable')}</div>)}
-                                <div><span style={{ fontWeight: 700 }}>{t('quiz_open')}</span> {this.transTime(get(requirementExam, 'startTime'))}</div>
-                                <div><span style={{ fontWeight: 700 }}>{t('quiz_close')}</span> {this.transTime(get(requirementExam, 'expireTime'))}</div>
-                                <div><span style={{ fontWeight: 700 }}>{t('quiz_time_remaining')}</span> {get(requirementExam, 'timingRemain')}</div>
-                                <div><span style={{ fontWeight: 700 }}>{t('quiz_status')}</span>{get(requirementExam, 'isOpen') ? <span style={{ color: '#44bd32', fontWeight: 900 }}>{t('opening')}</span> : <span style={{ color: '#e84118', fontWeight: 900 }}>{t('closed')}</span>}</div>
-                                <div><span style={{ fontWeight: 700 }}>{t('quiz_grade_method')}</span>{t('quiz_highest_grade')}</div>
+                                }}>
+                                    <i>
+                                        <img src={quizTime} />
+                                    </i>
+                                    <div style={{ fontSize: '2em' }}>{get(requirementExam, 'name')}</div>
+                                    <div>
+                                        <div><span style={{ fontWeight: 700 }}>{t('attempt_allowed')} </span> {get(get(requirementExam, 'setting'), 'attemptCount')}</div>
+                                        {!this.state.isTeacherPrivilege && (<div><span style={{ fontWeight: 700 }}>{t('attempt_available')}</span> {get(requirementExam, 'attemptAvailable')}</div>)}
+                                        <div><span style={{ fontWeight: 700 }}>{t('quiz_open')}</span> {this.transTime(get(requirementExam, 'startTime'))}</div>
+                                        <div><span style={{ fontWeight: 700 }}>{t('quiz_close')}</span> {this.transTime(get(requirementExam, 'expireTime'))}</div>
+                                        <div><span style={{ fontWeight: 700 }}>{t('quiz_time_remaining')}</span> {get(requirementExam, 'timingRemain')}</div>
+                                        <div><span style={{ fontWeight: 700 }}>{t('quiz_status')}</span>{get(requirementExam, 'isOpen') ? <span style={{ color: '#44bd32', fontWeight: 900 }}>{t('opening')}</span> : <span style={{ color: '#e84118', fontWeight: 900 }}>{t('closed')}</span>}</div>
+                                        <div><span style={{ fontWeight: 700 }}>{t('quiz_grade_method')}</span>{t('quiz_highest_grade')}</div>
+                                    </div>
+                                    {!this.state.isTeacherPrivilege && (<div>
+                                        {(get(requirementExam, 'attemptAvailable') > 0 && get(requirementExam, 'isAttempt') == true) && <Button type="primary" href={`/exams/${this.props.idExam}?idSubject=${this.props.idSubject}&idTimeline=${this.props.idTimeline}`} style={{ marginTop: 25 }}>{t('take_quiz')}</Button>}
+                                        {(get(requirementExam, 'attemptAvailable') == 0) && <div style={{ color: '#ff4000', fontStyle: 'italic', fontWeight: 900 }}>{t('quiz_join_run_out')}</div>}
+                                        {(!get(requirementExam, 'isOpen')) && (get(requirementExam, 'isRemain')) && <div style={{ color: '#ff4000', fontStyle: 'italic', fontWeight: 900 }}>{t('quiz_not_time')}</div>}
+                                    </div>)}
+                                </div>
+
+                                <div style={{
+                                    textAlign: 'center',
+                                    padding: '45px',
+                                    marginBottom: "25px",
+                                    border: "2px solid #c4c4c4",
+                                    borderRadius: "20px"
+
+                                }}>
+                                    <Table pagination={false} columns={columns} dataSource={this.state.submissions} rowKey='key' scroll={{ y: 240 }} />
+                                </div>
                             </div>
-                            {!this.state.isTeacherPrivilege && (<div>
-                                {(get(requirementExam, 'attemptAvailable') > 0 && get(requirementExam, 'isAttempt') == true) && <Button type="primary" href={`/exams/${this.props.idExam}?idSubject=${this.props.idSubject}&idTimeline=${this.props.idTimeline}`} style={{ marginTop: 25 }}>{t('take_quiz')}</Button>}
-                                {(get(requirementExam, 'attemptAvailable') == 0) && <div style={{ color: '#ff4000', fontStyle: 'italic', fontWeight: 900 }}>{t('quiz_join_run_out')}</div>}
-                                {(!get(requirementExam, 'isOpen')) && (get(requirementExam, 'isRemain')) && <div style={{ color: '#ff4000', fontStyle: 'italic', fontWeight: 900 }}>{t('quiz_not_time')}</div>}
-                            </div>)}
                         </div>
+                    </Row>
 
-                        <div style={{
-                            textAlign: 'center',
-                            padding: '45px',
-                            marginBottom: "25px",
-                            border: "2px solid #c4c4c4",
-                            borderRadius: "20px"
-
-                        }}>
-                            <Table pagination={false} columns={columns} dataSource={this.state.submissions} rowKey='key' scroll={{ y: 240 }} />
-                        </div>
-                    </div>
                 </div>
-            </Row>
-
-        </div>)
+            </>)
     }
 }
 

@@ -7,7 +7,7 @@
     "status_not_graded": "Not grade",
 
     "systm_onl": "Online learning system",
-    "univers_nm": "Ho Chi Minh City University of Technology and Education (Synary Coffee UTE)",
+    "univers_nm": "Ho Chi Minh City University of Technology and Education",
     "term_condt": "Term conditions",
     "policy": "Policy",
     "social_ntw": "Social Network",
@@ -29,9 +29,9 @@
     "setting": "Setting",
     "new_topic": "Create new topic",
     "topic_name": "Topic name",
-    "topic_description": "Topic description",
-    "req_topic_name": "Please fill into topic name",
-    "req_topic_description": "Please fill into topic description",
+    "topic_content": "Topic content",
+    "req_topic_name": "Please enter the name of topic",
+    "req_topic_content": "Please enter the content of topic",
     "add_content": "Add content",
 
     "our": "OUR",
@@ -284,5 +284,12 @@
     "quiz_minutes": "Minutes",
     "quiz_seconds": "Seconds",
     "view_all_responses": "View all response",
-    "view_your_response": "Your response"
+    "view_your_response": "Your response",
+    "edit_survey": "Edit survey",
+    "view_online": "View online",
+    "edit_file": "Edit file",
+    "edit_assignment": "Edit assignment",
+    "edit_forum": "Edit forum",
+    "edit_exam": "Edit quiz",
+    "student_score_statictis": "Test score statistics"
 }

@@ -1,10 +1,9 @@
 import { withTranslation } from 'react-i18next'
-import { get, head } from 'lodash'
-import { CSVLink } from "react-csv";
-import excel from '../../../assets/images/contents/excel.png'
-import { Row, Col, Table, Select, Tag, Space, Typography } from 'antd'
+import { Row, Col, Table, Typography } from 'antd'
 import statisticsPoint from '../../../assets/images/contents/statistics-point.png'
 const { Text } = Typography;
+import HeadPage from '../headPage/headPage.jsx';
+
 class Points extends React.Component {
 
     constructor(props) {
@@ -48,6 +47,7 @@ class Points extends React.Component {
         ]
 
         return <>
+        <HeadPage title={`${this.props.nameSubject}: ${t('student_score_statictis')}`}/>
             <Row style={{
                 width: '80%',
                 textAlign: 'center',
@@ -63,7 +63,7 @@ class Points extends React.Component {
                         <span>
                             <img src={statisticsPoint} width="80px" />
                         </span>
-                        <span style={{ fontWeight: '700' }}>[Statistics-Point] Thống kế điểm kiểm tra</span>
+                        <span style={{ fontWeight: '700' }}>[Statistics] {t('student_score_statictis')}</span>
                     </div>
                     <div style={{ width: '100%', minHeight: '150px' }}>
                         <div style={{

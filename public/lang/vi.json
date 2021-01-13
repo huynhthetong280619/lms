@@ -29,9 +29,9 @@
     "setting": "Cài đặt",
     "new_topic": "Tạo chủ đề mới",
     "topic_name": "Tên chủ đề",
-    "topic_description": "Mô tả chủ đề",
+    "topic_content": "Nội dung thảo luận",
     "req_topic_name": "Vui lòng nhập thông tin tên chủ đề",
-    "req_topic_description": "Vui lòng nhập thông tin mô tả chủ đề",
+    "req_topic_content": "Vui lòng nhập nội dung thảo luận của chủ đề",
     "add_content": "Thêm nội dung",
 
     "our": "NGƯỜI HƯỚNG DẪN",
@@ -284,5 +284,12 @@
     "quiz_minutes": "Phút",
     "quiz_seconds": "Giây",
     "view_all_responses": "Xem tất cả phản hồi",
-    "view_your_response": "Phản hồi của bạn"
+    "view_your_response": "Phản hồi của bạn",
+    "edit_survey": "Chỉnh sửa khảo sát",
+    "view_online": "Xem trực tiếp",
+    "edit_file": "Chỉnh sửa tài liệu",
+    "edit_assignment": "Chỉnh sửa bài tập",
+    "edit_forum": "Chỉnh sửa diễn đàn",
+    "edit_exam": "Chỉnh sửa bài kiểm tra",
+    "student_score_statictis": "Thông kê điểm kiểm tra"
 }

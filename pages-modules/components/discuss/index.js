@@ -5,12 +5,10 @@ import { Row, Col, Avatar, Form, Button, List, Input, Tooltip, Comment } from 'a
 import moment from 'moment';
 
 const { TextArea } = Input;
-import { UserOutlined } from '@ant-design/icons'
 import discussion from '../../../assets/images/contents/discussion.jpg'
-import discusad from '../../../assets/images/contents/discusad.png'
-import TextField from '@material-ui/core/TextField'
 import restClient from '../../../assets/common/core/restClient'
 import { get } from 'lodash'
+import HeadPage from '../headPage/headPage.jsx';
 
 import './overwrite.css'
 const CommentList = ({ t, comments }) => (
@@ -120,10 +118,11 @@ class Discussion extends React.Component {
     };
 
     render() {
-        const { comments, submitting, value, lstDiscussion } = this.state;
+        const { comments, submitting, value } = this.state;
         const { t } = this.props;
         return (
             <>
+                <HeadPage title={`${this.props.nameSubject}: ${this.props.detailTopic.name}`} />
                 <Row id="lms-ws-discussion-page" style={{
                     width: '85%',
                     textAlign: 'center',

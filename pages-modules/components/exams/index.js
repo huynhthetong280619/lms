@@ -12,6 +12,7 @@ import CountDownTest from '../countDown';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { withTranslation } from 'react-i18next'
 import '../fontAwesomeIcon'
+import HeadPage from '../headPage/headPage.jsx';
 
 class Exams extends React.Component {
 
@@ -113,7 +114,7 @@ class Exams extends React.Component {
         };
 
         return <>
-
+            <HeadPage title={`${this.props.nameSubject}: ${examQuestion.name}`} />
             <Row id="lms-ws-exam-component" style={{
                 width: '85%',
                 textAlign: 'center',
@@ -154,7 +155,7 @@ class Exams extends React.Component {
                                         (
                                             <div className="ant-row" style={{ marginBottom: 10 }}>
                                                 <Col span={10} style={{ textAlign: 'left' }}>
-                                                    <div style={{ fontWeight: 600 }}><span>{t('question')} {index+1}: </span>{q.question}</div>
+                                                    <div style={{ fontWeight: 600 }}><span>{t('question')} {index + 1}: </span>{q.question}</div>
                                                     <div>
                                                         <Checkbox.Group style={{ width: '100%' }} onChange={e => this.onChangeMultipleChoice(e, q._id)}>
                                                             <Row>
@@ -182,7 +183,7 @@ class Exams extends React.Component {
                                         :
                                         (<div className="ant-row" style={{ marginBottom: 10 }}>
                                             <Col span={10} style={{ textAlign: 'left' }}>
-                                                <div style={{ fontWeight: 600 }}><span>{t('question')} {index+1}: </span>{q.question}</div>
+                                                <div style={{ fontWeight: 600 }}><span>{t('question')} {index + 1}: </span>{q.question}</div>
                                                 <div>
                                                     <Radio.Group onChange={e => this.onChoice(e, q._id)} value={get(this.state.answer, q._id)}>
                                                         {

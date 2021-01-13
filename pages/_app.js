@@ -7,8 +7,8 @@ function MyApp({ Component, pageProps }) {
 
   return (
     <I18nextProvider i18n={i18n}>
-      <Component {...pageProps} isLoadingGlobal={isLoadingGlobal} setIsLoadingGlobal={setIsLoadingGlobal}/>
-      </I18nextProvider>
+      <Component {...pageProps} isLoadingGlobal={isLoadingGlobal} setIsLoadingGlobal={setIsLoadingGlobal} />
+    </I18nextProvider>
   )
 }
 

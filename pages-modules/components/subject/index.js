@@ -36,7 +36,7 @@ import {
     UploadOutlined,
 } from '@ant-design/icons';
 import fileDownload from 'js-file-download';
-
+import HeadPage from '../headPage/headPage.jsx';
 
 class Subject extends React.Component {
 
@@ -825,9 +825,9 @@ class Subject extends React.Component {
                                             display: 'flex',
                                             justifyContent: 'space-evenly'
                                         }}>
-                                            {this.state.isOnEdit && (<Tooltip title="Edit Survey">
+                                            {this.state.isOnEdit && (<Tooltip title={t('edit_survey')}>
                                                 <a>
-                                                    <FontAwesomeIcon icon="edit" onClick={() => { this.focusSurvey(survey._id, idTimeline); this.openDrawerCreate('CẬP NHẬT KHẢO SÁT') }} />
+                                                    <FontAwesomeIcon icon="edit" onClick={() => { this.focusSurvey(survey._id, idTimeline); this.openDrawerCreate(t('edit_survey').toUpperCase()) }} />
                                                 </a>
                                             </Tooltip>)}
                                             {this.state.isTeacherPrivilege && (!survey.isDeleted ? <FontAwesomeIcon icon="lock-open" style={{ color: '#e84118' }} /> : <FontAwesomeIcon icon="lock" style={{ color: '#e84118' }} />)}
@@ -870,14 +870,14 @@ class Subject extends React.Component {
                                             display: 'flex',
                                             justifyContent: 'space-evenly'
                                         }}>
-                                            <Tooltip title="View online">
+                                            <Tooltip title={t('view_online')}>
                                                 <a href={`/view?idSubject=${this.props.idSubject}&idTimeline=${idTimeline}&idFile=${f._id}`} target='_blank'>
                                                     <FontAwesomeIcon icon="external-link-alt" />
                                                 </a>
                                             </Tooltip>
-                                            {this.state.isOnEdit && (<Tooltip title="Edit File">
+                                            {this.state.isOnEdit && (<Tooltip title={t('edit_file')}>
                                                 <a>
-                                                    <FontAwesomeIcon icon="edit" onClick={() => { this.focusFile(f._id, idTimeline); this.openDrawerCreate('CẬP NHẬT TÀI LIỆU') }} />
+                                                    <FontAwesomeIcon icon="edit" onClick={() => { this.focusFile(f._id, idTimeline); this.openDrawerCreate(t('edit_file').toUpperCase()) }} />
                                                 </a>
                                             </Tooltip>)}
 
@@ -942,9 +942,9 @@ class Subject extends React.Component {
                                             display: 'flex',
                                             justifyContent: 'space-evenly'
                                         }}>
-                                            {this.state.isOnEdit && (<Tooltip title="Edit Survey">
+                                            {this.state.isOnEdit && (<Tooltip title={t('edit_assignment')}>
                                                 <a>
-                                                    <FontAwesomeIcon icon="edit" onClick={() => { this.focusAssignment(assign._id, idTimeline); this.openDrawerCreate('CẬP NHẬT BÀI TẬP') }} />
+                                                    <FontAwesomeIcon icon="edit" onClick={() => { this.focusAssignment(assign._id, idTimeline); this.openDrawerCreate(t('edit_assignment').toUpperCase()) }} />
                                                 </a>
                                             </Tooltip>)}
 
@@ -983,9 +983,9 @@ class Subject extends React.Component {
                                         display: 'flex',
                                         justifyContent: 'space-evenly'
                                     }}>
-                                        {this.state.isOnEdit && (<Tooltip title="Edit forum">
+                                        {this.state.isOnEdit && (<Tooltip title={t('edit_forum')}>
                                             <a>
-                                                <FontAwesomeIcon icon="edit" onClick={() => { this.focusForum(fr._id, idTimeline); this.openDrawerCreate('CẬP NHẬT DIỄN ĐÀN') }} />
+                                                <FontAwesomeIcon icon="edit" onClick={() => { this.focusForum(fr._id, idTimeline); this.openDrawerCreate(t('edit_forum').toUpperCase()) }} />
                                             </a>
                                         </Tooltip>)}
                                         {this.state.isTeacherPrivilege && (!fr.isDeleted ? <FontAwesomeIcon icon="lock-open" style={{ color: '#e84118' }} /> : <FontAwesomeIcon icon="lock" style={{ color: '#e84118' }} />)}
@@ -1026,9 +1026,9 @@ class Subject extends React.Component {
                                         display: 'flex',
                                         justifyContent: 'space-evenly'
                                     }}>
-                                        {this.state.isOnEdit && (<Tooltip title="Edit Exam">
+                                        {this.state.isOnEdit && (<Tooltip title={t('edit_exam')}>
                                             <a>
-                                                <FontAwesomeIcon icon="edit" style={{ color: '#3498db' }} onClick={() => { this.focusQuiz(ex._id, idTimeline); this.openDrawerCreate('CẬP NHẬT BÀI KIỂM TRA') }} />
+                                                <FontAwesomeIcon icon="edit" style={{ color: '#3498db' }} onClick={() => { this.focusQuiz(ex._id, idTimeline); this.openDrawerCreate(t('edit_exam').toUpperCase()) }} />
                                             </a>
                                         </Tooltip>)}
 
@@ -1166,6 +1166,7 @@ class Subject extends React.Component {
         //console.log('attachments', get(this.state.assignmentRequirement, 'attachments'))
         return (
             <>
+            <HeadPage title={this.props.nameSubject}/>
                 <Drawer
                     title={t('manage_content')}
                     placement="right"
@@ -1186,7 +1187,7 @@ class Subject extends React.Component {
                             lineHeight: '50px',
                             cursor: 'pointer'
                         }} onClick={() => {
-                            this.openDrawerCreate(this.props.t('create_information'));
+                            this.openDrawerCreate(this.props.t('create_information').toUpperCase());
                             this.focusInformation()
                         }}>
                             {t('information')}
@@ -1200,7 +1201,7 @@ class Subject extends React.Component {
                             cursor: 'pointer'
                         }}
                             onClick={() => {
-                                this.openDrawerCreate(this.props.t('create_document'));
+                                this.openDrawerCreate(this.props.t('create_document').toUpperCase());
                                 this.focusFile()
                             }}>
                             {t('document')}
@@ -1213,7 +1214,7 @@ class Subject extends React.Component {
                             lineHeight: '50px',
                             cursor: 'pointer'
                         }} onClick={() => {
-                            this.openDrawerCreate(this.props.t('create_assign'));
+                            this.openDrawerCreate(this.props.t('create_assign').toUpperCase());
                             this.focusAssignment();
                         }}>
                             {t('exercise')}
@@ -1228,7 +1229,7 @@ class Subject extends React.Component {
                             lineHeight: '50px',
                             cursor: 'pointer'
                         }} onClick={() => {
-                            this.openDrawerCreate(this.props.t('create_quiz'));
+                            this.openDrawerCreate(this.props.t('create_quiz').toUpperCase());
                             this.focusQuiz();
                         }}>
                             {t('quiz')}
@@ -1254,7 +1255,7 @@ class Subject extends React.Component {
                             lineHeight: '50px',
                             cursor: 'pointer'
                         }} onClick={() => {
-                            this.openDrawerCreate(this.props.t('create_timeline'));
+                            this.openDrawerCreate(this.props.t('create_timeline').toUpperCase());
                             this.focusTimeline()
                         }}>
                             {t('timeline')}
@@ -1272,7 +1273,7 @@ class Subject extends React.Component {
                             lineHeight: '50px',
                             cursor: 'pointer'
                         }} onClick={() => {
-                            this.openDrawerCreate(this.props.t('create_forum'));
+                            this.openDrawerCreate(this.props.t('create_forum').toUpperCase());
                             this.focusForum();
                         }}>
                             {t('forum')}
@@ -1318,7 +1319,7 @@ class Subject extends React.Component {
                                 size='large'
                                 icon={<UploadOutlined />}
                                 onClick={() => {
-                                    this.openDrawerCreate(this.props.t('import_data'));
+                                    this.openDrawerCreate(this.props.t('import_data').toUpperCase());
                                     this.importSubject()
                                 }}
                             > {this.props.t('import').toUpperCase()}</Button>

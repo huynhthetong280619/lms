@@ -7,6 +7,7 @@ import restClient from '../../../../assets/common/core/restClient'
 import { notifyError, notifySuccess } from '../../../../assets/common/core/notify'
 import Router from 'next/router'
 import { withTranslation } from 'react-i18next'
+import HeadPage from '../../headPage/headPage.jsx';
 
 class SurveyExecute extends React.Component {
 
@@ -101,13 +102,14 @@ class SurveyExecute extends React.Component {
         };
         console.log('answer', this.state.answer)
         return <>
+            <HeadPage title={`${this.props.nameSubject}: ${this.props.survey.name}`} />
             <Row style={{
                 width: '85%',
                 textAlign: 'center',
                 background: '#fff',
                 minHeight: '20px',
-                justifyContent:'center',
-                margin:'0 auto'
+                justifyContent: 'center',
+                margin: '0 auto'
             }}>
                 <Row style={{ width: '100%' }}>
                     <Col span={24} style={{ padding: '25px', fontSize: '2em' }}>{this.props.nameSubject.toUpperCase()}</Col>
@@ -132,7 +134,7 @@ class SurveyExecute extends React.Component {
                                 (this.state.questions).map((q, index) => (
                                     q.typeQuestion == 'choice' ?
                                         (<div style={{ marginBottom: '20px', textAlign: 'left' }} key={q._id}>
-                                            <div style={{ fontWeight: 600 }}><span>{t('question')} {index+1}: </span>{q.question}</div>
+                                            <div style={{ fontWeight: 600 }}><span>{t('question')} {index + 1}: </span>{q.question}</div>
                                             <div>
                                                 <Radio.Group onChange={e => this.onChoice(e, q._id)} value={get(this.state.answer, q._id)}>
                                                     {
@@ -148,7 +150,7 @@ class SurveyExecute extends React.Component {
                                         (
                                             q.typeQuestion == 'multiple' ? (<div style={{ textAlign: 'left' }} key={q._id}>
                                                 <div style={{ fontWeight: 600 }}>
-                                                    <span>{t('question')} {index+1}: </span>{q.question}
+                                                    <span>{t('question')} {index + 1}: </span>{q.question}
                                                 </div>
                                                 <div>
                                                     <Checkbox.Group style={{ width: '100%' }} onChange={e => this.onChangeMultipleChoice(e, q._id)}>
@@ -177,7 +179,7 @@ class SurveyExecute extends React.Component {
                                                         <span>{t('question')} {index}: </span>{q.question}
                                                     </div>
                                                     <div>
-                                                        <input style={{width:'400px'}} type="text" onChange={(e) => this.onFill(e, q._id)} />
+                                                        <input style={{ width: '400px' }} type="text" onChange={(e) => this.onFill(e, q._id)} />
                                                     </div>
                                                 </div>
                                         )

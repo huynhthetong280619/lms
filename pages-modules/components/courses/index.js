@@ -11,7 +11,7 @@ import styles from './styles.scss'
 import './overwrite.css'
 import { withTranslation } from 'react-i18next'
 import Deadline from '../../components/deadlines'
-
+import HeadPage from '../headPage/headPage.jsx';
 
 class Courses extends React.Component {
     constructor(props) {
@@ -58,6 +58,7 @@ class Courses extends React.Component {
         const { t } = this.props
         console.log(this.state.isTeacher)
         return <>
+            <HeadPage title={t('nm_course').toUpperCase()}/>
             <Row className={styles.background} style={{ justifyContent: 'center' }}>
                 <Col span={12}
                     style={{
