@@ -1,12 +1,11 @@
 import React from 'react'
-import { Row, Col, Popover, Tooltip, Tabs, Timeline, notification, Drawer, Button } from 'antd'
+import { Row, Col, Tooltip, Timeline, Drawer, Button } from 'antd'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 import styles from './styles.scss'
 import './overwrite.css'
 import { get, pick, head } from 'lodash';
 import forum from '../../../assets/images/contents/forum.png'
-import lock from '../../../assets/images/contents/lock.png'
 import manageScore from '../../../assets/images/contents/manage-score.png'
 import { withTranslation } from 'react-i18next';
 import restClient from '../../../assets/common/core/restClient';
@@ -15,7 +14,6 @@ require('isomorphic-fetch');
 import 'react-day-picker/lib/style.css';
 import newInfo from '../../../assets/images/contents/new.png';
 import deadline from '../../../assets/images/courses/deadline.png'
-import opts from '../../../assets/images/contents/opts.png'
 import { NotificationManager } from 'react-notifications';
 import Deadline from '../../components/deadlines'
 import Widget from '../widget';
@@ -30,12 +28,14 @@ import AddFile from './addFile/addFile.jsx'
 import AddForum from './addForum/addForum.jsx'
 import AssignmentModal from './assignmentModal/assignmentModal.jsx';
 import ImportSubject from './importSubject/importSubject.jsx';
+import ExportSubject from './exportSubject/exportSubject.jsx';
 import downloadFile from '../../../assets/common/core/downloadFile.js';
 import {
     ExportOutlined,
     UploadOutlined,
 } from '@ant-design/icons';
-import fileDownload from 'js-file-download';
+import { notifyError, notifySuccess } from '../../../assets/common/core/notify';
+
 import HeadPage from '../headPage/headPage.jsx';
 
 class Subject extends React.Component {
@@ -74,7 +74,6 @@ class Subject extends React.Component {
             titleDrawCreate: this.props.t('add_content').toUpperCase(),
             isOnMovement: false,
             isOnEdit: false,
-            isExporting: false,
             idInformationFocus: null,
             idTimelineFocus: null,
             idSurveyFocus: null,
@@ -82,6 +81,7 @@ class Subject extends React.Component {
             idExamFocus: null,
             idForumFocus: null,
             idFileFocus: null,
+            isExportSubject: false,
         }
     }
 
@@ -162,7 +162,7 @@ class Subject extends React.Component {
         await restClient.asyncPost(`/subject/${this.props.idSubject}/index`, this.state.updateTimelines, this.props.token)
             .then(res => {
                 if (!res.hasError) {
-                    this.notifySuccess(this.props.t('success'), get(res, 'data').message);
+                    notifySuccess(this.props.t('success'), get(res, 'data').message);
                     this.setState({
                         timelines: get(res, 'data').timelines
                     })
@@ -207,7 +207,7 @@ class Subject extends React.Component {
                         idTimelineRequired: idTimeline
                     });
                 } else {
-                    this.notifyError(this.props.t('failure'), res.data.message);
+                    notifyError(this.props.t('failure'), res.data.message);
                 }
             })
 
@@ -218,7 +218,7 @@ class Subject extends React.Component {
             .then(res => {
                 this.setState({ isSubmitAssignment: false });
                 if (!res.hasError) {
-                    this.notifySuccess(this.props.t('success'), this.props.t('submit_success'))
+                    notifySuccess(this.props.t('success'), this.props.t('submit_success'))
                     console.log('Notification', res)
                     let submission = res.data.submission;
                     console.log('OLD-ASSIGNMENT', this.state.assignmentRequirement);
@@ -227,7 +227,7 @@ class Subject extends React.Component {
                             console.log('New-ASSIGNMENT', this.state.assignmentRequirement);
                         });
                 } else {
-                    this.notifyError(this.props.t('failure'), res.data.message);
+                    notifyError(this.props.t('failure'), res.data.message);
                 }
             })
     }
@@ -238,7 +238,7 @@ class Subject extends React.Component {
             .then(res => {
                 this.setState({ isCommentAssignment: false });
                 if (!res.hasError) {
-                    this.notifySuccess(this.props.t('success'), res.data.message)
+                    notifySuccess(this.props.t('success'), res.data.message)
                     console.log('Notification', res)
                     let submission = res.data.submission;
                     console.log('OLD-ASSIGNMENT', this.state.assignmentRequirement);
@@ -247,14 +247,14 @@ class Subject extends React.Component {
                             console.log('New-ASSIGNMENT', this.state.assignmentRequirement);
                         });
                 } else {
-                    this.notifyError(this.props.t('failure'), res.data.message);
+                    notifyError(this.props.t('failure'), res.data.message);
                 }
             })
     }
 
     createFile = ({ file, idTimeline }) => {
 
-        this.notifySuccess(this.props.t('success'), this.props.t('add_document_success'))
+        notifySuccess(this.props.t('success'), this.props.t('add_document_success'))
 
         let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
 
@@ -271,7 +271,7 @@ class Subject extends React.Component {
     }
 
     updateFile = ({ file, idTimeline }) => {
-        this.notifySuccess(this.props.t('success'), this.props.t('update_document_success'))
+        notifySuccess(this.props.t('success'), this.props.t('update_document_success'))
         let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
         let target = head(timelineUpdate).files.find(({ _id }) => _id === file._id);
         console.log('targetFile', target);
@@ -287,7 +287,7 @@ class Subject extends React.Component {
 
     createQuiz = ({ exam, idTimeline }) => {
 
-        this.notifySuccess(this.props.t('success'), this.props.t('add_quiz_success'))
+        notifySuccess(this.props.t('success'), this.props.t('add_quiz_success'))
         let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
 
         console.log('timelineUpdate', timelineUpdate)
@@ -305,7 +305,7 @@ class Subject extends React.Component {
     }
 
     updateQuiz = ({ exam, idTimeline }) => {
-        this.notifySuccess(this.props.t('success'), this.props.t('update_quiz_success'))
+        notifySuccess(this.props.t('success'), this.props.t('update_quiz_success'))
         let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
 
         //console.log('timelineUpdate', timelineUpdate)
@@ -336,7 +336,7 @@ class Subject extends React.Component {
     }
 
     createAssignment = async ({ assignment, idTimeline }) => {
-        this.notifySuccess(this.props.t('success'), this.props.t('add_quiz_assign'))
+        notifySuccess(this.props.t('success'), this.props.t('add_quiz_assign'))
         let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
         head(timelineUpdate).assignments.push(assignment)
 
@@ -352,7 +352,7 @@ class Subject extends React.Component {
     }
 
     updateAssignment = ({ assignment, idTimeline }) => {
-        this.notifySuccess(this.props.t('success'), this.props.t('update_assign_success'))
+        notifySuccess(this.props.t('success'), this.props.t('update_assign_success'))
         let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
 
         console.log('timelineUpdate', timelineUpdate)
@@ -372,7 +372,7 @@ class Subject extends React.Component {
 
     createSurvey = ({ survey, idTimeline }) => {
 
-        this.notifySuccess(this.props.t('success'), this.props.t('add_quiz_survey'))
+        notifySuccess(this.props.t('success'), this.props.t('add_quiz_survey'))
         let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
 
         console.log('timelineUpdate', timelineUpdate)
@@ -391,7 +391,7 @@ class Subject extends React.Component {
     }
     updateSurvey = ({ survey, idTimeline }) => {
 
-        this.notifySuccess(this.props.t('success'), this.props.t('add_quiz_survey'))
+        notifySuccess(this.props.t('success'), this.props.t('add_quiz_survey'))
         let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
 
         console.log('timelineUpdate', timelineUpdate)
@@ -412,33 +412,6 @@ class Subject extends React.Component {
         })
     }
 
-
-
-    notifySuccess = (message, description) => {
-        notification.success({
-            message,
-            description,
-            placement: 'bottomRight'
-        });
-    };
-
-    notifyWarning = (message, description) => {
-        notification.warning({
-            message,
-            description,
-            placement: 'bottomRight'
-        });
-    };
-
-
-    notifyError = (message, description) => {
-        notification.error({
-            message,
-            description,
-            placement: 'bottomRight'
-        });
-    };
-
     createInformation = async ({ information, idTimeline }) => {
         this.setState({ isLoading: true });
         const data = {
@@ -451,7 +424,7 @@ class Subject extends React.Component {
             .then(res => {
                 this.setState({ isLoading: false });
                 if (!res.hasError) {
-                    this.notifySuccess(this.props.t('success'), this.props.t('add_quiz_information'))
+                    notifySuccess(this.props.t('success'), this.props.t('add_quiz_information'))
                     console.log('information', res)
                     let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === data.idTimeline)
                     head(timelineUpdate).information.push(res.data.information)
@@ -460,13 +433,13 @@ class Subject extends React.Component {
                         isOpenDrawerCreate: false
                     })
                 } else {
-                    this.notifyError(this.props.t('failure'), res.data.message);
+                    notifyError(this.props.t('failure'), res.data.message);
                 }
             })
     }
 
     createForum = async ({ forum, idTimeline }) => {
-        this.notifySuccess(this.props.t('success'), this.props.t('add_forum_timeline'))
+        notifySuccess(this.props.t('success'), this.props.t('add_forum_timeline'))
 
         let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
 
@@ -481,7 +454,7 @@ class Subject extends React.Component {
 
     updateForum = ({ forum, idTimeline }) => {
 
-        this.notifySuccess(this.props.t('success'), this.props.t('update_forum_success'))
+        notifySuccess(this.props.t('success'), this.props.t('update_forum_success'))
         let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
 
         let target = head(timelineUpdate).forums.find(({ _id }) => _id === forum._id);
@@ -515,7 +488,7 @@ class Subject extends React.Component {
                 console.log('Timeline', res)
                 this.setState({ isLoading: false });
                 if (!res.hasError) {
-                    this.notifySuccess(this.props.t('success'), this.props.t('add_quiz_timeline'))
+                    notifySuccess(this.props.t('success'), this.props.t('add_quiz_timeline'))
                     this.setState({
                         timelines: [...this.state.timelines, get(res, 'data').timeline],
                         lstTimelines: [...this.state.lstTimelines, {
@@ -528,7 +501,7 @@ class Subject extends React.Component {
                     })
 
                 } else {
-                    this.notifyError(this.props.t('failure'), res.data.message);
+                    notifyError(this.props.t('failure'), res.data.message);
                 }
             })
     }
@@ -594,6 +567,12 @@ class Subject extends React.Component {
     importSubject = () => {
         this.setState({
             isImportSubject: true
+        })
+    }
+
+    exportSubject = () => {
+        this.setState({
+            isExportSubject: true
         })
     }
 
@@ -684,6 +663,7 @@ class Subject extends React.Component {
             isFocusSurvey: false,
             isFocusForum: false,
             isImportSubject: false,
+            isExportSubject: false,
             isLoading: false,
             idInformationFocus: null,
             idSurveyFocus: null,
@@ -696,19 +676,6 @@ class Subject extends React.Component {
         })
     }
 
-    handleExportSubject = async () => {
-        this.setState({ isExporting: true });
-        await restClient.asyncGet(`/subject/${this.props.idSubject}/export-teacher`, this.props.token)
-            .then(res => {
-                this.setState({ isExporting: false });
-                if (!res.hasError) {
-                    console.log('res', res);
-                    fileDownload(JSON.stringify(res.data), `${this.props.subject.name}.json`);
-                } else {
-                    this.notifyError(this.props.t('failure'), res.data.message);
-                }
-            });
-    }
     handleImportSubject = async (data) => {
         this.setState({ isLoading: true });
         await restClient.asyncPost(`/subject/${this.props.idSubject}/import-teacher`, data, this.props.token)
@@ -717,14 +684,15 @@ class Subject extends React.Component {
                 console.log('res', res);
                 if (!res.hasError) {
                     this.setState({
-                        isOpenDrawerCreate: false,
-                        lstTimelines: res.data.timelines,
+                        lstTimelines: res.data.timelines.map(value => { return { _id: value._id, name: value.name } }),
                         lstSurveys: res.data.surveyBank,
-                        lstQuizzes: res.data.quizBank
+                        lstQuizzes: res.data.quizBank,
+                        timelines: res.data.timelines
                     });
-                    this.notifySuccess(this.props.t('success'), res.data.message);
+                    notifySuccess(this.props.t('success'), res.data.message);
+                    this.closeDrawerCreate();
                 } else {
-                    this.notifyError(this.props.t('failure'), res.data.message);
+                    notifyError(this.props.t('failure'), res.data.message);
                 }
             });
     }
@@ -1166,7 +1134,7 @@ class Subject extends React.Component {
         //console.log('attachments', get(this.state.assignmentRequirement, 'attachments'))
         return (
             <>
-            <HeadPage title={this.props.nameSubject}/>
+                <HeadPage title={this.props.nameSubject} />
                 <Drawer
                     title={t('manage_content')}
                     placement="right"
@@ -1242,7 +1210,7 @@ class Subject extends React.Component {
                             lineHeight: '50px',
                             cursor: 'pointer'
                         }} onClick={() => {
-                            this.openDrawerCreate(this.props.t('create_survey'));
+                            this.openDrawerCreate(this.props.t('create_survey').toUpperCase());
                             this.focusSurvey();
                         }}>
                             {t('survey')}
@@ -1327,8 +1295,10 @@ class Subject extends React.Component {
                         </Col>
                         <Col span={12} className="action-select-add-content" >
                             <Button
-                                loading={this.state.isExporting}
-                                onClick={this.handleExportSubject}
+                                onClick={() => {
+                                    this.openDrawerCreate(this.props.t('export_data').toUpperCase());
+                                    this.exportSubject()
+                                }}
                                 type='primary'
                                 size='large'
                                 icon={<ExportOutlined />}
@@ -1356,7 +1326,7 @@ class Subject extends React.Component {
                     {this.state.isFocusTimeline && (<AddTimeline createTimeline={this.createTimeline} isLoading={this.state.isLoading} />)}
                     {this.state.isImportSubject && (<ImportSubject isLoading={this.state.isLoading} handleImportSubject={this.handleImportSubject} />)}
                     {this.state.isFocusForum && (<AddForum lstTimelines={this.state.lstTimelines} createForum={this.createForum} updateForum={this.updateForum} idSubject={this.props.idSubject} idTimeline={this.state.idTimelineRequired} idForum={this.state.idForumFocus} token={this.props.token} />)}
-
+                    {this.state.isExportSubject && (<ExportSubject idSubject={this.props.idSubject} nameSubject={this.props.nameSubject} token={this.props.token} />)}
                 </Drawer>
                 {
                     this.state.isTeacherPrivilege &&
@@ -1366,7 +1336,7 @@ class Subject extends React.Component {
                         isOnMovement={this.state.isOnMovement}
                         setIsOnMovement={() => {
                             if (!this.state.isOnMovement) {
-                                this.notifySuccess(this.props.t('mode'), this.props.t('mode_arrange_index'));
+                                notifySuccess(this.props.t('mode'), this.props.t('mode_arrange_index'));
                             }
                             this.setState({ isOnMovement: !this.state.isOnMovement })
                         }}

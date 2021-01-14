@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { withTranslation } from 'react-i18next';
-import { Input, Select, Button, Form, notification } from 'antd'
-import { notifyError, notifyWarning } from '../../../../assets/common/core/notify.js';
+import { Input, Button, Form, Row } from 'antd'
+import { notifyWarning } from '../../../../assets/common/core/notify.js';
 
 const ImportSubject = ({ t, isLoading, handleImportSubject }) => {
 
@@ -60,20 +60,12 @@ const ImportSubject = ({ t, isLoading, handleImportSubject }) => {
             }
 
         } else {
-            notifyWarning(t('warning'),t('warning_choose_file_upload'))
+            notifyWarning(t('warning'), t('warning_choose_file_upload'))
         }
     }
 
     return (
         <>
-            <div style={{
-                fontStyle: "italic",
-                color: "#cacaca"
-            }}>
-                {t('setting_file')}
-            </div>
-
-
             <Form
                 {...formItemLayout}
                 onFinish={onFinish}
@@ -91,6 +83,30 @@ const ImportSubject = ({ t, isLoading, handleImportSubject }) => {
                 </Form.Item>
 
             </Form>
+            <Row>
+                <div style={{
+                    border: "2px solid #cacaca",
+                    padding: "20px 0",
+                    borderRadius: "11px",
+                    position: 'relative',
+                    margin: '20px',
+                    width: '100%'
+                }}>
+                    <h2>{t('import_h1')}</h2>
+                    <p style={{
+                        fontStyle: 'italic',
+                        color: '#9d9393'
+                    }}>{t('import_h2')}</p>
+                    <p style={{
+                        fontStyle: 'italic',
+                        color: '#9d9393'
+                    }}>{t('import_h3')} </p>
+                    <p style={{
+                        fontStyle: 'italic',
+                        color: '#9d9393'
+                    }}>{t('import_h4')}</p>
+                </div>
+            </Row>
         </>
     )
 }
