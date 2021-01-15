@@ -12,7 +12,7 @@ class Widget extends React.Component {
 
 
     showConfirm = () => {
-        const { setIsOnMovement, updateTimelinesIndex } = this.props;
+        const { setIsOnMovement, updateTimelinesIndex, cancelUpdateTimelinesIndex } = this.props;
         confirm({
             icon: <ExclamationCircleOutlined />,
             content: this.props.t('msg_confrm_update_index'),
@@ -25,6 +25,7 @@ class Widget extends React.Component {
                 }
             },
             onCancel() {
+                cancelUpdateTimelinesIndex();
                 setIsOnMovement();
             },
         })

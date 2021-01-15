@@ -31,7 +31,7 @@ class Student extends React.Component {
         return (
             <>
                 <HeadPage title={`${this.props.nameSubject}: ${t('manage_student')}`} />
-                <div class="lms-ws-student-page">
+                <div className="lms-ws-student-page">
                     <Row style={{
                         width: '85%',
                         textAlign: 'center',

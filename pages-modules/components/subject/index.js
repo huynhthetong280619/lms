@@ -82,6 +82,7 @@ class Subject extends React.Component {
             idForumFocus: null,
             idFileFocus: null,
             isExportSubject: false,
+            timelinesIndex: []
         }
     }
 
@@ -121,7 +122,7 @@ class Subject extends React.Component {
 
         this.setState({
             timelines: get(this.props.subject, 'timelines'),
-
+            timelinesIndex: get(this.props.subject, 'timelines'),
         })
 
     }
@@ -134,12 +135,12 @@ class Subject extends React.Component {
         //console.log('handleOnDragEnd', result)
         if (!result.destination) return;
 
-        const items = Array.from(this.state.timelines);
+        const items = Array.from(this.state.timelinesIndex);
         const [reorderedItem] = items.splice(result.source.index, 1);
         items.splice(result.destination.index, 0, reorderedItem);
 
         this.setState({
-            timelines: items
+            timelinesIndex: items
         });
 
         let uptTimelines = [];
@@ -164,7 +165,8 @@ class Subject extends React.Component {
                 if (!res.hasError) {
                     notifySuccess(this.props.t('success'), get(res, 'data').message);
                     this.setState({
-                        timelines: get(res, 'data').timelines
+                        timelines: get(res, 'data').timelines,
+                        timelineIndex: get(res, 'data').timelines,
                     })
                     return true;
                 }
@@ -172,6 +174,11 @@ class Subject extends React.Component {
             })
 
 
+    }
+    cancelUpdateTimelinesIndex = () => {
+        this.setState({
+            timelinesIndex: this.state.timelines
+        })
     }
 
     deleteExercise = async () => {
@@ -1027,17 +1034,33 @@ class Subject extends React.Component {
                             </div>
 
                             {
-                                this.state.timelines.map(({ _id, name, description, assignments, exams, forums, information, files, surveys }, index) => {
-                                    //console.log('assignment', assignments, exams, forums, information, surveys)
-                                    return (
-                                        <Draggable key={_id} draggableId={_id} index={index} >
-                                            {(provided) => (
-                                                <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                                                    {timelineTemplate(_id, index, name, description, assignments, exams, forums, information, files, surveys, true)}
-                                                </div>
-                                            )}
-                                        </Draggable>)
-                                })
+                                !this.state.isOnMovement
+                                    ?
+                                    this.state.timelines.map(({ _id, name, description, assignments, exams, forums, information, files, surveys }, index) => {
+                                        //console.log('assignment', assignments, exams, forums, information, surveys)
+                                        return (
+                                            <Draggable key={_id} draggableId={_id} index={index} >
+                                                {(provided) => (
+                                                    <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                                                        {timelineTemplate(_id, index, name, description, assignments, exams, forums, information, files, surveys, true)}
+                                                    </div>
+                                                )}
+                                            </Draggable>
+                                        )
+                                    })
+                                    :
+                                    this.state.timelinesIndex.map(({ _id, name, description, assignments, exams, forums, information, files, surveys }, index) => {
+                                        //console.log('assignment', assignments, exams, forums, information, surveys)
+                                        return (
+                                            <Draggable key={_id} draggableId={_id} index={index} >
+                                                {(provided) => (
+                                                    <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                                                        {timelineTemplate(_id, index, name, description, assignments, exams, forums, information, files, surveys, true)}
+                                                    </div>
+                                                )}
+                                            </Draggable>
+                                        )
+                                    })
                             }
                         </Col>
                     )}
@@ -1321,7 +1344,8 @@ class Subject extends React.Component {
                                 }
                             })
                         }}
-                        updateTimelinesIndex={() => this.updateTimelinesIndex()} />
+                        updateTimelinesIndex={() => this.updateTimelinesIndex()}
+                        cancelUpdateTimelinesIndex={() => this.cancelUpdateTimelinesIndex()} />
                 }
 
                 <AssignmentModal visible={this.state.visible} isSubmitAssignment={this.state.isSubmitAssignment} isCommentAssignment={this.state.isCommentAssignment} commentAssignmentGrade={this.commentAssignmentGrade} assignment={this.state.assignmentRequirement} handleCancelModal={this.handleCancelModal} submitAssignment={this.submissionFile} onSubmitAssignment={this.onSubmitAssignment} onCancelSubmitAssignment={this.onCancelSubmitAssignment} />
