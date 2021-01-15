@@ -25,7 +25,7 @@ class Courses extends React.Component {
     }
 
     componentDidMount() {
-        console.log('isLoadingGlobal, setIsLoadingGlobal', this.props.isLoadingGlobal, this.props.setIsLoadingGlobal)
+        //console.log('isLoadingGlobal, setIsLoadingGlobal', this.props.isLoadingGlobal, this.props.setIsLoadingGlobal)
         this.setState({
             courses: this.props.listCourses || [],
             deadlines: this.props.listDeadline || [],
@@ -34,7 +34,7 @@ class Courses extends React.Component {
 
         const usrJson = JSON.stringify(localStorage.getItem('user'))
         const usrObj = JSON.parse(JSON.parse(usrJson));
-        console.log('idPrivilege', usrObj.idPrivilege)
+        //console.log('idPrivilege', usrObj.idPrivilege)
 
 
         if (usrObj?.idPrivilege == 'student') {
@@ -56,7 +56,7 @@ class Courses extends React.Component {
     }
     render() {
         const { t } = this.props
-        console.log(this.state.isTeacher)
+        //console.log(this.state.isTeacher)
         return <>
             <HeadPage title={t('nm_course').toUpperCase()}/>
             <Row className={styles.background} style={{ justifyContent: 'center' }}>

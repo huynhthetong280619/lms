@@ -21,7 +21,7 @@ ProfilePage.getInitialProps = async (ctx) => {
     const data = parseCookies(ctx.req);
     const token = data.token
 
-    console.log('PageCourse', data, Object.keys(data).indexOf('token'))
+    //console.log('PageCourse', data, Object.keys(data).indexOf('token'))
     if (Object.keys(data).indexOf('token') < 0 && data.constructor === Object) {
         ctx.res.writeHead(301, { Location: "/" })
         ctx.res.end();

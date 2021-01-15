@@ -22,7 +22,7 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, createQuiz, updateQuiz, idSubjec
 
     useEffect(() => {
         if (exam) {
-            console.log(exam);
+            //console.log(exam);
             form.setFieldsValue({
                 idTimeline: idTimeline,
                 exam: { ...exam, isDeleted: !exam.isDeleted }
@@ -36,7 +36,7 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, createQuiz, updateQuiz, idSubjec
                 .then(res => {
                     if (!res.hasError) {
                         const ex = res.data.exam;
-                        console.log('Exam', ex);
+                        //console.log('Exam', ex);
                         setExam({
                             ...ex,
                             startTime: moment(ex.startTime),
@@ -74,7 +74,7 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, createQuiz, updateQuiz, idSubjec
         setLoading(true);
         await restClient.asyncPost('/exam', data, token)
             .then(res => {
-                console.log('handleCreateExam', res)
+                //console.log('handleCreateExam', res)
                 setLoading(false);
                 if (!res.hasError) {
                     createQuiz({ exam: res.data.exam, idTimeline: idTimelineAdd })
@@ -93,7 +93,7 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, createQuiz, updateQuiz, idSubjec
         setLoading(true);
         await restClient.asyncPut(`/exam/${idExam}`, data, token)
             .then(res => {
-                console.log('handleUpdateExam', res)
+                //console.log('handleUpdateExam', res)
                 setLoading(false);
                 if (!res.hasError) {
                     updateQuiz({ exam: res.data.exam, idTimeline: idTimelineUpdate })
@@ -110,7 +110,7 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, createQuiz, updateQuiz, idSubjec
             startTime: formatTime(fieldsValue.exam.startTime),
             expireTime: formatTime(fieldsValue.exam.expireTime)
         };
-        console.log(data);
+        //console.log(data);
         //createQuiz({ quiz: data, idTimeline: fieldsValue.idTimeline });
         if (!idExam) {
             handleCreateExam(data, fieldsValue.idTimeline);

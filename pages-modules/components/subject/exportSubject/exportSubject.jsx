@@ -21,7 +21,7 @@ const ExportSubject = ({ t, idSubject, token, nameSubject }) => {
     };
 
     const onChangeSelect = (cbx) => {
-        console.log(cbx);
+        //console.log(cbx);
         if (cbx.id === 'isTimelines' && cbx.checked) {
             form.setFieldsValue({
                 isSurveyBank: true,
@@ -35,13 +35,13 @@ const ExportSubject = ({ t, idSubject, token, nameSubject }) => {
     }
 
     const onFinish = async (values) => {
-        console.log('values', values);
+        //console.log('values', values);
         setLoading(true);
         await restClient.asyncPost(`/subject/${idSubject}/export-teacher`, values, token)
             .then(res => {
                 setLoading(false);
                 if (!res.hasError) {
-                    console.log('res', res);
+                    //console.log('res', res);
                     fileDownload(JSON.stringify(res.data), `${nameSubject}.json`);
                 } else {
                     notifyError(t('failure'), res.data.message);

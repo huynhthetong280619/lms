@@ -19,7 +19,7 @@ class SurveyExecute extends React.Component {
 
     componentDidMount() {
 
-        console.log('componentDidMount', this.props.questionnaire.questions)
+        //console.log('componentDidMount', this.props.questionnaire.questions)
         this.setState({
             questions: this.props.questionnaire.questions || []
         })
@@ -42,14 +42,14 @@ class SurveyExecute extends React.Component {
     }
 
     onChoice = (questionAns, questionsId) => {
-        console.log('onChange', { ...this.state.answer, [questionsId]: questionAns.target.value })
+        //console.log('onChange', { ...this.state.answer, [questionsId]: questionAns.target.value })
         this.setState({
             answer: { ...this.state.answer, [questionsId]: questionAns.target.value }
         });
     };
 
     onChangeMultipleChoice = (questionAns, questionsId) => {
-        console.log('checked = ', questionAns, questionsId);
+        //console.log('checked = ', questionAns, questionsId);
         this.setState({
             answer: { ...this.state.answer, [questionsId]: questionAns }
         });
@@ -100,7 +100,7 @@ class SurveyExecute extends React.Component {
             height: '30px',
             lineHeight: '30px'
         };
-        console.log('answer', this.state.answer)
+        //console.log('answer', this.state.answer)
         return <>
             <HeadPage title={`${this.props.nameSubject}: ${this.props.survey.name}`} />
             <Row style={{

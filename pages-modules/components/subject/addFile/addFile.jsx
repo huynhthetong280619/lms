@@ -59,7 +59,7 @@ const AddFile = ({ t, lstTimelines, createFile, updateFile, idSubject, idTimelin
         }
         await restClient.asyncPost(`/timeline/upload/`, data, token)
             .then(res => {
-                console.log('handleCreateFile', res)
+                //console.log('handleCreateFile', res)
                 setLoading(false);
                 if (!res.hasError) {
                     createFile({ file: res.data.file, idTimeline: idTimelineAdd })
@@ -76,7 +76,7 @@ const AddFile = ({ t, lstTimelines, createFile, updateFile, idSubject, idTimelin
         }
         await restClient.asyncPut(`/timeline/${idTimelineUpdate}/files/${idFile}`, data, token)
             .then(res => {
-                console.log('handleUpdateFile', res)
+                //console.log('handleUpdateFile', res)
                 setLoading(false);
                 if (!res.hasError) {
                     updateFile({ file: res.data.file, idTimeline: idTimelineUpdate })
@@ -103,7 +103,7 @@ const AddFile = ({ t, lstTimelines, createFile, updateFile, idSubject, idTimelin
 
     const onFinish = async (values) => {
         setLoading(true);
-        console.log('fileAttach', fileAttach);
+        //console.log('fileAttach', fileAttach);
         if (fileAttach) {
             const objectFile = await restClient.asyncUploadFile(fileAttach);
             if (objectFile) {
@@ -111,7 +111,7 @@ const AddFile = ({ t, lstTimelines, createFile, updateFile, idSubject, idTimelin
                     ...objectFile,
                     isDeleted: !values.file.isDeleted
                 }
-                console.log('File', f);
+                //console.log('File', f);
                 if (!idFile) {
                     handleCreateFile(f, values.idTimeline);
                 }

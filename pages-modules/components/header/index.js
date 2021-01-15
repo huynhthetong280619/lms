@@ -46,7 +46,7 @@ class Headers extends React.Component {
     componentDidMount() {
         if (isAuth) {
             const user = JSON.parse((localStorage.getItem('user')));
-            console.log('user', user)
+            //console.log('user', user)
             if (!isEmpty(user)) {
                 this.setState({
                     isLogin: true,
@@ -71,7 +71,7 @@ class Headers extends React.Component {
 
 
     handleClick = e => {
-        console.log('click ', e);
+        //console.log('click ', e);
         this.setState({ current: e.key });
     };
 
@@ -102,7 +102,7 @@ class Headers extends React.Component {
 
     responseGoogle = async (response) => {
         const token = response.tokenId;
-        console.log(token);
+        //console.log(token);
         const data = {
             token: token
         }
@@ -112,7 +112,7 @@ class Headers extends React.Component {
         })
         await restClient.asyncPost(`/user/auth/google`, data, null)
             .then(res => {
-                console.log(res.data);
+                //console.log(res.data);
                 if (!res.hasError) {
                     authenticate(res, () => {
                         Router.push("/courses");
@@ -130,16 +130,16 @@ class Headers extends React.Component {
             isLoading: true,
             loginChange: this.props.t('on_authenticate')
         })
-        console.log('responseFacebook', response);
+        //console.log('responseFacebook', response);
         const token = response.accessToken;
-        console.log('responseFacebook', token);
+        //console.log('responseFacebook', token);
         const data = {
             token: token
         }
 
         await restClient.asyncPost(`/user/auth/facebook`, data, null)
             .then(res => {
-                console.log(res.data);
+                //console.log(res.data);
                 if (!res.hasError) {
                     // cookieCutter.set('token', get(res.data, 'token'))
                     // Router.push(
@@ -188,7 +188,7 @@ class Headers extends React.Component {
             </div>
         );
 
-        console.log('title', this.state.profile)
+        //console.log('title', this.state.profile)
 
         const { current } = this.state;
 

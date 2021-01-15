@@ -11,7 +11,7 @@ const PageCourse = ({ listCourses = [], lstAssignment = [], token, isLoadingGlob
     const listDeadline = (lstAssignment || []).filter(obj => obj.isSubmit === false)
     const listDueAssignment = (lstAssignment || []).filter(obj => obj.isSubmit === true)
 
-    console.log('hello', listDeadline, listDueAssignment, lstAssignment)
+    //console.log('hello', listDeadline, listDueAssignment, lstAssignment)
 
     return (
         <IndexLayout>
@@ -24,7 +24,7 @@ PageCourse.getInitialProps = async (ctx) => {
     const data = parseCookies(ctx.req);
     const token = data.token
 
-    console.log('PageCourse', data, Object.keys(data).indexOf('token'))
+    //console.log('PageCourse', data, Object.keys(data).indexOf('token'))
     if (Object.keys(data).indexOf('token') < 0 && data.constructor === Object) {
         ctx.res.writeHead(301, { Location: "/" })
         ctx.res.end();
@@ -32,7 +32,7 @@ PageCourse.getInitialProps = async (ctx) => {
     }
 
     const [lstCourses, lstAssignment] = await Promise.all([RestClient.asyncGet('/subject', token), RestClient.asyncGet('/subject/deadline', token)])
-    console.log('PageCourse', lstCourses, lstAssignment)
+    //console.log('PageCourse', lstCourses, lstAssignment)
     return {
         listCourses: get(lstCourses, 'data').allSubject,
         lstAssignment: get(lstAssignment, 'data').deadline,

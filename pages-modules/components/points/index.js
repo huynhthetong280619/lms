@@ -14,7 +14,7 @@ class Points extends React.Component {
     }
 
     componentDidMount() {
-        console.log('componentDidMount', this.props.lstSubmissionCore)
+        //console.log('componentDidMount', this.props.lstSubmissionCore)
         this.setState({
             lstSubmissionCore: this.props.lstSubmissionCore,
         })

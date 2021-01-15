@@ -51,7 +51,7 @@ const AddForum = ({ t, lstTimelines, createForum, updateForum, idSubject, idTime
             ...values.forum,
             isDeleted: !values.forum.isDeleted
         }
-        console.log('forum', data)
+        //console.log('forum', data)
 
         if (!idForum) {
             handleCreateForum(data, fieldsValue.idTimeline);
@@ -69,7 +69,7 @@ const AddForum = ({ t, lstTimelines, createForum, updateForum, idSubject, idTime
         setLoading(true);
         await restClient.asyncPost('/forum', data, token)
             .then(res => {
-                console.log('handleCreateForum', res)
+                //console.log('handleCreateForum', res)
                 setLoading(false);
                 if (!res.hasError) {
                     createForum({ forum: res.data.forum, idTimeline: idTimelineAdd })
@@ -88,7 +88,7 @@ const AddForum = ({ t, lstTimelines, createForum, updateForum, idSubject, idTime
         setLoading(true);
         await restClient.asyncPut(`/forum/${idForum}`, data, token)
             .then(res => {
-                console.log('handleUpdateForum', res)
+                //console.log('handleUpdateForum', res)
                 setLoading(false);
                 if (!res.hasError) {
                     updateForum({ forum: res.data.forum, idTimeline: idTimelineUpdate })

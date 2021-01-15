@@ -21,7 +21,7 @@ const IndexPage = ({ t }) => {
 
 IndexPage.getInitialProps = async (ctx) => {
   const data = parseCookies(ctx.req)
-  console.log('IndexPage', data)
+  //console.log('IndexPage', data)
   if (Object.keys(data).indexOf('token') > 0 && data.constructor === Object) {
     ctx.res.writeHead(301, { Location: "/courses" })
     ctx.res.end()

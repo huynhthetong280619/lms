@@ -5,18 +5,18 @@ import urljoin from 'url-join';
 require('isomorphic-fetch')
 
 
-const parseReponse = async response => {
-    console.log('parseResponse', response)
+const parseResponse = async response => {
+    //console.log('parseResponse', response)
     try {
         return await response.json();
     } catch (ex) {
-        console.log('Could not parse as json');
+        //console.log('Could not parse as json');
     }
 
     try {
         return await response.text();
     } catch (ex) {
-        console.log('Could not parse as text');
+        //console.log('Could not parse as text');
     }
     return null;
 };
@@ -42,7 +42,7 @@ class RestClient {
 
     getUrl(path) {
         const url = urljoin(GLOBAL_CONFIG.APPS_DOMAIN, path);
-        console.log('url', url)
+        //console.log('url', url)
         return url;
     }
 
@@ -52,7 +52,7 @@ class RestClient {
                 headers: this.createHeaders(token),
             });
 
-            const data = await parseReponse(response);
+            const data = await parseResponse(response);
             if (response.status === 401 || get(data, 'error.code') === 401) {
                 this.exceptionHandler && this.exceptionHandler();
             }
@@ -87,12 +87,12 @@ class RestClient {
                 .then(res => res.blob())
                 .then(blob => {
 
-                    console.log('blob', blob)
+                    //console.log('blob', blob)
                     // var file = window.URL.createObjectURL(blob);
                     // window.location.assign(file)
                 }).
                 catch(err => {
-                    console.log('edxxxx')
+                    //console.log('edxxxx')
                 })
 
         } catch (ex) {
@@ -104,7 +104,7 @@ class RestClient {
     }
 
     async asyncPost(path, data, token) {
-        console.log(path, data)
+        //console.log(path, data)
         try {
             const response = await fetch(this.getUrl(path), {
                 method: 'POST',
@@ -112,7 +112,7 @@ class RestClient {
                 body: JSON.stringify(data),
             });
 
-            const resData = await parseReponse(response);
+            const resData = await parseResponse(response);
             if (response.status === 401 || get(resData, 'error.code') === 401) {
                 this.exceptionHandler && this.exceptionHandler();
             }
@@ -122,7 +122,7 @@ class RestClient {
                 data: resData,
             };
         } catch (ex) {
-            console.log(ex);
+            //console.log(ex);
             return {
                 hasError: true,
                 data: ex,
@@ -147,7 +147,7 @@ class RestClient {
                 body: data,
             });
 
-            const resData = await parseReponse(response);
+            const resData = await parseResponse(response);
             if (response.status === 401 || get(resData, 'error.code') === 401) {
                 this.exceptionHandler && this.exceptionHandler();
             }
@@ -157,7 +157,7 @@ class RestClient {
                 data: resData,
             };
         } catch (ex) {
-            console.log(ex);
+            //console.log(ex);
             return {
                 hasError: true,
                 data: ex,
@@ -173,7 +173,7 @@ class RestClient {
                 body: JSON.stringify(data),
             });
 
-            const resData = await parseReponse(response);
+            const resData = await parseResponse(response);
             if (response.status === 401 || get(resData, 'error.code') === 401) {
                 this.exceptionHandler && this.exceptionHandler();
             }
@@ -183,7 +183,7 @@ class RestClient {
                 data: resData,
             };
         } catch (ex) {
-            console.log(ex);
+            //console.log(ex);
             return {
                 hasError: true,
                 data: ex,
@@ -199,7 +199,7 @@ class RestClient {
                 method: 'DELETE',
             });
 
-            const res = await parseReponse(response);
+            const res = await parseResponse(response);
             if (response.status === 401 || get(res, 'error.code') === 401) {
                 this.exceptionHandler && this.exceptionHandler();
             }
@@ -209,7 +209,7 @@ class RestClient {
                 data: res,
             };
         } catch (ex) {
-            console.log(ex);
+            //console.log(ex);
             return {
                 hasError: true,
                 data: ex,
@@ -225,7 +225,7 @@ class RestClient {
                 body: isFormData ? data : JSON.stringify(data),
             });
 
-            const resData = await parseReponse(response);
+            const resData = await parseResponse(response);
             if (response.status === 401 || get(resData, 'error.code') === 401) {
                 this.exceptionHandler && this.exceptionHandler();
             }
@@ -235,7 +235,7 @@ class RestClient {
                 data: resData,
             };
         } catch (ex) {
-            console.log(ex);
+            //console.log(ex);
             return {
                 hasError: true,
                 data: ex,
@@ -264,7 +264,7 @@ class RestClient {
             .then(res => res.json())
             .then(res => {
 
-                console.log('Response', res)
+                //console.log('Response', res)
                 return {
                     name: res.original_filename,
                     path: res.url,
@@ -272,7 +272,7 @@ class RestClient {
                 }
             })
             .catch(err => {
-                console.log('Upload attachment', err);
+                //console.log('Upload attachment', err);
                 return null;
             });
     }

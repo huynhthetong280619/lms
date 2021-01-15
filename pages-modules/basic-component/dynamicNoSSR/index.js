@@ -3,14 +3,14 @@ import React from 'react';
 class OpenWidget extends React.Component {
     openWidget = () => {
         // create the widget
-        console.log('type of', typeof window)
+        //console.log('type of', typeof window)
         const widget = window.cloudinary.createUploadWidget(
             {
                 cloudName: 'dkepvw2rz',
                 uploadPreset: 'gmttm4bo',
             },
             (error, result) => {
-                console.log(result)
+                //console.log(result)
                 if (result.event === 'success') {
                     this.setState({
                         imageUrl: result.info.secure_url,

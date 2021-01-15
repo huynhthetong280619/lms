@@ -98,7 +98,8 @@
     "import": "Import",
     "export": "Export",
     "mode": "Chế độ",
-    "mode_arrange_index": "Bật chế độ sắp xếp chủ đề đã bật !",
+    "mode_arrange_index": "Chế độ sắp xếp mốc thời gian đã bật !",
+    "mode_arrange_index_off": "Chế độ sắp xếp mốc thời gian đã tắt !",
 
     "name": "Tên",
     "content": "Nội dung",
@@ -302,5 +303,6 @@
     "survey_bank": "Ngân hàng khảo sát",
     "export_h1": "Quy định export dữ liệu",
     "export_h2": "Export các mốc thời gian phải kèm theo ngân hàng đề, ngân hàng khảo sát",
-    "export_h3": "Những phần được chọn sẽ có trong tệp export .json"
+    "export_h3": "Những phần được chọn sẽ có trong tệp export .json",
+    "week": "Tuần"
 }

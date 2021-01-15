@@ -21,7 +21,7 @@ const AddSurvey = ({ lstTimelines, lstSurveys, t, createSurvey, updateSurvey, id
 
     useEffect(() => {
         if (survey) {
-            console.log(survey);
+            //console.log(survey);
             form.setFieldsValue({
                 idTimeline: idTimeline,
                 survey: { ...survey, isDeleted: !survey.isDeleted }
@@ -67,7 +67,7 @@ const AddSurvey = ({ lstTimelines, lstSurveys, t, createSurvey, updateSurvey, id
             handleCreateSurvey(data, fieldsValue.idTimeline);
         } else {
             handleUpdateSurvey(data, idTimeline);
-            console.log('data', data);
+            //console.log('data', data);
         }
     }
 
@@ -80,7 +80,7 @@ const AddSurvey = ({ lstTimelines, lstSurveys, t, createSurvey, updateSurvey, id
         setLoading(true);
         await restClient.asyncPost('/survey', data, token)
             .then(res => {
-                console.log('createSurvey', res)
+                //console.log('createSurvey', res)
                 setLoading(false);
                 if (!res.hasError) {
                     createSurvey({ survey: res.data.survey, idTimeline: idTimelineAdd })
@@ -99,7 +99,7 @@ const AddSurvey = ({ lstTimelines, lstSurveys, t, createSurvey, updateSurvey, id
         setLoading(true);
         await restClient.asyncPut(`/survey/${idSurvey}`, data, token)
             .then(res => {
-                console.log('UpdateSurvey', res)
+                //console.log('UpdateSurvey', res)
                 setLoading(false);
                 if (!res.hasError) {
                     updateSurvey({ survey: res.data.survey, idTimeline: idTimelineUpdate })

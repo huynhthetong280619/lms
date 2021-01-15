@@ -98,7 +98,8 @@
     "import": "Import",
     "export": "Export",
     "mode": "Mode",
-    "mode_arrange_index": "Turn on theme sorting mode!",
+    "mode_arrange_index": "Turn on timeline sorting mode!",
+    "mode_arrange_index_off": "Turn off timeline sorting mode!",
 
     "name": "Name",
     "content": "Content",
@@ -302,5 +303,6 @@
     "survey_bank": "Survey Bank",
     "export_h1": "Specifies export file",
     "export_h2": "Export timelines must be accompanied by survey bank and quiz bank",
-    "export_h3": "Which parts are checked will include in file export .json"
+    "export_h3": "Which parts are checked will include in file export .json",
+    "week": "Week"
 }

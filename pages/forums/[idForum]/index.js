@@ -15,7 +15,7 @@ const ForumPage = ({ forum, idForum, idSubject, idTimeline, subject, token }) =>
 ForumPage.getInitialProps = async (ctx) => {
     const data = parseCookies(ctx.req);
     const token = data.token
-    console.log('ForumPage', ctx);
+    //console.log('ForumPage', ctx);
     const { idForum, idSubject, idTimeline } = ctx.query
 
     const [forum, subject] = await Promise.all([restClient.asyncGet(`/forum/${idForum}?idSubject=${idSubject}&idTimeline=${idTimeline}`, token), restClient.asyncGet(`/subject/${idSubject}`, token)])

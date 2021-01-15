@@ -56,7 +56,7 @@ class Forum extends React.Component {
 
         await restClient.asyncPost('/topic', data, this.props.token)
             .then(res => {
-                console.log('Create topic', res)
+                //console.log('Create topic', res)
                 this.setState({
                     isLoading: false
                 })
@@ -101,7 +101,7 @@ class Forum extends React.Component {
         });
     };
     onFinish = (values) => {
-        console.log(values);
+        //console.log(values);
 
         this.createTopic({ topic: values });
     }
@@ -111,7 +111,7 @@ class Forum extends React.Component {
 
         const { t, forum } = this.props
 
-        console.log(forum)
+        //console.log(forum)
 
         const layout = {
             labelCol: {

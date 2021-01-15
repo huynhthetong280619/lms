@@ -22,7 +22,7 @@ class Quiz extends React.Component {
 
 
     transTime = (time) => {
-        console.log('transTime', time)
+        //console.log('transTime', time)
         return moment(time, 'YYYY-MM-DDTHH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
     }
 
@@ -65,7 +65,7 @@ class Quiz extends React.Component {
                     dataIndex: 'student',
                     key: 'student',
                     render: (data) => {
-                        console.log(data);
+                        //console.log(data);
                         return (<span> {get(data, 'surName') + " " + get(data, 'firstName')}</span>)
                     }
                 },
@@ -111,7 +111,7 @@ class Quiz extends React.Component {
             ]
         }
 
-        console.log('requirementExam', requirementExam)
+        //console.log('requirementExam', requirementExam)
 
         return (
             <>

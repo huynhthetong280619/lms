@@ -14,11 +14,11 @@ const ViewPage = ({ detailFile, token }) => {
 ViewPage.getInitialProps = async (ctx) => {
     const data = parseCookies(ctx.req);
     const token = data.token
-    console.log('ViewPage', ctx)
+    //console.log('ViewPage', ctx)
     const { idSubject, idTimeline, idFile } = ctx.query;
 
     const detailFile = await restClient.asyncGet(`/timeline/${idTimeline}/file/${idFile}?idSubject=${idSubject}`, token);
-    console.log(detailFile)
+    //console.log(detailFile)
     return {
         detailFile: get(detailFile, 'data').file,
         token

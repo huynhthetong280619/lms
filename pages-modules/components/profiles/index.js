@@ -31,7 +31,7 @@ const SectionDescription = ({ title, content }) => (
 );
 
 function getBase64(img, callback) {
-    console.log(img);
+    //console.log(img);
     const reader = new FileReader();
     reader.addEventListener('load', () => callback(reader.result));
     reader.readAsDataURL(img);
@@ -76,7 +76,7 @@ const Profile = ({ t, token }) => {
         submitPassword, submitProfile } = state;
 
     const beforeUpload = (file) => {
-        console.log('beforeUpload', file)
+        //console.log('beforeUpload', file)
         const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
         if (!isJpgOrPng) {
             notifyError(t('failure'), t('condition_avatar_type'));
@@ -98,7 +98,7 @@ const Profile = ({ t, token }) => {
         }, token)
             .then(res => {
                 setState({ ...state, submitProfile: false });
-                console.log('resLink', res)
+                //console.log('resLink', res)
                 // localStorage.removeItem('user');
                 if (!res.hasError) {
                     localStorage.setItem('user', JSON.stringify(res.data.user));
@@ -111,7 +111,7 @@ const Profile = ({ t, token }) => {
     }
 
     const updatePassword = async (values) => {
-        console.log('password', values);
+        //console.log('password', values);
         setState({ ...state, submitPassword: true });
         const tokenCookies = getCookie('token');
         await restClient.asyncPut(`/user/password`, {
@@ -120,7 +120,7 @@ const Profile = ({ t, token }) => {
         }, tokenCookies)
             .then(res => {
                 setState({ ...state, submitPassword: false });
-                console.log('resLink', res)
+                //console.log('resLink', res)
                 // localStorage.removeItem('user');
                 if (!res.hasError) {
                     formPassword.resetFields();
@@ -156,7 +156,7 @@ const Profile = ({ t, token }) => {
             await fetch('https://api.Cloudinary.com/v1_1/dkepvw2rz/upload', options)
                 .then(res => res.json())
                 .then(res => {
-                    console.log('url', res.url);
+                    //console.log('url', res.url);
                     setState({
                         ...state,
                         imageUrl: res.url,
@@ -164,7 +164,7 @@ const Profile = ({ t, token }) => {
                     });
                 })
                 .catch(err => {
-                    console.log(err)
+                    //console.log(err)
                     setState({
                         ...state,
                         loading: false
@@ -178,7 +178,7 @@ const Profile = ({ t, token }) => {
         const tokenCookies = getCookie('token');
         await restClient.asyncPut(`/user/auth/facebook/link`, data, tokenCookies)
             .then(res => {
-                console.log('resLink', res)
+                //console.log('resLink', res)
                 setState({ ...state, connectFacebook: false });
                 // localStorage.removeItem('user');
                 if (!res.hasError) {
@@ -199,7 +199,7 @@ const Profile = ({ t, token }) => {
         }, tokenCookies)
             .then(res => {
                 setState({ ...state, disconnectFacebook: false });
-                console.log('resLink unlink', res)
+                //console.log('resLink unlink', res)
                 if (!res.hasError) {
                     localStorage.setItem('user', JSON.stringify(res.data.user));
                     setProfile(res.data.user);
@@ -211,9 +211,9 @@ const Profile = ({ t, token }) => {
     }
 
     const responseFacebook = async (response) => {
-        console.log('responseFacebook', response);
+        //console.log('responseFacebook', response);
         const token = response.accessToken;
-        console.log('responseFacebook', token);
+        //console.log('responseFacebook', token);
         const data = {
             token: token
         }

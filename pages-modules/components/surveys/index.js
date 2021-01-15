@@ -14,7 +14,7 @@ import HeadPage from '../headPage/headPage.jsx';
 class Survey extends React.Component {
 
     componentDidMount() {
-        console.log('this.props.responseSurvey', this.props.replyCurrent)
+        //console.log('this.props.responseSurvey', this.props.replyCurrent)
     }
     transTime = (time) => {
         return moment(time).format('MMM DD h:mm A')
@@ -28,7 +28,7 @@ class Survey extends React.Component {
             height: '30px',
             lineHeight: '30px'
         };
-        console.log('Survey', survey)
+        //console.log('Survey', survey)
         return <>
             <HeadPage title={`${this.props.nameSubject}: ${survey.name}`} />
             <div className="lms-ws-survey-page">

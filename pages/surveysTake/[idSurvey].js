@@ -8,7 +8,7 @@ import { parseCookies } from '../../assets/helpers'
 const SurveyExePage = ({ survey, questionnaire, subject, idSubject,
     idTimeline, idSurvey, token }) => {
     const nameSubject = get(subject, 'name');
-    console.log("survey", survey);
+    //console.log("survey", survey);
 
     return <IndexLayout>
         <SurveyExecute survey={survey} questionnaire={questionnaire} nameSubject={nameSubject} idSubject={idSubject}
@@ -25,7 +25,7 @@ SurveyExePage.getInitialProps = async (ctx) => {
         restClient.asyncGet(`/subject/${idSubject}`, token)
     ])
 
-    console.log('SurveyExePage', survey)
+    //console.log('SurveyExePage', survey)
 
     return {
         survey: get(survey, 'data').survey,

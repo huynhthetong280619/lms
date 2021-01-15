@@ -86,7 +86,7 @@ class Subject extends React.Component {
     }
 
     async componentDidMount() {
-        console.log('componentDidMount', this.props.subject, this.props.lstQuizzes, this.props.lstTimeline);
+        //console.log('componentDidMount', this.props.subject, this.props.lstQuizzes, this.props.lstTimeline);
 
         const user = JSON.parse(localStorage.getItem('user'));
 
@@ -131,7 +131,7 @@ class Subject extends React.Component {
     };
 
     handleOnDragEnd = async (result) => {
-        console.log('handleOnDragEnd', result)
+        //console.log('handleOnDragEnd', result)
         if (!result.destination) return;
 
         const items = Array.from(this.state.timelines);
@@ -149,13 +149,13 @@ class Subject extends React.Component {
             return {
                 ...item,
                 index: index + 1,
-                name: `Tuần ${index < 10 ? 0 : ''}` + (index + 1)
+                //name: `Tuần ${index < 10 ? 0 : ''}` + (index + 1)
             }
         })
 
-        console.log('cv', cv)
+        //console.log('cv', cv)
         this.setState({ updateTimelines: cv });
-        console.log('items', items, cv);
+        //console.log('items', items, cv);
     }
 
     updateTimelinesIndex = async () => {
@@ -200,7 +200,7 @@ class Subject extends React.Component {
         await restClient.asyncGet(`/assignment/${idAssignment}?idSubject=${this.props.idSubject}&idTimeline=${idTimeline}`, this.props.token)
             .then(res => {
                 if (!res.hasError) {
-                    console.log('getRequirementAssignment', res);
+                    //console.log('getRequirementAssignment', res);
 
                     this.setState({
                         assignmentRequirement: get(res, 'data').assignment,
@@ -219,12 +219,12 @@ class Subject extends React.Component {
                 this.setState({ isSubmitAssignment: false });
                 if (!res.hasError) {
                     notifySuccess(this.props.t('success'), this.props.t('submit_success'))
-                    console.log('Notification', res)
+                    //console.log('Notification', res)
                     let submission = res.data.submission;
-                    console.log('OLD-ASSIGNMENT', this.state.assignmentRequirement);
+                    //console.log('OLD-ASSIGNMENT', this.state.assignmentRequirement);
                     this.setState({ assignmentRequirement: { ...this.state.assignmentRequirement, submission: submission } }
                         , () => {
-                            console.log('New-ASSIGNMENT', this.state.assignmentRequirement);
+                            //console.log('New-ASSIGNMENT', this.state.assignmentRequirement);
                         });
                 } else {
                     notifyError(this.props.t('failure'), res.data.message);
@@ -239,12 +239,12 @@ class Subject extends React.Component {
                 this.setState({ isCommentAssignment: false });
                 if (!res.hasError) {
                     notifySuccess(this.props.t('success'), res.data.message)
-                    console.log('Notification', res)
+                    //console.log('Notification', res)
                     let submission = res.data.submission;
-                    console.log('OLD-ASSIGNMENT', this.state.assignmentRequirement);
+                    //console.log('OLD-ASSIGNMENT', this.state.assignmentRequirement);
                     this.setState({ assignmentRequirement: { ...this.state.assignmentRequirement, submission: submission } }
                         , () => {
-                            console.log('New-ASSIGNMENT', this.state.assignmentRequirement);
+                            //console.log('New-ASSIGNMENT', this.state.assignmentRequirement);
                         });
                 } else {
                     notifyError(this.props.t('failure'), res.data.message);
@@ -260,12 +260,12 @@ class Subject extends React.Component {
 
         head(timelineUpdate).files.push(file)
 
-        console.log(timelineUpdate)
+        //console.log(timelineUpdate)
 
         this.setState({
             timelines: [...this.state.timelines],
         }, () => {
-            console.log(this.state.timelines)
+            //console.log(this.state.timelines)
             this.closeDrawerCreate();
         })
     }
@@ -274,13 +274,13 @@ class Subject extends React.Component {
         notifySuccess(this.props.t('success'), this.props.t('update_document_success'))
         let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
         let target = head(timelineUpdate).files.find(({ _id }) => _id === file._id);
-        console.log('targetFile', target);
+        //console.log('targetFile', target);
         let index = head(timelineUpdate).files.indexOf(target);
         head(timelineUpdate).files.splice(index, 1, file);
         this.setState({
             timelines: [...this.state.timelines],
         }, () => {
-            console.log(this.state.timelines)
+            //console.log(this.state.timelines)
             this.closeDrawerCreate();
         })
     }
@@ -290,16 +290,16 @@ class Subject extends React.Component {
         notifySuccess(this.props.t('success'), this.props.t('add_quiz_success'))
         let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
 
-        console.log('timelineUpdate', timelineUpdate)
+        //console.log('timelineUpdate', timelineUpdate)
         head(timelineUpdate).exams.push(exam)
 
 
-        console.log(timelineUpdate)
+        //console.log(timelineUpdate)
 
         this.setState({
             timelines: [...this.state.timelines],
         }, () => {
-            console.log(this.state.timelines)
+            //console.log(this.state.timelines)
             this.closeDrawerCreate();
         })
     }
@@ -309,9 +309,9 @@ class Subject extends React.Component {
         let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
 
         //console.log('timelineUpdate', timelineUpdate)
-        console.log('updateExam', exam);
+        //console.log('updateExam', exam);
         let target = head(timelineUpdate).exams.find(({ _id }) => _id === exam._id);
-        console.log('targetExam', target);
+        //console.log('targetExam', target);
         let index = head(timelineUpdate).exams.indexOf(target);
 
         head(timelineUpdate).exams.splice(index, 1, exam);
@@ -319,7 +319,7 @@ class Subject extends React.Component {
         this.setState({
             timelines: [...this.state.timelines],
         }, () => {
-            console.log(this.state.timelines)
+            //console.log(this.state.timelines)
             this.closeDrawerCreate();
         })
     }
@@ -341,12 +341,12 @@ class Subject extends React.Component {
         head(timelineUpdate).assignments.push(assignment)
 
 
-        console.log(timelineUpdate)
+        //console.log(timelineUpdate)
 
         this.setState({
             timelines: [...this.state.timelines],
         }, () => {
-            console.log(this.state.timelines)
+            //console.log(this.state.timelines)
             this.closeDrawerCreate();
         })
     }
@@ -355,9 +355,9 @@ class Subject extends React.Component {
         notifySuccess(this.props.t('success'), this.props.t('update_assign_success'))
         let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
 
-        console.log('timelineUpdate', timelineUpdate)
+        //console.log('timelineUpdate', timelineUpdate)
         let target = head(timelineUpdate).assignments.find(({ _id }) => _id === assignment._id);
-        console.log('targetAssignment', target);
+        //console.log('targetAssignment', target);
         let index = head(timelineUpdate).assignments.indexOf(target);
 
         head(timelineUpdate).assignments.splice(index, 1, assignment);
@@ -365,7 +365,7 @@ class Subject extends React.Component {
         this.setState({
             timelines: [...this.state.timelines],
         }, () => {
-            console.log(this.state.timelines)
+            //console.log(this.state.timelines)
             this.closeDrawerCreate();
         })
     }
@@ -375,16 +375,16 @@ class Subject extends React.Component {
         notifySuccess(this.props.t('success'), this.props.t('add_quiz_survey'))
         let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
 
-        console.log('timelineUpdate', timelineUpdate)
+        //console.log('timelineUpdate', timelineUpdate)
         head(timelineUpdate).surveys.push(survey)
 
 
-        console.log(timelineUpdate)
+        //console.log(timelineUpdate)
 
         this.setState({
             timelines: [...this.state.timelines],
         }, () => {
-            console.log(this.state.timelines)
+            //console.log(this.state.timelines)
             this.closeDrawerCreate();
         })
 
@@ -394,20 +394,20 @@ class Subject extends React.Component {
         notifySuccess(this.props.t('success'), this.props.t('add_quiz_survey'))
         let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
 
-        console.log('timelineUpdate', timelineUpdate)
+        //console.log('timelineUpdate', timelineUpdate)
         let target = head(timelineUpdate).surveys.find(({ _id }) => _id === survey._id);
-        console.log('targetSurvey', target);
+        //console.log('targetSurvey', target);
         let index = head(timelineUpdate).surveys.indexOf(target);
 
         head(timelineUpdate).surveys.splice(index, 1, survey);
 
 
-        console.log(timelineUpdate)
+        //console.log(timelineUpdate)
 
         this.setState({
             timelines: [...this.state.timelines],
         }, () => {
-            console.log(this.state.timelines)
+            //console.log(this.state.timelines)
             this.closeDrawerCreate();
         })
     }
@@ -419,13 +419,13 @@ class Subject extends React.Component {
             idTimeline: idTimeline,
             data: information
         }
-        console.log('createInformation', data);
+        //console.log('createInformation', data);
         await restClient.asyncPost('/information', data, this.props.token)
             .then(res => {
                 this.setState({ isLoading: false });
                 if (!res.hasError) {
                     notifySuccess(this.props.t('success'), this.props.t('add_quiz_information'))
-                    console.log('information', res)
+                    //console.log('information', res)
                     let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === data.idTimeline)
                     head(timelineUpdate).information.push(res.data.information)
                     this.setState({
@@ -458,17 +458,17 @@ class Subject extends React.Component {
         let timelineUpdate = this.state.timelines.filter(({ _id }) => _id === idTimeline)
 
         let target = head(timelineUpdate).forums.find(({ _id }) => _id === forum._id);
-        console.log('targetForum', target);
+        //console.log('targetForum', target);
         let index = head(timelineUpdate).forums.indexOf(target);
 
         head(timelineUpdate).forums.splice(index, 1, forum);
 
-        console.log(timelineUpdate)
+        //console.log(timelineUpdate)
 
         this.setState({
             timelines: [...this.state.timelines],
         }, () => {
-            console.log(this.state.timelines)
+            //console.log(this.state.timelines)
             this.closeDrawerCreate();
         })
     }
@@ -485,7 +485,7 @@ class Subject extends React.Component {
 
         await restClient.asyncPost('/timeline', data, this.props.token)
             .then(res => {
-                console.log('Timeline', res)
+                //console.log('Timeline', res)
                 this.setState({ isLoading: false });
                 if (!res.hasError) {
                     notifySuccess(this.props.t('success'), this.props.t('add_quiz_timeline'))
@@ -516,7 +516,7 @@ class Subject extends React.Component {
     }
 
     focusInformation = (idInformation) => {
-        console.log('Add information', idInformation)
+        //console.log('Add information', idInformation)
         this.setState({
             isFocusInformation: true,
             idInformationFocus: idInformation
@@ -547,7 +547,7 @@ class Subject extends React.Component {
     }
 
     focusSurvey = (idSurvey, idTimeline) => {
-        console.log('idTimeline', idTimeline)
+        //console.log('idTimeline', idTimeline)
         this.setState({
             isFocusSurvey: true,
             idSurveyFocus: idSurvey,
@@ -576,28 +576,6 @@ class Subject extends React.Component {
         })
     }
 
-    createNotification = (type, title, message) => {
-        return () => {
-            switch (type) {
-                case 'info':
-                    NotificationManager.info(message);
-                    break;
-                case 'success':
-                    NotificationManager.success(message, title);
-                    break;
-                case 'warning':
-                    NotificationManager.warning(message, title, 3000);
-                    break;
-                case 'error':
-                    NotificationManager.error(message, title, 5000, () => {
-                        alert('callback');
-                    });
-                    break;
-            }
-        };
-    };
-
-
     onExe = (status) => {
         this.setState({
             isExe: status
@@ -611,14 +589,14 @@ class Subject extends React.Component {
     }
 
     edit = (id) => {
-        console.log('Edit', id)
+        //console.log('Edit', id)
     }
 
     lock = async (url) => {
 
         await restClient.asyncPut(url, this.props.token)
             .then(res => {
-                console.log('Lock', res)
+                //console.log('Lock', res)
 
             })
     }
@@ -627,7 +605,7 @@ class Subject extends React.Component {
 
         await restClient.asyncPut(url, this.props.token)
             .then(res => {
-                console.log('Lock', res)
+                //console.log('Lock', res)
             })
 
     }
@@ -681,7 +659,7 @@ class Subject extends React.Component {
         await restClient.asyncPost(`/subject/${this.props.idSubject}/import-teacher`, data, this.props.token)
             .then(res => {
                 this.setState({ isLoading: false });
-                console.log('res', res);
+                //console.log('res', res);
                 if (!res.hasError) {
                     this.setState({
                         lstTimelines: res.data.timelines.map(value => { return { _id: value._id, name: value.name } }),
@@ -703,7 +681,7 @@ class Subject extends React.Component {
 
         const { t } = this.props;
 
-        const timelineTemplate = (idTimeline, name, description, assignments, exams, forums, information, files, surveys, flagMove) => (
+        const timelineTemplate = (idTimeline, index, name, description, assignments, exams, forums, information, files, surveys, flagMove) => (
             <div style={{ margin: '0 10px 10px 10px', border: `${flagMove ? '1px dashed #d9d9d9' : '2px solid #cacaca'}` }}>
                 <div style={{ position: 'relative' }}>
                     <Row
@@ -715,10 +693,10 @@ class Subject extends React.Component {
                             cursor: this.state.isTeacher && 'all-scroll'
                         }}
                     >
-                        <Col span={6}>
+                        <Col span={10}>
                             {
                                 // name.toUpperCase()
-                                name
+                                `${t('week')} ${index < 9 ? ('0' + (index + 1)) : (index + 1)}: ${name}`
                             }
                         </Col>
                         <Col span={10}>
@@ -727,11 +705,11 @@ class Subject extends React.Component {
                                 description
                             }
                         </Col>
-                        <Col span={12} style={{ textAlign: 'right' }}>
+                        {/* <Col span={12} style={{ textAlign: 'right' }}>
                             {
                                 this.state.isTeacher ? <MoreOutlined /> : null
                             }
-                        </Col>
+                        </Col> */}
                     </Row>
                     {
 
@@ -1050,12 +1028,12 @@ class Subject extends React.Component {
 
                             {
                                 this.state.timelines.map(({ _id, name, description, assignments, exams, forums, information, files, surveys }, index) => {
-                                    console.log('assignment', assignments, exams, forums, information, surveys)
+                                    //console.log('assignment', assignments, exams, forums, information, surveys)
                                     return (
                                         <Draggable key={_id} draggableId={_id} index={index} >
                                             {(provided) => (
                                                 <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                                                    {timelineTemplate(_id, name, description, assignments, exams, forums, information, files, surveys, true)}
+                                                    {timelineTemplate(_id, index, name, description, assignments, exams, forums, information, files, surveys, true)}
                                                 </div>
                                             )}
                                         </Draggable>)
@@ -1121,9 +1099,9 @@ class Subject extends React.Component {
                 }
 
                 {
-                    this.state.timelines.map(({ _id, name, description, assignments, exams, forums, information, files, surveys }) => (
+                    this.state.timelines.map(({ _id, name, description, assignments, exams, forums, information, files, surveys }, index) => (
                         <div key={_id}>
-                            {timelineTemplate(_id, name, description, assignments, exams, forums, information, files, surveys, false)}
+                            {timelineTemplate(_id, index, name, description, assignments, exams, forums, information, files, surveys, false)}
                         </div>
                     )
                     )
@@ -1335,13 +1313,17 @@ class Subject extends React.Component {
                         turnOnOffEditMode={() => this.turnOnOffEditMode()}
                         isOnMovement={this.state.isOnMovement}
                         setIsOnMovement={() => {
-                            if (!this.state.isOnMovement) {
-                                notifySuccess(this.props.t('mode'), this.props.t('mode_arrange_index'));
-                            }
-                            this.setState({ isOnMovement: !this.state.isOnMovement })
+                            this.setState({ isOnMovement: !this.state.isOnMovement }, () => {
+                                if (this.state.isOnMovement) {
+                                    notifySuccess(this.props.t('mode'), this.props.t('mode_arrange_index'));
+                                } else {
+                                    notifySuccess(this.props.t('mode'), this.props.t('mode_arrange_index_off'));
+                                }
+                            })
                         }}
                         updateTimelinesIndex={() => this.updateTimelinesIndex()} />
                 }
+
                 <AssignmentModal visible={this.state.visible} isSubmitAssignment={this.state.isSubmitAssignment} isCommentAssignment={this.state.isCommentAssignment} commentAssignmentGrade={this.commentAssignmentGrade} assignment={this.state.assignmentRequirement} handleCancelModal={this.handleCancelModal} submitAssignment={this.submissionFile} onSubmitAssignment={this.onSubmitAssignment} onCancelSubmitAssignment={this.onCancelSubmitAssignment} />
 
 

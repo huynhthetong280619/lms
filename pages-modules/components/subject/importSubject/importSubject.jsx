@@ -33,7 +33,7 @@ const ImportSubject = ({ t, isLoading, handleImportSubject }) => {
     };
 
     const onFinish = async (values) => {
-        console.log('fileAttach', fileAttach);
+        //console.log('fileAttach', fileAttach);
 
         if (fileAttach) {
             let text = await readFileAsDataURL(fileAttach)
@@ -52,7 +52,7 @@ const ImportSubject = ({ t, isLoading, handleImportSubject }) => {
                 timelines: data.timelines || null,
                 studentIds: data.studentIds || null,
             }
-            console.log(data);
+            //console.log(data);
             if (!values.quizBank && !values.surveyBank && !values.timelines && !values.studentIds) {
                 notifyWarning(t('warning'), t('condition_file_import'))
             } else {

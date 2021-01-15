@@ -40,14 +40,14 @@ class Exams extends React.Component {
     }
 
     onChoice = (questionAns, questionsId) => {
-        console.log('onChange', { ...this.state.answer, [questionsId]: questionAns.target.value })
+        //console.log('onChange', { ...this.state.answer, [questionsId]: questionAns.target.value })
         this.setState({
             answer: { ...this.state.answer, [questionsId]: questionAns.target.value }
         });
     };
 
     onChangeMultipleChoice = (questionAns, questionsId) => {
-        console.log('checked = ', questionAns, questionsId);
+        //console.log('checked = ', questionAns, questionsId);
         this.setState({
             answer: { ...this.state.answer, [questionsId]: questionAns }
         });
@@ -68,7 +68,7 @@ class Exams extends React.Component {
 
 
         // Push up to server
-        console.log(convert)
+        //console.log(convert)
         const data = {
             idSubject: this.props.idSubject,
             idTimeline: this.props.idTimeline,
@@ -81,7 +81,7 @@ class Exams extends React.Component {
                         message: res.data.message,
                         placement: 'topRight'
                     });
-                    console.log('Rest client', get(res, 'data'));
+                    //console.log('Rest client', get(res, 'data'));
                     Router.push(`/quizzis/${this.props.idExam}?idSubject=${this.props.idSubject}&idTimeline=${this.props.idTimeline}`)
                 } else {
                     this.setState({ loading: false });
@@ -100,7 +100,7 @@ class Exams extends React.Component {
 
         const { examQuestion, t } = this.props;
 
-        console.log(examQuestion)
+        //console.log(examQuestion)
 
         const renderer = ({ hours, minutes, seconds, completed }) => {
             if (completed) {

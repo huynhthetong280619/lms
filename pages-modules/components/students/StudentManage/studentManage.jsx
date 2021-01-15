@@ -30,7 +30,7 @@ const StudentManage = ({ t, lstStudents, idSubject, token }) => {
             .then(res => {
                 setLoadingDelete(false);
                 setIdStudent(null);
-                console.log('delete', res)
+                //console.log('delete', res)
                 if (!res.hasError) {
                     setList(res.data.students);
                 } else {

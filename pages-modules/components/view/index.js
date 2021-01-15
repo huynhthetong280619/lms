@@ -18,7 +18,7 @@ class ViewOnline extends React.Component {
         fileType: null
     }
     onError = e => {
-        console.log(e, "error in file-viewer");
+        //console.log(e, "error in file-viewer");
     };
 
     componentDidMount(){

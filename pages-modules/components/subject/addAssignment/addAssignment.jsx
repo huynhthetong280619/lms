@@ -28,7 +28,7 @@ const AddAssignment = ({ lstTimelines, t, createAssignment, updateAssignment, id
 
     useEffect(() => {
         if (assignment) {
-            console.log(assignment);
+            //console.log(assignment);
             form.setFieldsValue({
                 idTimeline: idTimeline,
                 assignment: { ...assignment, isDeleted: !assignment.isDeleted }
@@ -85,7 +85,7 @@ const AddAssignment = ({ lstTimelines, t, createAssignment, updateAssignment, id
         setLoading(true);
         await restClient.asyncPost('/assignment', data, token)
             .then(res => {
-                console.log('handleCreateAssignment', res)
+                //console.log('handleCreateAssignment', res)
                 setLoading(false);
                 if (!res.hasError) {
                     createAssignment({ assignment: res.data.assignment, idTimeline: idTimelineAdd })
@@ -104,7 +104,7 @@ const AddAssignment = ({ lstTimelines, t, createAssignment, updateAssignment, id
         setLoading(true);
         await restClient.asyncPut(`/assignment/${idAssignment}`, data, token)
             .then(res => {
-                console.log('handleUpdateAssignment', res)
+                //console.log('handleUpdateAssignment', res)
                 setLoading(false);
                 if (!res.hasError) {
                     updateAssignment({ assignment: res.data.assignment, idTimeline: idTimelineUpdate })
@@ -116,7 +116,7 @@ const AddAssignment = ({ lstTimelines, t, createAssignment, updateAssignment, id
 
     const onFinish = async (fieldsValue) => {
         setLoading(true);
-        console.log('fileAttach', fileAttach);
+        //console.log('fileAttach', fileAttach);
         const assign = {
             ...fieldsValue.assignment,
             isDeleted: !fieldsValue.assignment.isDeleted,
@@ -127,7 +127,7 @@ const AddAssignment = ({ lstTimelines, t, createAssignment, updateAssignment, id
             expireTime: formatTime(assign.setting.expireTime),
             overDueDate: assign.setting.isOverDue ? formatTime(assign.setting.overDueDate) : null
         };
-        console.log('setting', setting);
+        //console.log('setting', setting);
         let file = []
         let data = null;
         if (fileAttach) {

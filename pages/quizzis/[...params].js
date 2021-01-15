@@ -15,14 +15,14 @@ const QuizPage = ({requirementExam, idExam,idTimeline, subject, idSubject, token
 }
 
 QuizPage.getInitialProps = async (ctx) => {
-    console.log('Quiz page', ctx)
+    //console.log('Quiz page', ctx)
 const data = parseCookies(ctx.req);
     const token = data.token
     const {params, idTimeline, idSubject} = ctx.query
     const [idExam] = params
     const [requirement, subject] = await Promise.all([restClient.asyncGet(`/exam/${idExam}?idSubject=${idSubject}&idTimeline=${idTimeline}`, token), restClient.asyncGet(`/subject/${idSubject}`, token)]);
     
-    console.log('Quiz', requirement, subject)
+    //console.log('Quiz', requirement, subject)
     return {
         requirementExam: get(requirement, 'data').exam,
         idExam,

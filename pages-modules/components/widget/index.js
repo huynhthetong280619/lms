@@ -25,7 +25,7 @@ class Widget extends React.Component {
                 }
             },
             onCancel() {
-                this.props.setIsOnMovement()
+                setIsOnMovement();
             },
         })
     }

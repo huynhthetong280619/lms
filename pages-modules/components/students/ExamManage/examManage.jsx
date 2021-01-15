@@ -12,7 +12,7 @@ const ExamManage = ({ t, lstSubmissionCore }) => {
     const [test, setTest] = useState(lstSubmissionCore[0])
 
     const handleSelectTest = (e) => {
-        console.log('idTest', e);
+        //console.log('idTest', e);
         const result = lstSubmissionCore.find(item => get(item, '_id') === e);
         setTest(result);
     }

@@ -94,7 +94,7 @@ class Discussion extends React.Component {
 
             await restClient.asyncPost(`/discussion`, data, this.props.token)
                 .then(res => {
-                    console.log('discussion', res)
+                    //console.log('discussion', res)
 
                     if (!res.hasError) {
                         this.setState({

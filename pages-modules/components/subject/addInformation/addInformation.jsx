@@ -39,7 +39,7 @@ const AddInformation = ({ t, lstTimelines, isLoading, createInformation, idSubje
             name: values.information.name,
             content: values.information.content
         }
-        console.log('information', information)
+        //console.log('information', information)
         if (!idInformation) {
             createInformation({ idTimeline: values.idTimeline, information: information });
         }

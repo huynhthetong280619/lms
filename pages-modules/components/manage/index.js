@@ -40,7 +40,7 @@ const Manage = ({ t, assignment, idAssign, idSubject, idTimeline, token }) => {
         await restClient.asyncPost(`/assignment/${idAssign}/grade/${idSubmission}`, data, token)
             .then(res => {
                 setState({ ...state, isConfirm: false });
-                console.log('enterGradeVerify', res)
+                //console.log('enterGradeVerify', res)
                 if (!res.hasError) {
                     notification.success({
                         message: 'Thành công!',
@@ -48,7 +48,7 @@ const Manage = ({ t, assignment, idAssign, idSubject, idTimeline, token }) => {
                     });
                     let newData = state.lstSubmission;
                     const rowIndex = newData.findIndex(value => value._id === idSubmission);
-                    console.log('rowIndex', rowIndex);
+                    //console.log('rowIndex', rowIndex);
                     newData[rowIndex].feedBack = res.data.feedBack;
                     setState({ ...state, editingKey: null, lstSubmission: newData });
                 } else {

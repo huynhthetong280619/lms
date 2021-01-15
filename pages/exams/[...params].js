@@ -11,7 +11,7 @@ const ExamsPage = ({examQuestion, subject, idSubject,
     idExam, token}) => {
     
     const nameSubject = get(subject, 'name')
-    console.log('examQuestion', examQuestion)
+    //console.log('examQuestion', examQuestion)
 
     return <IndexLayout>
          <Exams examQuestion={examQuestion} subject={subject} nameSubject={nameSubject} idSubject={idSubject} idTimeline={idTimeline} idExam={idExam} token={token}/>
@@ -21,7 +21,7 @@ const ExamsPage = ({examQuestion, subject, idSubject,
 
 ExamsPage.getInitialProps = async (ctx) => {
     
-    console.log('ExamsPage', ctx)
+    //console.log('ExamsPage', ctx)
 const data = parseCookies(ctx.req);
     const token = data.token
 

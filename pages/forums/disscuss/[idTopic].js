@@ -6,10 +6,10 @@ import { get } from 'lodash'
 import { parseCookies } from '../../../assets/helpers'
 
 const DiscussionPage = ({ lstDiscussion, idTopic, idSubject, idTimeline, idForum, detailTopic, subject, token }) => {
-    console.log('lstDiscussion', lstDiscussion)
+    //console.log('lstDiscussion', lstDiscussion)
     const nameSubject = get(subject, 'name')
 
-    console.log('Discussion', nameSubject)
+    //console.log('Discussion', nameSubject)
     return <IndexLayout>
         <Discussion lstDiscussion={lstDiscussion} idTopic={idTopic} idSubject={idSubject} idTimeline={idTimeline} idForum={idForum} detailTopic={detailTopic} nameSubject={nameSubject} token={token}/>
     </IndexLayout>
@@ -26,7 +26,7 @@ const data = parseCookies(ctx.req);
     restClient.asyncGet(`/topic/${idTopic}?idSubject=${idSubject}&idTimeline=${idTimeline}&idForum=${idForum}`, token), restClient.asyncGet(`/subject/${idSubject}`, token)
     ])
 
-    console.log('DiscussionPage', subject, lstDiscussion, detailTopic)
+    //console.log('DiscussionPage', subject, lstDiscussion, detailTopic)
     return {
         lstDiscussion: get(lstDiscussion, 'data'),
         idTopic,
