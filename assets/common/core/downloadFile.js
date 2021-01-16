@@ -4,10 +4,7 @@ import { notifyError } from './notify';
 
 const downloadFile = (file) => {
     fetch(file.path, {
-        method: 'GET',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Accept',
-        mode: 'no-cors'
+        method: 'GET'
     })
         .then(res => {
             return res.blob();

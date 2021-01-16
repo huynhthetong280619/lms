@@ -45,7 +45,7 @@ const AddSurvey = ({ lstTimelines, lstSurveys, t, createSurvey, updateSurvey, id
 
         } else {
             const object = {
-                code: bank._id,
+                code: bank ? bank._id : null,
                 isDeleted: !false,
             }
             form.setFieldsValue({

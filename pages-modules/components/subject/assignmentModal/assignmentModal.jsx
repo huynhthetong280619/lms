@@ -79,7 +79,7 @@ class AssignmentModal extends React.Component {
                         <TabPane tab={`${t('submission')}`} key="1">
                             <div>
                                 <div style={{ margin: '10px 0' }}>
-                                    <span style={{ fontWeight: 600 }}>{t('sbmit_stat')}: </span>
+                                    <span style={{ fontWeight: 600 }}>{t('sbmit_stat')} </span>
                                     {(get(this.props.assignment, 'submissionStatus') ? <Text type='success'>{t('status_submitted')}</Text> : <Text type='danger'>{t('status_not_submit')}</Text>)}
                                 </div>
                                 <div style={{ margin: '10px 0' }}>
@@ -128,7 +128,7 @@ class AssignmentModal extends React.Component {
 
                         </TabPane>
                         <TabPane tab={t('requirement')} key="2">
-                            <div style={{ fontWeight: "700" }}>[{t('require_content')}]</div>
+                            <div style={{ fontWeight: "700", whiteSpace: 'pre-line' }}>[{t('require_content')}]</div>
                             <div dangerouslySetInnerHTML={{ __html: get(this.props.assignment, 'content') }} />
                             {/* <div>
                     {get(this.props.assignment, 'content')}

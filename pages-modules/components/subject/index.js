@@ -9,12 +9,10 @@ import forum from '../../../assets/images/contents/forum.png'
 import manageScore from '../../../assets/images/contents/manage-score.png'
 import { withTranslation } from 'react-i18next';
 import restClient from '../../../assets/common/core/restClient';
-import { MoreOutlined } from '@ant-design/icons'
 require('isomorphic-fetch');
 import 'react-day-picker/lib/style.css';
 import newInfo from '../../../assets/images/contents/new.png';
 import deadline from '../../../assets/images/courses/deadline.png'
-import { NotificationManager } from 'react-notifications';
 import Deadline from '../../components/deadlines'
 import Widget from '../widget';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -35,7 +33,7 @@ import {
     UploadOutlined,
 } from '@ant-design/icons';
 import { notifyError, notifySuccess } from '../../../assets/common/core/notify';
-
+import FadeLoader from "react-spinners/FadeLoader";
 import HeadPage from '../headPage/headPage.jsx';
 
 class Subject extends React.Component {
@@ -82,7 +80,8 @@ class Subject extends React.Component {
             idForumFocus: null,
             idFileFocus: null,
             isExportSubject: false,
-            timelinesIndex: []
+            timelinesIndex: [],
+            isLoadingUpdateIndex: false,
         }
     }
 
@@ -160,8 +159,10 @@ class Subject extends React.Component {
     }
 
     updateTimelinesIndex = async () => {
+        this.setState({ isLoadingUpdateIndex: true });
         await restClient.asyncPost(`/subject/${this.props.idSubject}/index`, this.state.updateTimelines, this.props.token)
             .then(res => {
+                this.setState({ isLoadingUpdateIndex: false });
                 if (!res.hasError) {
                     notifySuccess(this.props.t('success'), get(res, 'data').message);
                     this.setState({
@@ -229,7 +230,7 @@ class Subject extends React.Component {
                     //console.log('Notification', res)
                     let submission = res.data.submission;
                     //console.log('OLD-ASSIGNMENT', this.state.assignmentRequirement);
-                    this.setState({ assignmentRequirement: { ...this.state.assignmentRequirement, submission: submission } }
+                    this.setState({ assignmentRequirement: { ...this.state.assignmentRequirement, submission: submission, submissionStatus: true } }
                         , () => {
                             //console.log('New-ASSIGNMENT', this.state.assignmentRequirement);
                         });
@@ -273,6 +274,9 @@ class Subject extends React.Component {
             timelines: [...this.state.timelines],
         }, () => {
             //console.log(this.state.timelines)
+            this.setState({
+                timelinesIndex: this.state.timelines
+            })
             this.closeDrawerCreate();
         })
     }
@@ -288,6 +292,9 @@ class Subject extends React.Component {
             timelines: [...this.state.timelines],
         }, () => {
             //console.log(this.state.timelines)
+            this.setState({
+                timelinesIndex: this.state.timelines
+            })
             this.closeDrawerCreate();
         })
     }
@@ -307,6 +314,9 @@ class Subject extends React.Component {
             timelines: [...this.state.timelines],
         }, () => {
             //console.log(this.state.timelines)
+            this.setState({
+                timelinesIndex: this.state.timelines
+            })
             this.closeDrawerCreate();
         })
     }
@@ -327,6 +337,9 @@ class Subject extends React.Component {
             timelines: [...this.state.timelines],
         }, () => {
             //console.log(this.state.timelines)
+            this.setState({
+                timelinesIndex: this.state.timelines
+            })
             this.closeDrawerCreate();
         })
     }
@@ -353,6 +366,9 @@ class Subject extends React.Component {
         this.setState({
             timelines: [...this.state.timelines],
         }, () => {
+            this.setState({
+                timelinesIndex: this.state.timelines
+            })
             //console.log(this.state.timelines)
             this.closeDrawerCreate();
         })
@@ -372,7 +388,11 @@ class Subject extends React.Component {
         this.setState({
             timelines: [...this.state.timelines],
         }, () => {
+            this.setState({
+                timelinesIndex: this.state.timelines
+            })
             //console.log(this.state.timelines)
+
             this.closeDrawerCreate();
         })
     }
@@ -392,6 +412,9 @@ class Subject extends React.Component {
             timelines: [...this.state.timelines],
         }, () => {
             //console.log(this.state.timelines)
+            this.setState({
+                timelinesIndex: this.state.timelines
+            })
             this.closeDrawerCreate();
         })
 
@@ -415,6 +438,9 @@ class Subject extends React.Component {
             timelines: [...this.state.timelines],
         }, () => {
             //console.log(this.state.timelines)
+            this.setState({
+                timelinesIndex: this.state.timelines
+            })
             this.closeDrawerCreate();
         })
     }
@@ -437,8 +463,12 @@ class Subject extends React.Component {
                     head(timelineUpdate).information.push(res.data.information)
                     this.setState({
                         timelines: [...this.state.timelines],
-                        isOpenDrawerCreate: false
+                    }, () => {
+                        this.setState({
+                            timelinesIndex: this.state.timelines
+                        })
                     })
+                    this.closeDrawerCreate();
                 } else {
                     notifyError(this.props.t('failure'), res.data.message);
                 }
@@ -455,6 +485,9 @@ class Subject extends React.Component {
         this.setState({
             timelines: [...this.state.timelines],
         }, () => {
+            this.setState({
+                timelinesIndex: this.state.timelines
+            })
             this.closeDrawerCreate();
         })
     }
@@ -476,6 +509,9 @@ class Subject extends React.Component {
             timelines: [...this.state.timelines],
         }, () => {
             //console.log(this.state.timelines)
+            this.setState({
+                timelinesIndex: this.state.timelines
+            })
             this.closeDrawerCreate();
         })
     }
@@ -504,8 +540,12 @@ class Subject extends React.Component {
                             name: get(res, 'data').timeline.name,
                             description: get(res, 'data').timeline.description
                         }],
-                        isOpenDrawerCreate: false
-                    })
+                    }, () => {
+                        this.setState({
+                            timelinesIndex: this.state.timelines
+                        })
+                    });
+                    this.closeDrawerCreate();
 
                 } else {
                     notifyError(this.props.t('failure'), res.data.message);
@@ -595,14 +635,14 @@ class Subject extends React.Component {
         })
     }
 
-    edit = (id) => {
+    edit = () => {
         //console.log('Edit', id)
     }
 
     lock = async (url) => {
 
         await restClient.asyncPut(url, this.props.token)
-            .then(res => {
+            .then(() => {
                 //console.log('Lock', res)
 
             })
@@ -611,7 +651,7 @@ class Subject extends React.Component {
     unlock = async (url) => {
 
         await restClient.asyncPut(url, this.props.token)
-            .then(res => {
+            .then(() => {
                 //console.log('Lock', res)
             })
 
@@ -672,7 +712,8 @@ class Subject extends React.Component {
                         lstTimelines: res.data.timelines.map(value => { return { _id: value._id, name: value.name } }),
                         lstSurveys: res.data.surveyBank,
                         lstQuizzes: res.data.quizBank,
-                        timelines: res.data.timelines
+                        timelines: res.data.timelines,
+                        timelinesIndex: res.data.timelines
                     });
                     notifySuccess(this.props.t('success'), res.data.message);
                     this.closeDrawerCreate();
@@ -739,8 +780,8 @@ class Subject extends React.Component {
                                                     fontStyle: 'italic',
                                                     paddingLeft: '18px',
                                                     color: '#2ecc71',
-                                                    fontWeight: 400
-
+                                                    fontWeight: 400,
+                                                    whiteSpace: 'pre-line'
                                                 }}>{info.content}</div>
                                             </Timeline.Item>
                                         )
@@ -800,9 +841,43 @@ class Subject extends React.Component {
                                             textAlign: 'center',
                                             alignSelf: 'center'
                                         }}>
-                                            <i>
-                                                <FontAwesomeIcon icon={`${f.type == 'webm' ? 'file-video' : 'file-alt'}`} style={{ width: 40, height: 40, color: '#273c75' }} />
-                                            </i>
+                                            {f.type.includes('doc') && (
+                                                <i>
+                                                    <FontAwesomeIcon icon='file-word' style={{ width: 40, height: 40, color: '#2d5898' }} />
+                                                </i>
+                                            )}
+                                            {f.type.includes('pdf') && (
+                                                <i>
+                                                    <FontAwesomeIcon icon='file-pdf' style={{ width: 40, height: 40, color: '#f44236' }} />
+                                                </i>
+                                            )}
+                                            {f.type.includes('ppt') && (
+                                                <i>
+                                                    <FontAwesomeIcon icon='file-powerpoint' style={{ width: 40, height: 40, color: '#d04424' }} />
+                                                </i>
+                                            )}
+                                            {f.type.includes('xls') && (
+                                                <i>
+                                                    <FontAwesomeIcon icon='file-excel' style={{ width: 40, height: 40, color: '#1a7243' }} />
+                                                </i>
+                                            )}
+
+                                            {(f.type.includes('rar') || (f.type.includes('zip')) && (
+                                                <i>
+                                                    <FontAwesomeIcon icon='file-archive' style={{ width: 40, height: 40, color: '#9e6fb2' }} />
+                                                </i>
+                                            ))}
+
+                                            {!(f.type.includes('ppt')) && !(f.type.includes('doc')) && !(f.type.includes('pdf'))
+                                                && !(f.type.includes('xls')) && !(f.type.includes('rar')) && !(f.type.includes('zip'))
+                                                && (
+                                                    <i>
+                                                        <FontAwesomeIcon icon='file-alt' style={{ width: 40, height: 40, color: '#273c75' }} />
+                                                    </i>
+                                                )}
+
+
+
                                         </Col>
                                         <Col span={18} style={{
                                             fontSize: '20px',
@@ -1349,13 +1424,23 @@ class Subject extends React.Component {
                 }
 
                 <AssignmentModal visible={this.state.visible} isSubmitAssignment={this.state.isSubmitAssignment} isCommentAssignment={this.state.isCommentAssignment} commentAssignmentGrade={this.commentAssignmentGrade} assignment={this.state.assignmentRequirement} handleCancelModal={this.handleCancelModal} submitAssignment={this.submissionFile} onSubmitAssignment={this.onSubmitAssignment} onCancelSubmitAssignment={this.onCancelSubmitAssignment} />
-
+                <div className="sweet-loading" style={{
+                    position: 'fixed',
+                    zIndex: 1000,
+                    top: '50%',
+                    left: '50%',
+                }}>
+                    <FadeLoader
+                        size={150}
+                        loading={this.state.isLoadingUpdateIndex}
+                    />
+                </div>
 
                 <Row className={styles.background} style={{ justifyContent: 'center' }}>
                     {
                         this.state.isOnMovement ? contentMovement : contentNormal
-                    }
 
+                    }
 
                     {
                         this.state.isTeacherPrivilege

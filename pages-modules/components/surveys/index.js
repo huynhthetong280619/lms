@@ -115,7 +115,7 @@ class Survey extends React.Component {
                                                                                 {
                                                                                     q.answer.map(a => (
                                                                                         <div key={a._id}>
-                                                                                            <Checkbox value={a._id}>{a.content}</Checkbox>
+                                                                                            <Checkbox style={radioStyle} value={a._id}>{a.content}</Checkbox>
                                                                                         </div>
                                                                                     ))
                                                                                 }
@@ -130,11 +130,11 @@ class Survey extends React.Component {
                                                         )
 
                                                             : <div style={{ textAlign: 'left' }} key={q._id}>
-                                                                <div style={{ fontWeight: 600 }}>
+                                                                <div style={{ fontWeight: 600, width: '100%' }}>
                                                                     <span>{t('question')} {index + 1}: </span>{q.question}
                                                                 </div>
                                                                 <div>
-                                                                    <input type="text" value={this.props.replyCurrent.response.answerSheet[index].answer} disabled />
+                                                                    <input type="text" style={{ width: '40%' }} value={this.props.replyCurrent.response.answerSheet[index].answer} disabled />
                                                                 </div>
                                                             </div>
                                                     )
@@ -152,10 +152,10 @@ class Survey extends React.Component {
                                                 <div style={{ fontWeight: 600 }}><span>{t('question')} {index + 1}: </span>{q.question}</div>
                                                 <Row>
                                                     <Col span={12}>
-                                                        <Radio.Group style={{ width: "50%" }} disabled>
+                                                        <Radio.Group disabled>
                                                             {
                                                                 q.answer.map(a => (<div style={{ display: 'flex' }}>
-                                                                    <div style={{ width: '50%' }}>
+                                                                    <div >
                                                                         <Radio style={radioStyle} value={a._id} key={a._id}>
                                                                             {a.content}
                                                                         </Radio>
@@ -182,19 +182,23 @@ class Survey extends React.Component {
                                                     <div style={{ fontWeight: 600 }}><span>{t('question')} {index + 1}: </span>{q.question}</div>
                                                     <Row>
                                                         <Col span={12} >
-                                                            <Radio.Group style={{ width: "50%" }} disabled>
+                                                            <Checkbox.Group disabled>
                                                                 {
                                                                     q.answer.map(a => (<div style={{ display: 'flex' }}>
-                                                                        <div style={{ width: '50%' }}>
-                                                                            <Radio style={radioStyle} value={a._id} key={a._id}>
+                                                                        <div >
+                                                                            {/* <Radio style={radioStyle} value={a._id} key={a._id}>
                                                                                 {a.content}
-                                                                            </Radio>
+                                                                            </Radio> */}
+
+                                                                            <Checkbox style={radioStyle} value={a._id} key={a._id}>
+                                                                                {a.content}
+                                                                            </Checkbox>
                                                                         </div>
 
                                                                     </div>
                                                                     ))
                                                                 }
-                                                            </Radio.Group>
+                                                            </Checkbox.Group>
                                                         </Col>
                                                         <Col span={12}>
                                                             {

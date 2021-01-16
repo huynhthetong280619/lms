@@ -176,7 +176,7 @@ class SurveyExecute extends React.Component {
 
                                                 : <div style={{ textAlign: 'left' }} key={q._id}>
                                                     <div style={{ fontWeight: 600 }}>
-                                                        <span>{t('question')} {index}: </span>{q.question}
+                                                        <span>{t('question')} {index+1}: </span>{q.question}
                                                     </div>
                                                     <div>
                                                         <input style={{ width: '400px' }} type="text" onChange={(e) => this.onFill(e, q._id)} />

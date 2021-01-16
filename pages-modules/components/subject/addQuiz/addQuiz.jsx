@@ -51,7 +51,7 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, createQuiz, updateQuiz, idSubjec
 
             const object = {
                 setting: {
-                    code: quizBank._id,
+                    code: quizBank ? quizBank._id : null,
                     questionCount: 1,
                     attemptCount: 3,
                     timeToDo: 15,
@@ -156,7 +156,7 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, createQuiz, updateQuiz, idSubjec
                             rules={[
                                 {
                                     required: true,
-                                    message:t('req_select_week')
+                                    message: t('req_select_week')
                                 }
                             ]}
                             hasFeedback>
@@ -261,7 +261,7 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, createQuiz, updateQuiz, idSubjec
                                 }
                             ]}
                             hasFeedback>
-                            <InputNumber min={1} max={quizBank.questions} />
+                            <InputNumber min={1} max={quizBank ? quizBank.questions : 30} />
 
                         </Form.Item>
                         <Form.Item

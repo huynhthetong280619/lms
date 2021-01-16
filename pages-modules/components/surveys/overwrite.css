@@ -20,10 +20,6 @@
     margin: 0;
 }
 
-.lms-ws-survey-page .ant-checkbox-inner {
-    border-radius: 50%;
-}
-
 .lms-ws-survey-page .ant-checkbox-checked .ant-checkbox-inner {
     background-color: #fff;
 }
@@ -52,10 +48,9 @@ content: none; */
     display: table;
     width: 8px;
     height: 8px;
-    background-color: #1890ff;
+    background-color: #c4c4c4;
     border-top: 0;
     border-left: 0;
-    border-radius: 8px;
     -webkit-transform: scale(0);
     transform: scale(0);
     opacity: 0;

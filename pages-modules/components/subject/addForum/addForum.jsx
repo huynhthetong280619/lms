@@ -54,7 +54,7 @@ const AddForum = ({ t, lstTimelines, createForum, updateForum, idSubject, idTime
         //console.log('forum', data)
 
         if (!idForum) {
-            handleCreateForum(data, fieldsValue.idTimeline);
+            handleCreateForum(data, values.idTimeline);
         } else {
             handleUpdateForum(data, idTimeline);
         }

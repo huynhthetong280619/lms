@@ -4,6 +4,7 @@ import { get } from 'lodash'
 import { withTranslation } from 'react-i18next';
 import downloadFile from '../../../assets/common/core/downloadFile.js';
 import restClient from '../../../assets/common/core/restClient.js';
+import { notifyError, notifySuccess } from '../../../assets/common/core/notify.js';
 import HeadPage from '../headPage/headPage.jsx';
 import 'antd/dist/antd.css';
 
@@ -23,39 +24,41 @@ const Manage = ({ t, assignment, idAssign, idSubject, idTimeline, token }) => {
     }
     const editRow = (record) => {
         setState({ ...state, editingKey: record._id });
+        form.setFieldsValue({
+            grade: record.feedBack ? record.feedBack.grade : 0
+        })
     }
 
     const enterGradeVerify = async (idSubmission) => {
         setState({ ...state, isConfirm: true });
-        const row = await form.validateFields().then(value => value).catch(error => {
-            return null;
-        });
-        if (!row) { setState({ ...state, isConfirm: false }); return; }
+        // const row = await form.validateFields()
+        //     .then(value => value).catch(error => {
+        //         return null;
+        //     });
+        // if (!row) { setState({ ...state, isConfirm: false }); return; }
+        //console.log('enterGradeVerify', grade)
+        let grade = form.getFieldValue('grade');
+        if (grade < 0 || grade > 10) { setState({ ...state, isConfirm: false }); return; }
         const data = {
             idSubject: idSubject,
             idTimeline: idTimeline,
-            grade: row.grade
+            grade: grade
         }
+        console.log('enterGradeVerify', data)
 
         await restClient.asyncPost(`/assignment/${idAssign}/grade/${idSubmission}`, data, token)
             .then(res => {
                 setState({ ...state, isConfirm: false });
                 //console.log('enterGradeVerify', res)
                 if (!res.hasError) {
-                    notification.success({
-                        message: 'Thành công!',
-                        description: res.data.message
-                    });
+                    notifySuccess(t('success'), res.data.message);
                     let newData = state.lstSubmission;
                     const rowIndex = newData.findIndex(value => value._id === idSubmission);
                     //console.log('rowIndex', rowIndex);
                     newData[rowIndex].feedBack = res.data.feedBack;
                     setState({ ...state, editingKey: null, lstSubmission: newData });
                 } else {
-                    notification.error({
-                        message: 'Thất bại!',
-                        description: res.data.message
-                    })
+                    notifyError(t('failure'), res.data.message);
                 }
             })
     }
@@ -99,7 +102,7 @@ const Manage = ({ t, assignment, idAssign, idSubject, idTimeline, token }) => {
                                     },
                                 }),
                             ]}>
-                            <Input type="number" min='0' max='10' defaultValue={data.feedBack ? data.feedBack.grade : null} />
+                            <Input type="number" min='0' max='10' />
                         </Form.Item>
                     )
                 } else {
@@ -122,6 +125,7 @@ const Manage = ({ t, assignment, idAssign, idSubject, idTimeline, token }) => {
                                 loading={state.isConfirm}
                                 type='primary'>{t('submit')}</Button>
                             <Button
+                                disabled={state.isConfirm}
                                 onClick={() => { setState({ ...state, editingKey: null }) }}
                             >{t('cancel')}</Button>
                         </span>

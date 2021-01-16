@@ -154,7 +154,7 @@ class Exams extends React.Component {
                                     q.typeQuestion === "multiple" ?
                                         (
                                             <div className="ant-row" style={{ marginBottom: 10 }}>
-                                                <Col span={10} style={{ textAlign: 'left' }}>
+                                                <Col span={24} style={{ textAlign: 'left' }}>
                                                     <div style={{ fontWeight: 600 }}><span>{t('question')} {index + 1}: </span>{q.question}</div>
                                                     <div>
                                                         <Checkbox.Group style={{ width: '100%' }} onChange={e => this.onChangeMultipleChoice(e, q._id)}>
@@ -176,13 +176,12 @@ class Exams extends React.Component {
                                                         </Checkbox.Group>
                                                     </div>
                                                 </Col>
-                                                <Col span={12} >
-                                                </Col>
+
                                             </div>
                                         )
                                         :
                                         (<div className="ant-row" style={{ marginBottom: 10 }}>
-                                            <Col span={10} style={{ textAlign: 'left' }}>
+                                            <Col span={24} style={{ textAlign: 'left' }}>
                                                 <div style={{ fontWeight: 600 }}><span>{t('question')} {index + 1}: </span>{q.question}</div>
                                                 <div>
                                                     <Radio.Group onChange={e => this.onChoice(e, q._id)} value={get(this.state.answer, q._id)}>
@@ -195,8 +194,6 @@ class Exams extends React.Component {
                                                         }
                                                     </Radio.Group>
                                                 </div>
-                                            </Col>
-                                            <Col span={12} >
                                             </Col>
                                         </div>)
                                 ))

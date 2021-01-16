@@ -31,7 +31,12 @@ import {
   faSave,
   faLockOpen,
   faExternalLinkAlt,
-  faComment
+  faComment,
+  faFilePowerpoint,
+  faFilePdf,
+  faFileWord,
+  faFileArchive,
+  faFileExcel
 } from "@fortawesome/free-solid-svg-icons";
 
 
@@ -67,5 +72,10 @@ library.add(
   faMoon,
   faChevronRight,
   faGlobe,
-  faCaretRight
+  faCaretRight,
+  faFilePowerpoint,
+  faFilePdf,
+  faFileWord,
+  faFileArchive,
+  faFileExcel
 );
