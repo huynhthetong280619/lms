@@ -6,7 +6,7 @@ import { parseCookies } from '../../assets/helpers'
 const ViewPage = ({ detailFile, token }) => {
     return (
         <IndexLayout>
-            <ViewOnline detailFile={detailFile} token={token}/>
+            <ViewOnline detailFile={detailFile} token={token} />
         </IndexLayout>
     )
 }
@@ -14,11 +14,11 @@ const ViewPage = ({ detailFile, token }) => {
 ViewPage.getInitialProps = async (ctx) => {
     const data = parseCookies(ctx.req);
     const token = data.token
-    //console.log('ViewPage', ctx)
+    console.log('ViewPage', ctx)
     const { idSubject, idTimeline, idFile } = ctx.query;
 
-    const detailFile = await restClient.asyncGet(`/timeline/${idTimeline}/file/${idFile}?idSubject=${idSubject}`, token);
-    //console.log(detailFile)
+    const detailFile = await restClient.asyncGet(`/timeline/${idTimeline}/files/${idFile}?idSubject=${idSubject}`, token);
+    console.log('detailFile', get(detailFile, 'data'))
     return {
         detailFile: get(detailFile, 'data').file,
         token
