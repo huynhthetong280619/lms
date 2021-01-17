@@ -223,7 +223,7 @@ const Profile = ({ t, token }) => {
 
     return (
         <>
-        <HeadPage title={t('profile')}/>
+            <HeadPage title={t('profile')} />
             <Row className="profile-lms-ws" style={{
                 background: '#fff',
                 minHeight: '200px',
@@ -414,7 +414,7 @@ const Profile = ({ t, token }) => {
                                         message: t('req_confirm_password'),
                                     },
                                     ({ getFieldValue }) => ({
-                                        validator(value) {
+                                        validator(rule, value) {
                                             if (!value || getFieldValue('new') === value) {
                                                 return Promise.resolve();
                                             }
