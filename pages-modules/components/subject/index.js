@@ -856,7 +856,7 @@ class Subject extends React.Component {
                                                     <FontAwesomeIcon icon='file-powerpoint' style={{ width: 40, height: 40, color: '#d04424' }} />
                                                 </i>
                                             )}
-                                            {f.type.includes('xls') && (
+                                            {(f.type.includes('xls') || f.type.includes('csv')) && (
                                                 <i>
                                                     <FontAwesomeIcon icon='file-excel' style={{ width: 40, height: 40, color: '#1a7243' }} />
                                                 </i>
@@ -864,12 +864,12 @@ class Subject extends React.Component {
 
                                             {(f.type.includes('rar') || (f.type.includes('zip')) && (
                                                 <i>
-                                                    <FontAwesomeIcon icon='file-archive' style={{ width: 40, height: 40, color: '#9e6fb2' }} />
+                                                    <FontAwesomeIcon icon='archive' style={{ width: 40, height: 40, color: '#9e6fb2' }} />
                                                 </i>
                                             ))}
 
                                             {!(f.type.includes('ppt')) && !(f.type.includes('doc')) && !(f.type.includes('pdf'))
-                                                && !(f.type.includes('xls')) && !(f.type.includes('rar')) && !(f.type.includes('zip'))
+                                                && !(f.type.includes('xls')) && !(f.type.includes('csv')) && !(f.type.includes('rar')) && !(f.type.includes('zip'))
                                                 && (
                                                     <i>
                                                         <FontAwesomeIcon icon='file-alt' style={{ width: 40, height: 40, color: '#273c75' }} />

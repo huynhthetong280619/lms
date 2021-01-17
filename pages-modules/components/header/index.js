@@ -1,11 +1,11 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { Button, Col, Row, Popover, Menu, Modal, Input, Tooltip } from 'antd'
-import { Form, Divider, message } from 'antd'
-import { Avatar, dividerClassName } from "@fluentui/react-northstar";
+import { Form, Divider } from 'antd'
+import { Avatar } from "@fluentui/react-northstar";
 import { GoogleLogin } from 'react-google-login';
 import { GOOGLE_CLIENT_ID, FACEBOOK_CLIENT_ID } from '../../../assets/constants/const'
 import restClient from '../../../assets/common/core/restClient'
-import { notifyError, notifySuccess } from '../../../assets/common/core/notify'
+import { notifyError } from '../../../assets/common/core/notify'
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
 import { get, isEmpty } from 'lodash'
 import { withTranslation } from 'react-i18next';
@@ -14,17 +14,14 @@ import styles from './styles.scss'
 import './overwrite.css'
 
 //import message from '../../../assets/images/contents/chat.png'
-import notification from '../../../assets/images/contents/notification.png'
-import profile from '../../../assets/images/contents/profile.png'
 import enter from '../../../assets/images/contents/enter.png'
 import logo from '../../../assets/logo/logo.png'
-import { UserOutlined, KeyOutlined, GoogleOutlined, FacebookOutlined, PoweroffOutlined, HomeOutlined, GooglePlusOutlined, } from '@ant-design/icons';
+import { UserOutlined, KeyOutlined, FacebookOutlined, GooglePlusOutlined, } from '@ant-design/icons';
 import Router from 'next/router'
 import { authenticate, removeCookie, isAuth } from '../../../assets/common/core/localStorage';
 import { css } from "@emotion/core";
 import FadeLoader from "react-spinners/FadeLoader";
 
-const { SubMenu } = Menu;
 
 const override = css`
   display: block;
@@ -37,20 +34,18 @@ class Headers extends React.Component {
         current: 'mail',
         isVisible: false,
         isLogin: false,
-        username: '',
         isLoading: false,
         loginChange: this.props.t('sign_in'),
         isLoadingPage: false
     };
 
     componentDidMount() {
-        if (isAuth) {
+        if (isAuth()) {
             const user = JSON.parse((localStorage.getItem('user')));
             //console.log('user', user)
             if (!isEmpty(user)) {
                 this.setState({
                     isLogin: true,
-                    username: user.code,
                     profile: user
                 })
             }
@@ -98,6 +93,10 @@ class Headers extends React.Component {
                 }
             })
 
+    }
+
+    responseGoogleFailure = async (response)=>{
+        console.log(response);
     }
 
     responseGoogle = async (response) => {
@@ -156,7 +155,7 @@ class Headers extends React.Component {
             })
     }
 
-    logout = (e) => {
+    logout = () => {
         this.setState({ isLoadingPage: true })
 
         removeCookie('token');
@@ -173,7 +172,7 @@ class Headers extends React.Component {
             <div>
                 <a className='menu_item setting' href="/profiles">{t('account_setting')}</a>
                 <a className='menu_item sign_out'
-                    onClick={(e) => this.logout()}
+                    onClick={() => this.logout()}
                 >{t('sign_out')}</a>
             </div>
         );
@@ -190,7 +189,6 @@ class Headers extends React.Component {
 
         //console.log('title', this.state.profile)
 
-        const { current } = this.state;
 
         return (
             <Row style={{
@@ -266,7 +264,7 @@ class Headers extends React.Component {
                                     </Row>
                                 )}
                                 onSuccess={this.responseGoogle}
-                                onFailure={this.responseGoogle}
+                                onFailure={this.responseGoogleFailure}
                                 cookiePolicy={'single_host_origin'}
                             />
 
