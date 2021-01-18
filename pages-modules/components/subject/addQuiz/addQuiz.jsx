@@ -59,7 +59,7 @@ const AddQuiz = ({ lstTimelines, lstQuizzes, t, createQuiz, updateQuiz, idSubjec
                 isDeleted: !false,
             }
             form.setFieldsValue({
-                idTimeline: lstTimelines[0]._id,
+                idTimeline: lstTimelines[0] ? lstTimelines[0]._id : null,
                 exam: object
             })
         }

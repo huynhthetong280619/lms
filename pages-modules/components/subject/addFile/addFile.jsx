@@ -42,7 +42,7 @@ const AddFile = ({ t, lstTimelines, createFile, updateFile, idSubject, idTimelin
 
         } else {
             form.setFieldsValue({
-                idTimeline: lstTimelines[0]._id,
+                idTimeline: lstTimelines[0] ? lstTimelines[0]._id : null,
                 file: {
                     isDeleted: !false,
                 }

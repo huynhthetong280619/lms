@@ -74,7 +74,7 @@ class Quiz extends React.Component {
                     dataIndex: 'grade',
                     key: 'grade',
                     render: (data) => (
-                        data ? <Text type='success'>{data}</Text> : <Text type='danger'>{t('not_do')}</Text>
+                        data !== null ? <Text type='success'>{data}</Text> : <Text type='danger'>{t('not_do')}</Text>
                     )
                 },
                 {

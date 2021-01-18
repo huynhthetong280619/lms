@@ -28,6 +28,7 @@ const AddAssignment = ({ lstTimelines, t, createAssignment, updateAssignment, id
 
     useEffect(() => {
         if (assignment) {
+            setIsOverDue(assignment.setting.isOverDue);
             //console.log(assignment);
             form.setFieldsValue({
                 idTimeline: idTimeline,
@@ -65,7 +66,7 @@ const AddAssignment = ({ lstTimelines, t, createAssignment, updateAssignment, id
                 isDeleted: !false,
             }
             form.setFieldsValue({
-                idTimeline: lstTimelines[0]._id,
+                idTimeline: lstTimelines[0] ? lstTimelines[0]._id : null,
                 assignment: object
             })
         }

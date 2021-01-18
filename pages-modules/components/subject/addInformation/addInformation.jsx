@@ -29,7 +29,7 @@ const AddInformation = ({ t, lstTimelines, isLoading, createInformation, idSubje
 
         } else {
             form.setFieldsValue({
-                idTimeline: lstTimelines[0]._id
+                idTimeline: lstTimelines[0] ? lstTimelines[0]._id : null
             })
         }
     }, []);
