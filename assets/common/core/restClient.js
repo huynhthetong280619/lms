@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import { get, isEmpty, split, includes, omit } from 'lodash';
+import {get, isEmpty, split, includes, omit } from 'lodash';
 import { GLOBAL_CONFIG } from '../../config/index'
 import urljoin from 'url-join';
 require('isomorphic-fetch')
@@ -22,7 +22,7 @@ const parseResponse = async response => {
 };
 
 class RestClient {
-    constructor(props) { }
+    constructor(props) {}
 
     setExceptionHandler(exceptionHandler) {
         this.exceptionHandler = exceptionHandler;
@@ -82,8 +82,8 @@ class RestClient {
 
         try {
             await fetch(this.getUrl(path), {
-                headers,
-            })
+                    headers,
+                })
                 .then(res => res.blob())
                 .then(blob => {
 
@@ -91,9 +91,9 @@ class RestClient {
                     // var file = window.URL.createObjectURL(blob);
                     // window.location.assign(file)
                 }).
-                catch(err => {
-                    //console.log('edxxxx')
-                })
+            catch(err => {
+                //console.log('edxxxx')
+            })
 
         } catch (ex) {
             return {
@@ -221,7 +221,7 @@ class RestClient {
         try {
             const response = await fetch(this.getUrl(path), {
                 method: 'PATCH',
-                headers: isFormData ? { ...omit(this.createHeaders(), 'Content-Type') } : this.createHeaders(),
+                headers: isFormData ? {...omit(this.createHeaders(), 'Content-Type') } : this.createHeaders(),
                 body: isFormData ? data : JSON.stringify(data),
             });
 
@@ -247,7 +247,7 @@ class RestClient {
     async asyncUploadFile(file) {
         const formData = new FormData();
         formData.append('file', file)
-        // replace this with your upload preset name
+            // replace this with your upload preset name
         formData.append('upload_preset', 'gmttm4bo');
         const options = {
             method: 'POST',
@@ -264,7 +264,9 @@ class RestClient {
             .then(res => res.json())
             .then(res => {
 
-                //console.log('Response', res)
+                console.log('Response secure_url', res.secure_url);
+
+                console.log('Response url', res.url);
                 return {
                     name: res.original_filename,
                     path: res.url,

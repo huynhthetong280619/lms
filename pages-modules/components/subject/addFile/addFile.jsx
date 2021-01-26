@@ -103,7 +103,7 @@ const AddFile = ({ t, lstTimelines, createFile, updateFile, idSubject, idTimelin
 
     const onFinish = async (values) => {
         setLoading(true);
-        //console.log('fileAttach', fileAttach);
+        console.log('fileAttach', fileAttach);
         if (fileAttach) {
             const objectFile = await restClient.asyncUploadFile(fileAttach);
             if (objectFile) {

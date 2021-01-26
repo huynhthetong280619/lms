@@ -1,19 +1,19 @@
-.pg-viewer-wrapper{
+.pg-viewer-wrapper {
     overflow: hidden !important;
     height: auto !important;
     border: 3px solid #cacaca;
     text-align: center;
 }
 
-.document-container{
+.document-container {
     height: 600px;
     overflow-y: auto;
 }
 
-.video-container video{
+.video-container video {
     width: 974px;
 }
 
-.pg-viewer-wrapper .pg-viewer{
+.pg-viewer-wrapper .pg-viewer {
     text-align: center;
 }

@@ -69,6 +69,7 @@
     "react-date-picker": "^8.0.5",
     "react-datepicker": "^3.3.0",
     "react-day-picker": "^7.4.8",
+    "react-doc-viewer": "^0.1.5",
     "react-dom": "16.13.1",
     "react-facebook-login": "^4.1.1",
     "react-file-viewer": "^1.2.1",
